@@ -1,0 +1,146 @@
+/*
+fetchTLE primary CSS file.
+*/
+
+/* Page Styles */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    font-family: "Arial",sans-serif;
+	font-size: 12px;
+}
+
+body:before {
+    /* Opera fix for CSS sticky footer */
+    content: "";
+    height: 100%;
+    float: left;
+    width: 0;
+    margin-top: -32767px;
+}
+
+/* Text Styles */
+a.link:link {color: #000000; text-decoration: underline;}
+a.link:visited {color: #000000; text-decoration: underline;}
+a.link:hover {color: #666666; text-decoration: none;}
+a.link:active {color: #666666; text-decoration: none;}
+
+.form_header {
+    color: #224479;
+    font-size: 20px;
+}
+
+.login_form_label {
+    color: #666666;
+    font-size: 16px;
+}
+
+.page_title {
+    color: #224479;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+h3 {
+    margin-bottom: 5px;
+}
+
+.btn {
+    text-decoration: none;
+}
+
+/* Layout Styles */
+#wrap {
+    min-height: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#content_container {
+    overflow: auto;
+    padding-bottom: 66px; /* Footer height + borders + vertical margins/padding + 10 px (margin between footer) */
+    width: 70%;
+    min-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 20px;
+	position: relative;
+}
+
+#footer {
+    position: relative;
+    margin-top: -56px; /* Negation of footer height + borders + vertical margins/padding */
+    height: 50px;
+    clear: both;
+    width: 70%;
+    min-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px dotted #cccccc;
+    border-width: 2px 0px 0px 0px;
+    color: #666666;
+	font-size: 12px;
+    padding-top: 4px;
+}
+
+#footer_left {
+    width: 130px;
+    float: left;
+}
+
+#footer_middle {
+    width: 200px;
+    float: left;
+}
+
+#footer_right {
+    width: 250px;
+    float: right;
+}
+
+#login_form {
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#admin_left_column  {
+    float: left;
+    width: 200px;
+}
+
+#admin_right_column {
+    float: left;
+    width: 500px;
+}
+
+#admin_nav_menu {
+    background-color: #F5F5F5;
+    width: 95%;
+    padding: 5px 0px 5px 0px;
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+
+.form_error {
+    border-color: #B94A48 !important;
+}
+
+.form_errors ul {
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.form_errors li {
+    padding-left: 20px;
+    background-image: url(images/bullet_error.png);
+    background-repeat: no-repeat;
+    background-position: 0 1px;;
+    color: #D61C1C;
+}
