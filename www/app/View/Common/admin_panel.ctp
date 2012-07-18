@@ -17,7 +17,7 @@
                 <?php echo Configure::read('Website.name'); ?> Settings
             </li>
             <li <?php if($this->params['controller']=='panel'){echo "class=\"active\"";} ?>>
-                <a href="/admin">Website Configuration</a>
+                <a href="/admin"><?php echo Configure::read('Website.name'); ?> Status</a>
             </li>
             <li <?php if($this->params['controller']=='source'){echo "class=\"active\"";} ?>>
                 <a href="/admin/source">TLE Source Management</a>

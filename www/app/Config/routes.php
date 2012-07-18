@@ -31,10 +31,18 @@ Router::connect('/', array('controller' => 'display', 'action' => 'index'));
 
 // Admin routes
 Router::connect('/admin', array('controller' => 'panel', 'action' => 'index', 'admin' => true));
+Router::connect('/admin/source/sourceupdate', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'sourceupdate', 'admin' => true));
 Router::connect('/admin/source/add', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'add', 'admin' => true));
 Router::connect('/admin/source/add', array('[method]' => 'POST', 'controller' => 'source', 'action' => 'create', 'admin' => true));
+Router::connect('/admin/source/:id/delete', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'remove', 'admin' => true));
+Router::connect('/admin/source/:id/delete', array('[method]' => 'POST', 'controller' => 'source', 'action' => 'delete', 'admin' => true));
+Router::connect('/admin/source/:id/edit', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'edit', 'admin' => true));
+Router::connect('/admin/source/:id/edit', array('[method]' => 'POST', 'controller' => 'source', 'action' => 'change', 'admin' => true));
 
 // API routes
+
+// CRON routes
+Router::connect('/cron/source/update/:source', array('controller' => 'source', 'action' => 'update', 'cron' => true));
 
 /**
  * Load all plugin routes.  See the CakePlugin documentation on 

@@ -10,7 +10,49 @@ class SourceController extends AppController {
     function beforeFilter(){
         parent::beforeFilter();
         
-        $this->Auth->allow(); 
+        $this->Auth->allow('cron_update'); 
+    }
+    
+    function cron_update(){
+        /*
+        Update the specified source(s) when called via a CRON job.
+        */
+        
+        // Make sure the request is from a CRON
+        if (!defined('CRON_DISPATCHER')){
+            $this->redirect('/');
+            exit();
+        }
+        
+        // 
+    }
+    
+    public function admin_sourceupdate(){
+        /*
+        Update the specified source(s) when called from the admin panel.
+        
+        Accessed via Ajax. Outputs 'okay' on success or 'error' on error.
+        */
+        
+        // Setup
+        $update_attempt = null;
+        $this->layout = 'ajax';
+        
+        if (isset($this->params->source) && !empty($this->params->source)){
+            // Update the specified source
+            $update_attempt = $this->Source->update_sources(urldecode($this->params->source));
+        } else {
+            // Update all sources
+            $update_attempt = $this->Source->update_sources();
+        }
+        
+        if ($update_attempt){
+            $this->Session->setFlash('All specified sources were successfully updated.', 'default', array('class' => 'alert alert-success'));
+            $this->set('update_status', 'okay');
+        } else {
+            $this->Session->setFlash('At least one source failed to update. The error will be displayed below.', 'default', array('class' => 'alert'));
+            $this->set('update_status', 'error');
+        }
     }
     
     public function admin_index(){
@@ -20,6 +62,100 @@ class SourceController extends AppController {
         
         // Load all configured sources
         $this->set('sources', $this->Source->find('all'));
+    }
+    
+    public function admin_edit(){
+        /*
+        Displayes the source edit page.
+        */
+        
+        $this->set("title_for_layout", "Edit a TLE Source");
+        
+        // Load the source
+        $source = $this->Source->find('first', array('conditions' => array('Source.id' => $this->params->id)));
+        if($source){
+            $this->set('source', $source);
+        } else {
+            $this->Session->setFlash('That source could not be found.', 'default', array('class' => 'alert alert-error'));
+            $this->redirect(array('controller' => 'source', 'action' => 'index', 'admin' => true));
+        }
+    }
+    
+    public function admin_change(){
+        /*
+        Handles form submissions from admin_edit().
+        
+        Method: POST
+        */
+        
+        // Load the source
+        $source = $this->Source->find('first', array('conditions' => array('Source.id' => $this->params->id)));
+        if($source){
+            // Edit the source
+            $source_changes['Source']['name'] = $_POST['source_name'];
+            $source_changes['Source']['url'] = $_POST['source_url'];
+            $source_changes['Source']['description'] = $_POST['source_description'];
+            $source_changes['Source']['updated_on'] = date('Y-m-d H:i:s', time());
+            $source_changes['Source']['id'] = $this->params->id;
+            
+            $edit_attempt = $this->Source->save($source_changes);
+            if ($edit_attempt){
+                $this->Session->setFlash('Source \''.$source['Source']['name'].'\' successfully edited', 'default', array('class' => 'alert alert-success'));
+                CakeLog::write('admin', '[success] Source \''.$source['Source']['name'].'\' edited.');
+                $this->redirect(array('controller' => 'source', 'action' => 'index', 'admin' => true));
+            } else {
+                $this->Session->setFlash('There was an error editing the \''.$source['Source']['name'].'\' TLE souce.', 'default', array('class' => 'alert alert-error'));
+                CakeLog::write('admin', '[success] Source \''.$satellite['Satellite']['name'].'\' could not be edited.');
+                $this->redirect(array('controller' => 'source', 'action' => 'index', 'admin' => true));
+            }
+        } else {
+            $this->Session->setFlash('That source could not be found.', 'default', array('class' => 'alert alert-error'));
+            $this->redirect(array('controller' => 'satellite', 'action' => 'index', 'admin' => true));
+        }
+    }
+    
+    public function admin_remove(){
+        /*
+        Displays the source remove confirmation.
+        */
+        
+        $this->set("title_for_layout","Remove a TLE Source");
+        
+        // Load the source
+        $source = $this->Source->find('first', array('conditions' => array('Source.id' => $this->params->id)));
+        if($source){
+            $this->set('source', $source);
+        } else {
+            $this->Session->setFlash('That source could not be found.', 'default', array('class' => 'alert alert-error'));
+            $this->redirect(array('controller' => 'source', 'action' => 'index', 'admin' => true));
+        }
+    }
+    
+    public function admin_delete(){
+        /*
+        Handle form submissions from admin_remove().
+        
+        Method: POST
+        */
+        
+        // Load the source
+        $source = $this->Source->find('first', array('conditions' => array('Source.id' => $this->params->id)));
+        if($source){
+            // Delete the source
+            $delete_attempt = $this->Source->delete($this->params->id);
+            if ($delete_attempt){
+                $this->Session->setFlash('Source \''.$source['Source']['name'].'\' successfully deleted.', 'default', array('class' => 'alert alert-success'));
+                CakeLog::write('admin', '[success] Source \''.$source['Source']['name'].'\' deleted.');
+                $this->redirect(array('controller' => 'source', 'action' => 'index', 'admin' => true));
+            } else {
+                $this->Session->setFlash('There was an error deleting the \''.$source['Source']['name'].'\' TLE source.', 'default', array('class' => 'alert alert-error'));
+                CakeLog::write('admin', '[success] Source \''.$source['Source']['name'].'\' could not be deleted.');
+                $this->redirect(array('controller' => 'source', 'action' => 'index', 'admin' => true));
+            }
+        } else {
+            $this->Session->setFlash('That source could not be found.', 'default', array('class' => 'alert alert-error'));
+            $this->redirect(array('controller' => 'source', 'action' => 'index', 'admin' => true));
+        }
     }
     
     public function admin_add(){

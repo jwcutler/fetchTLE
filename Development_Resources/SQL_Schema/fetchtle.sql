@@ -9,6 +9,14 @@ CREATE TABLE admins (
     PRIMARY KEY(`id`)
 );
 
+CREATE TABLE updates (
+    id int AUTO_INCREMENT,
+    source_id int NOT NULL,
+    created_on datetime NOT NULL,
+    update_message text,
+    PRIMARY KEY(`id`)
+);
+
 CREATE TABLE sources (
     id int AUTO_INCREMENT,
     name varchar(50) NOT NULL,
@@ -16,13 +24,13 @@ CREATE TABLE sources (
     description text,
     created_on datetime NOT NULL,
     updated_on datetime NOT NULL,
-    last_polled datetime,
+    latest_update INT,
     PRIMARY KEY(`id`)
 );
 
 CREATE TABLE tles (
     id int AUTO_INCREMENT,
-    source_id int NOT NULL,
+    update_id int NOT NULL,
     name varchar(50) NOT NULL,
     satellite_number int NOT NULL,
     classification char(1) NOT NULL,

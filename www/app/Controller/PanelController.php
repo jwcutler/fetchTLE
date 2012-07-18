@@ -4,7 +4,7 @@ This controller is responsible for fetchTLE administrator functionality.
 */
 
 class PanelController extends AppController {
-    var $uses = array('Source', 'Tle'); 
+    var $uses = array('Source', 'Tle', 'Update'); 
     var $components = array('RequestHandler');
     
     function beforeFilter(){
@@ -19,7 +19,23 @@ class PanelController extends AppController {
         Displays the main administrator menu.
         */
         
+        // Load all updates that have errors
+        $options['joins'] = array(
+            array('table' => 'sources',
+                'alias' => 'SourceTemp',
+                'type' => 'INNER',
+                'conditions' => array(
+                    'SourceTemp.latest_update = Update.id'
+                )
+            )
+        );
+        $options['conditions'] = array(
+            'Update.update_message !=' => ''
+        );
         
+        var_dump($this->Update->find('all', $options));
+        
+        //$this->set('error_sources', $this->Source->find('all', $options));
     }
     
     public function admin_generatehash(){
