@@ -6,9 +6,13 @@ This model keeps track of updates and the TLE's parsed in each update. It is use
 */
 
 class Update extends AppModel {
-    // Set up model
+    // Define Associations
     var $name = 'Update';
-    public $hasMany = 'Tle';
     public $belongsTo = 'Source';
+    public $hasMany = array(
+        'Tle' => array(
+            'dependent'=> true
+        )
+    ); 
 }
 ?>

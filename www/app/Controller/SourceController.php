@@ -13,20 +13,6 @@ class SourceController extends AppController {
         $this->Auth->allow('cron_update'); 
     }
     
-    function cron_update(){
-        /*
-        Update the specified source(s) when called via a CRON job.
-        */
-        
-        // Make sure the request is from a CRON
-        if (!defined('CRON_DISPATCHER')){
-            $this->redirect('/');
-            exit();
-        }
-        
-        // 
-    }
-    
     public function admin_sourceupdate(){
         /*
         Update the specified source(s) when called from the admin panel.

@@ -9,7 +9,11 @@ class Source extends AppModel {
     var $name = 'Source';
     
     // Define associations
-    public $hasMany = 'Update';
+    public $hasMany = array(
+        'Update' => array(
+            'dependent'=> true
+        )
+    ); 
     
     // Validations
     public $validate = array(
