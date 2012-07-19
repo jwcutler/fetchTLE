@@ -5,10 +5,6 @@ Source Model
 Handles all TLE source management operations.
 */
 
-// Load other required models
-App::import('model','Tle');
-App::import('model','Update');
-
 class Source extends AppModel {
     var $name = 'Source';
     
@@ -39,8 +35,11 @@ class Source extends AppModel {
         */
         
         // Setup the source names
+		$mod_update = Classregistry::init('Update');
+		$mod_tle = Classregistry::init('Tle');
         $sources = null;
         $success = true;
+		$this->recursive = 0;
         if (is_array($source_names)){
             // Multiple sources
             $source_conditions = array(
@@ -57,10 +56,12 @@ class Source extends AppModel {
             // Fetch all sources
             $sources = $this->find('all');
         }
-        
+		
         // Update each source
         foreach ($sources as $source){
+			$this->create();
             $temp_update_message = '';
+			$temp_source = Array();
             
             // Load the source URL
             $source_curl = curl_init();
@@ -73,16 +74,16 @@ class Source extends AppModel {
             
             if ($source_data){
                 // Create a new update
-                $this->Update->create();
+                $mod_update->create();
                 $new_update = Array();
                 $new_update['Update']['source_id'] = $source['Source']['id'];
                 $new_update['Update']['created_on'] = date('Y-m-d H:i:s', time());
                 $new_update['Update']['update_message'] = '';
-                $create_update_attempt = $this->Update->save($new_update);
-                
+                $create_update_attempt = $mod_update->save($new_update);
+				
                 if ($create_update_attempt){
                     // Parse the response
-                    $tle_parse_attempt = $this->Tle->parse_tle_source($source_data, $this->Update->id);
+                    $tle_parse_attempt = $mod_tle->parse_tle_source($source_data, $mod_update->id);
                     
                     if ($tle_parse_attempt!==TRUE){
                         // Parse error occured
@@ -100,22 +101,22 @@ class Source extends AppModel {
             
             if (!empty($temp_update_message)){
                 // An error occured, record it in the update
-                $temp_update['Update']['id'] = $this->Update->id;
+                $temp_update['Update']['id'] = $mod_update->id;
                 $temp_update['Update']['update_message'] = $temp_update_message;
-                $this->Update->save($temp_update);
+                $mod_update->save($temp_update);
                 
                 CakeLog::write('source', '[error] There was an error updating the source \''.$source['Source']['name'].'\': \''.$temp_update_message.'\'');
                 $success = false;
             } else {
-                CakeLog::write('source', '[success] The source \''.$source['Source']['name'].'\' was updated. Update ID: '.$this->Update->id);
+				$temp_source['Source']['latest_successful_update'] = $mod_update->id;
+                CakeLog::write('source', '[success] The source \''.$source['Source']['name'].'\' was updated. Update ID: '.$mod_update->id);
             }
             
-            // Update the `last_update` field of the source, even if it failed
-            $temp_source = Array();
+            // Update the `latest_update` field of the source, even if it failed
             $temp_source['Source']['id'] = $source['Source']['id'];
             $temp_source['Source']['url'] = $source['Source']['url']; // Appease the validator
             $temp_source['Source']['name'] = $source['Source']['name']; // Appease the validator
-            $temp_source['Source']['last_update'] = $this->Update->id;
+            $temp_source['Source']['latest_update'] = $mod_update->id;
             $this->save($temp_source);
         }
         

@@ -25,6 +25,7 @@ CREATE TABLE sources (
     created_on datetime NOT NULL,
     updated_on datetime NOT NULL,
     latest_update INT,
+	latest_successful_update INT,
     PRIMARY KEY(`id`)
 );
 

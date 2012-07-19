@@ -115,7 +115,7 @@ h3 {
 
 #admin_right_column {
     float: left;
-    width: 500px;
+    width: 600px;
 }
 
 #admin_nav_menu {
@@ -144,3 +144,14 @@ h3 {
     background-position: 0 1px;;
     color: #D61C1C;
 }
+
+.tle_expansion {
+    padding: 4px;
+    display: none;
+    border: 1px dotted #cccccc;
+    background-color: #eeeeee;
+    margin: 5px;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+}
+

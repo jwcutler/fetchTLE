@@ -101,10 +101,7 @@ class Tle extends AppModel {
             }
             
             if ($valid_tle){
-                // Delete the old TLE's
-                $this->deleteAll(array('Tle.source_id' => $source_id));
-                
-                // Add the TLE
+                // Add the TLE's
                 $save_result = $this->saveMany($new_tle_entries, array('deep' => true));
                 
                 if ($save_result){

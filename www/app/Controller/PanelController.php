@@ -20,6 +20,7 @@ class PanelController extends AppController {
         */
         
         // Load all updates that have errors
+		$this->Update->recursive = 0; // If you fetch all of the tle's at once you're gonna have a bad time
         $options['joins'] = array(
             array('table' => 'sources',
                 'alias' => 'SourceTemp',
@@ -32,10 +33,8 @@ class PanelController extends AppController {
         $options['conditions'] = array(
             'Update.update_message !=' => ''
         );
-        
-        var_dump($this->Update->find('all', $options));
-        
-        //$this->set('error_sources', $this->Source->find('all', $options));
+		
+        $this->set('error_updates', $this->Update->find('all', $options));
     }
     
     public function admin_generatehash(){

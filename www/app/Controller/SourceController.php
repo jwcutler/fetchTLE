@@ -4,7 +4,7 @@ This controller is responsible for fetchTLE source management and display.
 */
 
 class SourceController extends AppController {
-    var $uses = array('Source', 'Tle'); 
+    var $uses = array('Source', 'Tle', 'Update'); 
     var $components = array('RequestHandler');
     
     function beforeFilter(){
@@ -72,6 +72,10 @@ class SourceController extends AppController {
         $this->set("title_for_layout", "Edit a TLE Source");
         
         // Load the source
+		$update_limit = 10;
+		$this->set('update_limit', $update_limit);
+		$this->Source->hasMany['Update']['limit'] = $update_limit;
+		$this->Source->hasMany['Update']['order'] = 'Update.created_on DESC';
         $source = $this->Source->find('first', array('conditions' => array('Source.id' => $this->params->id)));
         if($source){
             $this->set('source', $source);
@@ -79,6 +83,12 @@ class SourceController extends AppController {
             $this->Session->setFlash('That source could not be found.', 'default', array('class' => 'alert alert-error'));
             $this->redirect(array('controller' => 'source', 'action' => 'index', 'admin' => true));
         }
+		
+		// Load the most recent TLE's
+		$latest_tles = $this->Update->find('first', array(
+			'conditions' => array('Update.id' => $source['Source']['latest_successful_update'])
+		));
+		$this->set('latest_tles', $latest_tles);
     }
     
     public function admin_change(){

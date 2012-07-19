@@ -12,16 +12,16 @@ $this->start('panel_content');
 		<thead>
 			<tr>
 				<th width="20%">Name</th>
-				<th width="30%">Description</th>
+				<th width="27%">Description</th>
 				<th width="30%">Last Polled</th>
-				<th width="20%">Actions</th>
+				<th width="23%">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php foreach($sources as $source): ?>
 				<tr>
 					<td width="20%"><a href="<?php echo $source['Source']['url']; ?>" target="_blank" class="link"><?php echo $source['Source']['name']; ?></a></td>
-					<td width="30%"><?php echo $source['Source']['description']; ?></td>
+					<td width="27%"><?php echo $source['Source']['description']; ?></td>
 					<td width="30%">
 						<?php if (!empty($source['Update'])): ?>
 							<?php
@@ -32,7 +32,7 @@ $this->start('panel_content');
 							Not Polled Yet
 						<?php endif; ?>
 					</td>
-					<td width="20%"><a href="/admin/source/<?php echo $source['Source']['id']; ?>/delete" class="btn btn-mini btn-primary">Delete</a> <a href="/admin/source/<?php echo $source['Source']['id']; ?>/edit" class="btn btn-mini btn-primary">Edit</a></td>
+					<td width="23%"><a href="/admin/source/<?php echo $source['Source']['id']; ?>/delete" class="btn btn-mini btn-primary">Delete</a> <a href="/admin/source/<?php echo $source['Source']['id']; ?>/edit" class="btn btn-mini btn-primary">Manage</a></td>
 				</tr>
 			<?php endforeach; ?>
 		</tbody>

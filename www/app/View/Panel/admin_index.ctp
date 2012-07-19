@@ -31,7 +31,7 @@ $(document).ready(function(){
 <div id="spinner_container" style="display: inline; visibility: hidden;position: relative; top: 5px;"><img src='/img/ajax_spinner_small.gif' alt='Currently Loading TLEs' /></div>
 <br /><br />
 <h4>Source Update Alerts</h4>
-<?php if (empty($error_sources)): ?>
+<?php if (empty($error_updates)): ?>
     No errors have occured recently while trying to update TLE sources.
     <br /><br />
 <?php else: ?>
@@ -45,16 +45,16 @@ $(document).ready(function(){
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach($error_sources as $error_source): ?>
+			<?php foreach($error_updates as $error_update): ?>
 				<tr>
 					<td width="30%">
                         <?php
-                        $source_polled = strtotime($error_source['Update'][count($error_source['Update'])-1]['created_on']);
+                        $source_polled = strtotime($error_update['Update']['created_on']);
                         echo date("m/j/Y H:i:s", $source_polled);
                         ?>
                     </td>
-					<td width="31%"><a href="/admin/source/<?php echo $error_source['Source']['id']; ?>/edit" target="_blank" class="link"><?php echo $error_source['Source']['name']; ?></a></td>
-					<td width="38%"><?php echo $error_source['Update'][count($error_source['Update'])-1]['update_message']; ?></td>
+					<td width="31%"><a href="/admin/source/<?php echo $error_update['Source']['id']; ?>/edit" target="_blank" class="link"><?php echo $error_update['Source']['name']; ?></a></td>
+					<td width="38%"><?php echo $error_update['Update']['update_message']; ?></td>
 				</tr>
 			<?php endforeach; ?>
 		</tbody>
