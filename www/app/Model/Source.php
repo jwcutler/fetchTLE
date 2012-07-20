@@ -5,6 +5,9 @@ Source Model
 Handles all TLE source management operations.
 */
 
+// Load required classes
+App::uses('Sanitize', 'Utility');
+
 class Source extends AppModel {
     var $name = 'Source';
     
@@ -22,10 +25,94 @@ class Source extends AppModel {
                 'rule' => 'isUnique',
                 'required' => true,
                 'allowEmpty' => false
+            ),
+            'name_alphanum' => array(
+                'rule' => 'alphaNumeric',
+                'message' => 'Source names may only contain letters and numbers.'
             )
         ),
         'url' => 'notEmpty'
     );
+    
+    public function api_loadsources($source_names = false, $timestamp = false){
+        /*
+        Fetches all updates and TLE's for the specified source(s) and timestamp (if set).
+        
+        @param $source_names: And array containing the name of all sources to load.
+        @param $timestamp: A UNIX timestamp to filter results.
+        */
+        
+        // Load the sources
+        $result = Array();
+        if ($source_names){
+            if ($timestamp){
+                // Load the updates for `source_names` that are closest to `timestamp`
+            } else {
+                // Load the source and most recent successful update for each `source_names`
+                $query_source_names = Array();
+                foreach($source_names as $source_name){
+                    array_push($query_source_names, 'Source.name=\''.Sanitize::clean($source_name).'\'');
+                }
+                $query_source_names = implode(' OR ',$query_source_names);
+                $sources = $this->query('SELECT * FROM sources AS Source INNER JOIN updates AS `Update` ON (`Update`.id = Source.latest_successful_update) WHERE '.$query_source_names);
+            }
+            
+            if (empty($sources)){
+                // No matching sources found
+                $result['status']['status'] = 'error';
+                $result['status']['message'] = 'None of the provided sources could be located.';
+                $result['status']['timestamp'] = time();
+                $result['status']['number_fetched'] = 0;
+            } else {
+                // Results found, fetch the TLE's and assemble the result
+                foreach($sources as $source){
+                    // Load the TLE's for the update
+                    $mod_update = ClassRegistry::init('Update');
+                    $update = $mod_update->find('first', array(
+                        'conditions' => array('Update.id' => '500')
+                    ));
+                    
+                    if (isset($update['Tle']) && !empty($update['Tle'])){
+                        // Loop through the TLE's and store them
+                        foreach($update['Tle'] as $tle){
+                            $result[$source['Source']['name']]['satellites'][$tle['name']] = $tle;
+                            unset($result[$source['Source']['name']]['satellites'][$tle['name']]['created_on']);
+                            unset($result[$source['Source']['name']]['satellites'][$tle['name']]['update_id']);
+                            unset($result[$source['Source']['name']]['satellites'][$tle['name']]['id']);
+                        }
+                        
+                        // Store the source status
+                        $result[$source['Source']['name']]['status']['url'] = $source['Source']['url'];
+                        $result[$source['Source']['name']]['status']['description'] = $source['Source']['description'];
+                        $result[$source['Source']['name']]['status']['updated'] = strtotime($source['Update']['created_on']);
+                        $result[$source['Source']['name']]['status']['satellites_fetched'] = count($result[$source['Source']['name']]['satellites']);
+                    } else {
+                        // No tle's found for the current source/update, skip it
+                        continue;
+                    }
+                }
+                
+                // At least 1 source loaded successfully
+                if ($count($result)>=1)
+                    $result['status']['status'] = 'okay';
+                    $result['status']['message'] = 'At least one of the specified sources was loaded.';
+                    $result['status']['timestamp'] = time();
+                    $result['status']['sources_fetched'] = count($result)-1;
+                } else {
+                    $result['status']['status'] = 'error';
+                    $result['status']['message'] = 'None of the specified sources could be loaded.';
+                    $result['status']['timestamp'] = time();
+                    $result['status']['sources_fetched'] = 0;
+                }
+            }
+            
+            var_dump($result);
+        } else {
+            
+        }
+        
+        return $result;
+    }
     
     public function update_sources($source_names = false){
         /*

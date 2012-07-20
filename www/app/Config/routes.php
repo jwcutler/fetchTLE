@@ -40,7 +40,9 @@ Router::connect('/admin/source/:id/edit', array('[method]' => 'GET', 'controller
 Router::connect('/admin/source/:id/edit', array('[method]' => 'POST', 'controller' => 'source', 'action' => 'change', 'admin' => true));
 
 // API routes
-
+Router::connect('/api/sources/:sources', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'sources', 'api' => true));
+Router::connect('/api/sources', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'sources', 'api' => true));
+Router::parseExtensions();
 
 /**
  * Load all plugin routes.  See the CakePlugin documentation on 

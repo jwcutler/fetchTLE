@@ -27,12 +27,13 @@ $(document).ready(function(){
 });
 </script>
 <h3>TLE Source Status</h3>
-<button name="update_tles" id="update_tles" class="btn btn-primary">Manually Update TLE's</button>
+<p>To refresh individual sources, visit the <a href="/admin/source" class="link">source management page</a>.</p>
+<button name="update_tles" id="update_tles" class="btn btn-primary">Manually Refresh TLE's</button>
 <div id="spinner_container" style="display: inline; visibility: hidden;position: relative; top: 5px;"><img src='/img/ajax_spinner_small.gif' alt='Currently Loading TLEs' /></div>
 <br /><br />
 <h4>Source Update Alerts</h4>
 <?php if (empty($error_updates)): ?>
-    No errors have occured recently while trying to update TLE sources.
+    <p>No recent errors have occured while updating TLE sources.</p>
     <br /><br />
 <?php else: ?>
     <p>A few errors have occured recently while trying to update TLE sources. They are listed below.</p>

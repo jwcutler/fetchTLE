@@ -10,7 +10,25 @@ class SourceController extends AppController {
     function beforeFilter(){
         parent::beforeFilter();
         
-        $this->Auth->allow('cron_update'); 
+        $this->Auth->allow('cron_update', 'api_sources'); 
+    }
+    
+    public function api_sources(){
+        /*
+        Returns all of the satellites and source information for the specified source(s).
+        */
+        
+        // Load the required sources
+        $sources = null;
+        $timestamp = (isset($this->request->params['timestamp']))?$this->request->params['timestamp']:false;
+        if (isset($this->request->params['sources'])){
+            // Load the specified sources
+            $source_names = explode('+', $this->request->params['sources']);
+            $sources = $this->Source->api_loadsources($source_names, $timestamp);
+        } else {
+            // Load all sources
+            $sources = $this->Source->api_loadsources();
+        }
     }
     
     public function admin_sourceupdate(){

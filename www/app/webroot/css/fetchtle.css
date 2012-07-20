@@ -53,6 +53,10 @@ h3 {
     text-decoration: none;
 }
 
+p {
+    margin-bottom: 5px;
+}
+
 /* Layout Styles */
 #wrap {
     min-height: 100%;
