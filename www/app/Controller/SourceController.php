@@ -20,15 +20,21 @@ class SourceController extends AppController {
         
         // Load the required sources
         $sources = null;
-        $timestamp = (isset($this->request->params['timestamp']))?$this->request->params['timestamp']:false;
+        $timestamp = (isset($_GET['timestamp'])&&is_numeric($_GET['timestamp']))?$_GET['timestamp']:false;
         if (isset($this->request->params['sources'])){
             // Load the specified sources
             $source_names = explode('+', $this->request->params['sources']);
             $sources = $this->Source->api_loadsources($source_names, $timestamp);
         } else {
             // Load all sources
-            $sources = $this->Source->api_loadsources();
+            $sources = $this->Source->api_loadsources(false, $timestamp);
         }
+		
+		if ($this->request->params['ext']=='xml'){
+			// Convert the array to an XML string
+		} else {
+			$this->set('sources', $sources);
+		}
     }
     
     public function admin_sourceupdate(){
