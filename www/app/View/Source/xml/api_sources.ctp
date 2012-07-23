@@ -1,3 +1,3 @@
 <?php
-echo $sources_xml;
+echo $sources;
 ?>

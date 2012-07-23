@@ -61,7 +61,6 @@ $(document).ready(function(){
 	</tbody>
     </table>
 <?php endif; ?>
-<h3>API Status</h3>
 <?php
 $this->end();
 ?>

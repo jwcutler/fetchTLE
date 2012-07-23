@@ -5,11 +5,175 @@ TLE Model
 This model handles all TLE management and interaction options.
 */
 
+// Load required classes
+App::uses('Sanitize', 'Utility');
+
 class Tle extends AppModel {
     var $name = 'Tle';
     
     // Define associations
     public $belongsTo = 'Update';
+    
+    public function api_loadsatellites($satellite_names, $timestamp = false){
+        /*
+        Fetches the TLE information for the specified satellite(s).
+        
+        @param $satellite_names: And array containing the name of all satellites to load.
+        @param $timestamp: A UNIX timestamp to filter results.
+        */
+        
+        // Setup
+        $result = Array();
+        $mod_update = ClassRegistry::init('Update');
+		
+        // Construct a query out of the names
+        $query_satellite_names = Array();
+        foreach($satellite_names as $satellite_name){
+            array_push($query_satellite_names, 'Tle.name=\''.Sanitize::clean(urldecode($satellite_name)).'\'');
+        }
+        $query_satellite_names = implode(' OR ',$query_satellite_names);
+		
+        // Check if a timestamp was set
+        if ($timestamp){
+            // Find the TLE's that are the closest to the specified timestamp along with their associated updates
+            $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(UNIX_TIMESTAMP(Tle.created_on) - \''.Sanitize::clean($timestamp).'\') > ABS(UNIX_TIMESTAMP(TleAlt.created_on) - \''.Sanitize::clean($timestamp).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
+        } else {
+            // Grab the most recent TLE for each specified satellite along with its associated update
+            $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND Tle.created_on < TleAlt.created_on) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
+        }
+        
+        if (empty($satellites)){
+            // No matching satellites found
+            $result['status']['status'] = 'error';
+            $result['status']['message'] = 'None of the provided satellites could be located or have been updated recently.';
+            $result['status']['timestamp'] = time();
+            $result['status']['satellites_fetched'] = 0;
+        } else {
+            // Results found, loop through each satellite and assemble the result
+            foreach ($satellites as $satellite){
+                $satellite_name = $satellite['Tle']['name'];
+                
+                // Set the satellite's status
+                $result['satellites'][$satellite_name]['status']['updated'] = strtotime($satellite['Tle']['created_on']);
+                
+                // Set the satellite's TLE info
+                $result['satellites'][$satellite_name]['tle'] = $satellite['Tle'];
+                unset($result['satellites'][$satellite_name]['tle']['id']);
+                unset($result['satellites'][$satellite_name]['tle']['created_on']);
+                unset($result['satellites'][$satellite_name]['tle']['update_id']);
+            }
+                
+            // At least 1 satellite loaded successfully
+            if (count($result['satellites'])>=1){
+                $result['status']['status'] = 'okay';
+                $result['status']['message'] = 'At least one of the specified satellites was loaded.';
+                $result['status']['timestamp'] = time();
+                $result['status']['satellites_fetched'] = count($result['satellites']);
+            } else {
+                $result['status']['status'] = 'error';
+                $result['status']['message'] = 'None of the specified satellites could be loaded.';
+                $result['status']['timestamp'] = time();
+                $result['status']['satellites_fetched'] = 0;
+            }
+        }
+        
+        return $result;
+    }
+    
+    public function arrayToXML($satellites){
+        /*
+        Converts the satellites API array into an XML string.
+        
+        @param $satellites: Array containing satellite data.
+        
+        Returns:
+            An XML string representing the array.
+        */
+        
+        // Start XML document.
+        $xml_string = '<?xml version="1.0"?>';
+        $xml_string .= '<api_satellites>';
+        
+        // Add the status element
+        $xml_string .= '<status>';
+        $xml_string .= '<status>'.htmlspecialchars($satellites['status']['status']).'</status>';
+        $xml_string .= '<message>'.htmlspecialchars($satellites['status']['message']).'</message>';
+        $xml_string .= '<timestamp>'.htmlspecialchars($satellites['status']['timestamp']).'</timestamp>';
+        $xml_string .= '<satellites_fetched>'.htmlspecialchars($satellites['status']['satellites_fetched']).'</satellites_fetched>';
+        $xml_string .= '</status>';
+        
+        // Add the satellites
+        if (isset($satellites['satellites']) && !empty($satellites['satellites'])){
+            $xml_string .= '<satellites>';
+            foreach($satellites['satellites'] as $satellite_name => $satellite){
+                $xml_string .= '<satellite name=\''.htmlspecialchars($satellite_name).'\'>';
+                
+                // Add the satellite status
+                $xml_string .= '<status>';
+                $xml_string .= '<updated>'.htmlspecialchars($satellite['status']['updated']).'</updated>';
+                $xml_string .= '</status>';
+                
+                // Add the TLE information
+                $xml_string .= '<tle>';
+                $xml_string .= '<name>'.htmlspecialchars($satellite['tle']['name']).'</name>';
+                $xml_string .= '<satellite_number>'.htmlspecialchars($satellite['tle']['satellite_number']).'</satellite_number>';
+                $xml_string .= '<classification>'.htmlspecialchars($satellite['tle']['classification']).'</classification>';
+                $xml_string .= '<launch_year>'.htmlspecialchars($satellite['tle']['launch_year']).'</launch_year>';
+                $xml_string .= '<launch_number>'.htmlspecialchars($satellite['tle']['launch_number']).'</launch_number>';
+                $xml_string .= '<launch_piece>'.htmlspecialchars($satellite['tle']['launch_piece']).'</launch_piece>';
+                $xml_string .= '<epoch_year>'.htmlspecialchars($satellite['tle']['epoch_year']).'</epoch_year>';
+                $xml_string .= '<epoch>'.htmlspecialchars($satellite['tle']['epoch']).'</epoch>';
+                $xml_string .= '<ftd_mm_d2>'.htmlspecialchars($satellite['tle']['ftd_mm_d2']).'</ftd_mm_d2>';
+                $xml_string .= '<std_mm_d6>'.htmlspecialchars($satellite['tle']['std_mm_d6']).'</std_mm_d6>';
+                $xml_string .= '<bstar_drag>'.htmlspecialchars($satellite['tle']['bstar_drag']).'</bstar_drag>';
+                $xml_string .= '<element_number>'.htmlspecialchars($satellite['tle']['element_number']).'</element_number>';
+                $xml_string .= '<checksum_l1>'.htmlspecialchars($satellite['tle']['checksum_l1']).'</checksum_l1>';
+                $xml_string .= '<inclination>'.htmlspecialchars($satellite['tle']['inclination']).'</inclination>';
+                $xml_string .= '<right_ascension>'.htmlspecialchars($satellite['tle']['right_ascension']).'</right_ascension>';
+                $xml_string .= '<eccentricity>'.htmlspecialchars($satellite['tle']['eccentricity']).'</eccentricity>';
+                $xml_string .= '<perigee>'.htmlspecialchars($satellite['tle']['perigee']).'</perigee>';
+                $xml_string .= '<mean_anomaly>'.htmlspecialchars($satellite['tle']['mean_anomaly']).'</mean_anomaly>';
+                $xml_string .= '<mean_motion>'.htmlspecialchars($satellite['tle']['mean_motion']).'</mean_motion>';
+                $xml_string .= '<revs>'.htmlspecialchars($satellite['tle']['revs']).'</revs>';
+                $xml_string .= '<checksum_l2>'.htmlspecialchars($satellite['tle']['checksum_l2']).'</checksum_l2>';
+                $xml_string .= '<raw_l1>'.$satellite['tle']['raw_l1'].'</raw_l1>';
+                $xml_string .= '<raw_l2>'.$satellite['tle']['raw_l2'].'</raw_l2>';
+                $xml_string .= '</tle>';
+                
+                $xml_string .= '</satellite>';
+            }
+            $xml_string .= '</satellites>';
+        }
+        
+        // Close XML
+        $xml_string .= '</api_satellites>';
+        
+        return $xml_string;
+    }
+    
+    public function arrayToRaw($satellites){
+        /*
+        Converts the supplied array into a raw TLE file. Duplicates all ready handled by the queries in api_loadsatellites().
+        
+        @param $satellites: Array of satellite TLE's.
+        */
+        
+        $raw_tles = Array();
+        
+        if (isset($satellites['satellites']) && !empty($satellites['satellites'])){
+            foreach($satellites['satellites'] as $satellite){
+                $temp_satellite = Array(
+                    'name' => $satellite['tle']['name'],
+                    'raw_l1' => $satellite['tle']['raw_l1'],
+                    'raw_l2' => $satellite['tle']['raw_l2']
+                );
+                
+                array_push($raw_tles, $temp_satellite);
+            }
+        }
+        
+        return $raw_tles;
+    }
     
     public function parse_tle_source($raw_tle_data, $update_id){
         /*

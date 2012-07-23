@@ -30,11 +30,17 @@ class SourceController extends AppController {
             $sources = $this->Source->api_loadsources(false, $timestamp);
         }
 		
-		if ($this->request->params['ext']=='xml'){
+		if (isset($this->request->params['ext']) && $this->request->params['ext']=='xml'){
 			// Convert the array to an XML string
-		} else {
+            $this->set('sources', $this->Source->arrayToXML($sources));
+		} else if (isset($this->request->params['ext']) && $this->request->params['ext']=='json'){
+            // $sources is encoded to JSON in the view using json_encode
 			$this->set('sources', $sources);
-		}
+		} else {
+            // Convert the response to RAW tle output and display
+            $this->layout = 'ajax';
+            $this->set('sources', $this->Source->arrayToRaw($sources));
+        }
     }
     
     public function admin_sourceupdate(){

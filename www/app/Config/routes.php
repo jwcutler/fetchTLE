@@ -42,6 +42,7 @@ Router::connect('/admin/source/:id/edit', array('[method]' => 'POST', 'controlle
 // API routes
 Router::connect('/api/sources/:sources', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'sources', 'api' => true));
 Router::connect('/api/sources', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'sources', 'api' => true));
+Router::connect('/api/satellites/:satellites', array('[method]' => 'GET', 'controller' => 'satellite', 'action' => 'satellites', 'api' => true));
 Router::parseExtensions();
 
 /**
