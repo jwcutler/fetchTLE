@@ -27,7 +27,7 @@
  */
 
 // Index location
-Router::connect('/', array('controller' => 'display', 'action' => 'index'));
+Router::connect('/', array('controller' => 'content', 'action' => 'documentation'));
 
 // Admin routes
 Router::connect('/admin', array('controller' => 'panel', 'action' => 'index', 'admin' => true));

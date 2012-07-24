@@ -29,7 +29,8 @@ class Tle extends AppModel {
         // Construct a query out of the names
         $query_satellite_names = Array();
         foreach($satellite_names as $satellite_name){
-            array_push($query_satellite_names, 'Tle.name=\''.Sanitize::clean(urldecode($satellite_name)).'\'');
+			//var_dump(urldecode($satellite_name));
+            array_push($query_satellite_names, 'Tle.name=\''.$satellite_name.'\'');
         }
         $query_satellite_names = implode(' OR ',$query_satellite_names);
 		
@@ -41,6 +42,9 @@ class Tle extends AppModel {
             // Grab the most recent TLE for each specified satellite along with its associated update
             $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND Tle.created_on < TleAlt.created_on) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
         }
+		
+		echo $this->getLastQuery();
+		var_dump($satellites);
         
         if (empty($satellites)){
             // No matching satellites found
