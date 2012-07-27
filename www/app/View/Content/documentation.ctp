@@ -1,5 +1,10 @@
-<h1><?php echo Configure::read('Website.name'); ?> Documentation</h1>
-<a name="about"><a href="#about" class="doc_link"><h3>About <?php echo Configure::read('Website.name'); ?></h3></a></a>
+<h2 class="docs"><?php echo Configure::read('Website.name'); ?> Documentation</h2>
+<span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> is a publically accessible API that allows users or programs to retrieve TLE's for specified sources and satellites.</p>
 
-<a name="api"><a href="#api" class="doc_link"><h3>Using the API</h3></a></a>
+<!-- Using the API -->
+<h3 class="docs"><a name="using_api"><a href="#using_api" class="doc_link">1.0 Using the API</a></a></h3>
+The <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> API uses a standard HTTP RESTful API scheme. 
+
+<!-- About fetchTLE -->
+<h3 class="docs"><a name="about"><a href="#about" class="doc_link">2.0 About <?php echo Configure::read('Website.name'); ?></a></a></h3>
 

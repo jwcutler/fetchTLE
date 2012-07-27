@@ -49,10 +49,6 @@ h3 {
     margin-bottom: 5px;
 }
 
-h1 {
-	color: #224479;
-}
-
 .btn {
     text-decoration: none;
 }
@@ -82,6 +78,15 @@ a.doc_link:link {color: black; text-decoration: none; cursor: pointer;}
 a.doc_link:visited {color: black; text-decoration: none;}
 a.doc_link:hover {color: #224479; text-decoration: none;}
 a.doc_link:active {color: black; text-decoration: none;}
+
+h2.docs {
+	color: #224479;
+    margin-bottom: 10px;
+}
+
+h3.docs {
+    margin: 20px 0px 10px 0px;
+}
 
 /* Layout Styles */
 #wrap {
