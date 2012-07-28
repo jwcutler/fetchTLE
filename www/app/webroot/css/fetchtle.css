@@ -79,13 +79,20 @@ a.doc_link:visited {color: black; text-decoration: none;}
 a.doc_link:hover {color: #224479; text-decoration: none;}
 a.doc_link:active {color: black; text-decoration: none;}
 
-h2.docs {
+h1.docs {
 	color: #224479;
     margin-bottom: 10px;
 }
 
-h3.docs {
-    margin: 20px 0px 10px 0px;
+h2.docs {
+    margin: 10px 0px 10px 0px;
+	border: 1px solid #cccccc;
+	border-width: 0px 0px 1px 0px;
+	padding-bottom: 5px;
+}
+
+h3.docs{
+	margin: 10px 0px 5px 0px;
 }
 
 /* Layout Styles */

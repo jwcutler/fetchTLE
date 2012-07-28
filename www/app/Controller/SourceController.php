@@ -36,6 +36,8 @@ class SourceController extends AppController {
 		} else if (isset($this->request->params['ext']) && $this->request->params['ext']=='json'){
             // $sources is encoded to JSON in the view using json_encode
 			$this->set('sources', $sources);
+			$callback = (isset($_GET['callback'])&&!empty($_GET['callback']))?$_GET['callback']:false;
+			$this->set('callback', $callback);
 		} else {
             // Convert the response to RAW tle output and display
             $this->layout = 'ajax';

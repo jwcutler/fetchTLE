@@ -43,8 +43,8 @@ class Tle extends AppModel {
             $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND Tle.created_on < TleAlt.created_on) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
         }
 		
-		echo $this->getLastQuery();
-		var_dump($satellites);
+		//echo $this->getLastQuery();
+		//var_dump($satellites);
         
         if (empty($satellites)){
             // No matching satellites found
