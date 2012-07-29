@@ -6,6 +6,12 @@ This controller is primarily reponsible for fetching and displaying satellites f
 class SatelliteController extends AppController {
     var $uses = array('Source', 'Tle');
     var $components = array('RequestHandler');
+	
+	// Setup Caching
+	public $helpers = array('Cache');
+    public $cacheAction = array(
+		'api_satellites' => 1800 // Cache API for 30 minutes (1800 seconds)
+	);
     
     function beforeFilter(){
         parent::beforeFilter();

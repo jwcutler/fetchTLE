@@ -47,6 +47,15 @@ $(document).ready(function(){
 	});
 });
 </script>
+<style type="text/css">
+pre {
+	background-color: #EEEEEE;
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	font-size: 11px;
+}
+</style>
 <h3>Edit the '<?php echo $source['Source']['name']; ?>' TLE Source</h3>
 <p>Use the form below to edit the source.</p>
 <div class="form_errors">

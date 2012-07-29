@@ -25,11 +25,13 @@ $(document).ready(function(){
 		
 		if (link_content == '[Hide Satellites]'){
 			$(this).html('[Show Satellites]');
+			$("#source_"+row_id).css("background-color","white");
 		} else {
 			$(this).html('[Hide Satellites]');
+			$("#source_"+row_id).css("background-color","#F5F5F5");
 		}
 		
-		$("#satellites_"+row_id).toggle();
+		$("#satellites_"+row_id).toggle(400);
 	});
 });
 </script>
@@ -47,18 +49,8 @@ p {
     color: #224479;
     text-decoration: none;
 }
-.satellite_table {
-	font-size: 10px;
-}
-.satellite_table td {
-	background-color: white !important;
-}
-tr.satellite_row:hover td, tr.satellite_row:hover th {
-	background-color: white !important;
-}
-.satellite_row {
-	display: none;
-}
+
+
 .expand_link {
 	font-size: 10px;
 	color: #3F3E3E;
@@ -66,6 +58,22 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 }
 .expand_link:hover {
 	color: #6E6C6C;
+}
+.satellite_table {
+	font-size: 10px;
+}
+.satellite_table td {
+	background-color: white !important;
+	padding: 2px 2px;
+}
+.satellite_table th {
+	padding: 2px 2px;
+}
+tr.satellite_row:hover td, tr.satellite_row:hover th {
+	background-color: white !important;
+}
+.satellite_row {
+	display: none;
 }
 </style>
 
@@ -83,6 +91,7 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 </pre>
 <p>The different types of resources are explained in detail in the following sections.</p>
 <p>The resources specified in the list of resources passed to the API, indicated above by <span style="font-style: italic;">[collection of resources]</span> <strong>must</strong> be <a href="http://php.net/manual/en/function.urlencode.php" target="_blank" class="link">URL encoded</a> before being joined together and submitted. This is required so that <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> can successfully process the request. It is very important to URL encode each item separately before joining them with the underscore ("_") character.</p>
+<p>Currently, the results of an API request are cached for 30 minutes for performance reasons.</p>
 
 <h3 class="docs"><a name="making_request"><a href="#making_request" class="doc_link">1.2 Response Formats</a></a></h3>
 <p>Currently, <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> can respond in four different formats: XML, JSON, JSONP, and raw TLE format. To request a result in JSON/JSONP or XML just append .json or .xml, respectively, to the API endpoint URL. To request a raw TLE file, simple remove the <span style="font-style: italic;">[format]</span> postfix all together. Note that to generate a JSONP response (which allows for the cross-domain resource loading commonly used in AJAX scripts), you must specify a callback. For example:</p>
@@ -568,7 +577,7 @@ RAX-2
 		</thead>
 		<tbody>
 			<?php foreach($sources as $source): ?>
-				<tr>
+				<tr id="source_<?php echo $source['Source']['id']; ?>">
 					<td width="15%"><?php echo $source['Source']['name']; ?> <a class="expand_link" rel="<?php echo $source['Source']['id']; ?>">[Show Satellites]</a></td>
 					<td width="15%"><?php echo urlencode($source['Source']['name']); ?></td>
 					<td width="10%"><?php echo date('m/d/Y G:i:s T', strtotime($source['Update'][0]['created_on'])); ?></td>

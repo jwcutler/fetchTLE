@@ -6,7 +6,13 @@ This controller is responsible for fetchTLE source management and display.
 class SourceController extends AppController {
     var $uses = array('Source', 'Tle', 'Update'); 
     var $components = array('RequestHandler');
-    
+	
+	// Setup Caching
+	public $helpers = array('Cache');
+    public $cacheAction = array(
+		'api_sources' => 1800 // Cache API for 30 minutes (1800 seconds)
+	);
+		
     function beforeFilter(){
         parent::beforeFilter();
         
