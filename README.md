@@ -9,7 +9,7 @@ fetchTLE was developed on top of the popular CakePHP MVC framework and shares it
 * PHP >= 5.2.8
 * MySQL >= 4
 
-Besides these, fetchTLE has no other requirements.
+In addition, cURL needs to be installed and loaded into PHP.
 
 Installation
 ------------
