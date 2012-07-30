@@ -580,27 +580,37 @@ RAX-2
 				<tr id="source_<?php echo $source['Source']['id']; ?>">
 					<td width="15%"><?php echo $source['Source']['name']; ?> <a class="expand_link" rel="<?php echo $source['Source']['id']; ?>">[Show Satellites]</a></td>
 					<td width="15%"><?php echo rawurlencode($source['Source']['name']); ?></td>
-					<td width="10%"><?php echo date('m/d/Y G:i:s T', strtotime($source['Update'][0]['created_on'])); ?></td>
+					<td width="10%">
+					    <?php if (isset($source['Update'][0]['created_on'])): ?>
+						<?php echo date('m/d/Y G:i:s T', strtotime($source['Update'][0]['created_on'])); ?>
+					    <?php else: ?>
+						<span style="font-style: italic;">Not Updated Yet</span>
+					    <?php endif; ?>
+					</td>
 					<td width="15%"><?php echo $source['Source']['description']; ?></td>
 					<td width="45%"><a href="<?php echo $source['Source']['url']; ?>" target="_blank" class="link"><?php echo $source['Source']['url']; ?></a></td>
 				</tr>
 				<tr id="satellites_<?php echo $source['Source']['id']; ?>" class="satellite_row">
 					<td colspan="1"></td>
 					<td colspan="4">
-						<table style="width: 50%;" class="table table-condensed satellite_table">
-							<thead>
-								<th width="50%">Satellite Name</th>
-								<th width="50%">Encoded Satellite Name</th>
-							</thead>
-							<tbody>
-								<?php foreach($source['Update'][0]['Tle'] as $tle): ?>
-									<tr>
-										<td><?php echo $tle['name']; ?></td>
-										<td><?php echo rawurlencode($tle['name']); ?></td>
-									</tr>
-								<?php endforeach; ?>
-							</tbody>
-						</table>
+						<?php if (!empty($source['Update'][0]['Tle'])): ?>
+						    <table style="width: 50%;" class="table table-condensed satellite_table">
+							    <thead>
+								    <th width="50%">Satellite Name</th>
+								    <th width="50%">Encoded Satellite Name</th>
+							    </thead>
+							    <tbody>
+								    <?php foreach($source['Update'][0]['Tle'] as $tle): ?>
+									    <tr>
+										    <td><?php echo $tle['name']; ?></td>
+										    <td><?php echo rawurlencode($tle['name']); ?></td>
+									    </tr>
+								    <?php endforeach; ?>
+							    </tbody>
+						    </table>
+						<?php else: ?>
+						    <span style="font-style: italic;">No Satellites Loaded</span>
+						<?php endif; ?>
 					</td>
 				</tr>
 			<?php endforeach; ?>
