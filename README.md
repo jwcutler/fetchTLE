@@ -46,7 +46,7 @@ For details on how to use the API, simply visit fetchtlelocation.com for a guide
 ### CRON Updates
 fetchTLE's sources can be updated by using a standard CRON tab. To make use of this feature, simply set up a CRON tab to call:
 ```
-php /path/to/cakephp/app/Console/cake TleUpdate [source names]
+/path/to/fetchTLE/app/Console/cake TleUpdate update [source names]
 ```
 If no source names are included, all of them will be updated.
 

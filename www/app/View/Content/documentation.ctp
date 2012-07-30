@@ -2,48 +2,48 @@
 <?php echo $this->Html->css('prettify.css'); ?>
 <script type="text/javascript">
 $(document).ready(function(){
-	// Load prettify
-	prettyPrint();
+    // Load prettify
+    prettyPrint();
 
-	// Handle example tabs
-	$('#sources_examples a').click(function (e) {
-		e.preventDefault();
-		$(this).tab('show');
+    // Handle example tabs
+    $('#sources_examples a').click(function (e) {
+	e.preventDefault();
+	$(this).tab('show');
     })
-	$('#satellites_examples a').click(function (e) {
-		e.preventDefault();
-		$(this).tab('show');
+    $('#satellites_examples a').click(function (e) {
+	e.preventDefault();
+	$(this).tab('show');
     })
-	$('#error_examples a').click(function (e) {
-		e.preventDefault();
-		$(this).tab('show');
+    $('#error_examples a').click(function (e) {
+	e.preventDefault();
+	$(this).tab('show');
     })
 	
-	$(".expand_link").click(function (){
-		row_id = $(this).attr('rel');
-		link_content = $(this).html();
+    $(".expand_link").click(function (){
+	row_id = $(this).attr('rel');
+	link_content = $(this).html();
 		
-		if (link_content == '[Hide Satellites]'){
-			$(this).html('[Show Satellites]');
-			$("#source_"+row_id).css("background-color","white");
-		} else {
-			$(this).html('[Hide Satellites]');
-			$("#source_"+row_id).css("background-color","#F5F5F5");
-		}
-		
-		$("#satellites_"+row_id).toggle(400);
-	});
+	if (link_content == '[Hide Satellites]'){
+	    $(this).html('[Show Satellites]');
+	    $("#source_"+row_id).css("background-color","white");
+	} else {
+	    $(this).html('[Hide Satellites]');
+	    $("#source_"+row_id).css("background-color","#F5F5F5");
+	}
+	
+	$("#satellites_"+row_id).toggle(400);
+    });
 });
 </script>
 <style type="text/css">
 p {
-	line-height: 1.5;
-	padding-bottom: 5px;
+    line-height: 1.5;
+    padding-bottom: 5px;
 }
 .nav-tabs > .active > a {
-	color: #555555;
+    color: #555555;
     cursor: default;
-	text-decoration: none;
+    text-decoration: none;
 }
 .nav > li > a {
     color: #224479;
@@ -52,28 +52,28 @@ p {
 
 
 .expand_link {
-	font-size: 10px;
-	color: #3F3E3E;
-	cursor: pointer;
+    font-size: 10px;
+    color: #3F3E3E;
+    cursor: pointer;
 }
 .expand_link:hover {
-	color: #6E6C6C;
+    color: #6E6C6C;
 }
 .satellite_table {
-	font-size: 10px;
+    font-size: 10px;
 }
 .satellite_table td {
-	background-color: white !important;
-	padding: 2px 2px;
+    background-color: white !important;
+    padding: 2px 2px;
 }
 .satellite_table th {
-	padding: 2px 2px;
+    padding: 2px 2px;
 }
 tr.satellite_row:hover td, tr.satellite_row:hover th {
-	background-color: white !important;
+    background-color: white !important;
 }
 .satellite_row {
-	display: none;
+    display: none;
 }
 </style>
 
@@ -90,7 +90,7 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 <?php echo Router::url('/', true); ?>api/[resource type]/[collection of resources].[format]
 </pre>
 <p>The different types of resources are explained in detail in the following sections.</p>
-<p>The resources specified in the list of resources passed to the API, indicated above by <span style="font-style: italic;">[collection of resources]</span> <strong>must</strong> be <a href="http://php.net/manual/en/function.urlencode.php" target="_blank" class="link">URL encoded</a> before being joined together and submitted. This is required so that <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> can successfully process the request. It is very important to URL encode each item separately before joining them with the underscore ("_") character.</p>
+<p>The resources specified in the list of resources passed to the API, indicated above by <span style="font-style: italic;">[collection of resources]</span> <strong>must</strong> be <a href="http://us2.php.net/manual/en/function.rawurlencode.php" target="_blank" class="link">URL encoded</a> before being joined together and submitted. This is required so that <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> can successfully process the request. It is very important to URL encode each item separately before joining them with the underscore ("_") character. In addition, spaces must be encoded as "&20" instead of "+" (use the PHP function rawurlencode instead of urlencode).</p>
 <p>Currently, the results of an API request are cached for 30 minutes for performance reasons.</p>
 
 <h3 class="docs"><a name="making_request"><a href="#making_request" class="doc_link">1.2 Response Formats</a></a></h3>
@@ -579,7 +579,7 @@ RAX-2
 			<?php foreach($sources as $source): ?>
 				<tr id="source_<?php echo $source['Source']['id']; ?>">
 					<td width="15%"><?php echo $source['Source']['name']; ?> <a class="expand_link" rel="<?php echo $source['Source']['id']; ?>">[Show Satellites]</a></td>
-					<td width="15%"><?php echo urlencode($source['Source']['name']); ?></td>
+					<td width="15%"><?php echo rawurlencode($source['Source']['name']); ?></td>
 					<td width="10%"><?php echo date('m/d/Y G:i:s T', strtotime($source['Update'][0]['created_on'])); ?></td>
 					<td width="15%"><?php echo $source['Source']['description']; ?></td>
 					<td width="45%"><a href="<?php echo $source['Source']['url']; ?>" target="_blank" class="link"><?php echo $source['Source']['url']; ?></a></td>
@@ -596,7 +596,7 @@ RAX-2
 								<?php foreach($source['Update'][0]['Tle'] as $tle): ?>
 									<tr>
 										<td><?php echo $tle['name']; ?></td>
-										<td><?php echo urlencode($tle['name']); ?></td>
+										<td><?php echo rawurlencode($tle['name']); ?></td>
 									</tr>
 								<?php endforeach; ?>
 							</tbody>

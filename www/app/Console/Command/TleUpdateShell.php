@@ -14,7 +14,21 @@ class TleUpdateShell extends AppShell {
         Just display a quick readme. The main function can't receive parameters.
         */
         
-        $this->out('TleUpdateShell\n\nThis script allows users to update TLE sources via a console or CRON tab.');
+$this->out('NAME:
+    TleUpdate - fetchTLE Console TLE update utility.
+
+SYNOPSIS:
+    app/Console/cake TleUpdate update [source names]
+
+DESCRIPTION:
+    TleUpdate is a console utility that allows users to update individual or all TLE sources via the console or a CRON tab.
+
+EXAMPLES:
+    app/Console/cake TleUpdate update
+        Updates all configured TLE sources.
+    app/Console/cake TleUpdate update CUBESAT GPS
+        Updates the CUBESAT and GPS sources.
+');
     }
     
     public function update(){
