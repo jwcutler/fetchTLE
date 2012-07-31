@@ -10,6 +10,11 @@ class PanelController extends AppController {
     function beforeFilter(){
         parent::beforeFilter();
         
+        // Setup authentication
+        $this->Auth->authenticate = array(
+            'Form' => array('userModel' => 'Admin')
+        );
+        
         // Let the user access the login page
         $this->Auth->allow('admin_login', 'admin_makehash', 'admin_generatehash'); 
     }
@@ -90,11 +95,7 @@ class PanelController extends AppController {
 			$this->redirect(array('controller' => 'panel', 'action' => 'index', 'admin' => true));
 		} else {
 			if ($this->request->is('post')) {
-				// Store user credentials
-				$this->data['Admin']['username'] = $_POST['username'];
-				$this->data['Admin']['password'] = $_POST['password'];
-				
-				if ($this->Auth->login($this->data)) {
+				if ($this->Auth->login()) {
 					$this->Session->setFlash('You have been logged in. Welcome back.', 'default', array('class' => 'alert alert-success'));
 					$this->redirect($this->Auth->redirect());
 				} else {
