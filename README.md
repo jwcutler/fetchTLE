@@ -17,21 +17,26 @@ To install fetchTle, perform the following procedure:
 
 1. Modify app/Config/database.php.default to reflect your database and save it as 'database.php'
 2. Import Development_Resources/SQL_Schema/fetchtle.sql into your newly created database.
-3. Modify app/Config/core.php.default by changing the salt (line 187) and seed (line 192) to random values specific to your application and save it as 'core.php'.
+3. Modify app/Config/core.php.default by changing the Security.salt (line 187) and Security.cipherSeed (line 192) to random values specific to your application and save it as 'core.php'.
 4. Change the permissions of the app/tmp directory to 777.
 5. Generate an admin password hash by visiting fetchtlelocation.com/admin/panel/makehash.
 6. Update the 'admin' user in the database by replacing 'dummypassword' with the hash you just created.
 
-``` php
-/**
- * A random string used in security hashing methods.
- */
-Configure::write('Security.salt', 'yoursaltvalue');
+### Installing fetchTLE to a directory
+If you want to install fetchTLE to a directory (or use Apache's Alias feature), you must add a rewrite base for the directory to three .htaccess files. These files are:
+* /path/to/fetchTLE/.htaccess
+* /path/to/fetchTLE/app/.htaccess
+* /path/to/fetchTLE/app/webroot/.htaccess
 
-/**
- * A random numeric string (digits only) used to encrypt/decrypt strings.
- */
-Configure::write('Security.cipherSeed', 'yourcipherseedvalue');
+So, for example, if fetchTLE were setup at mysite.com/fetchtle/ webroot/.htaccess would look like:
+```
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+	RewriteBase /fetchtle/
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
 ```
 
 Using fetchTLE
