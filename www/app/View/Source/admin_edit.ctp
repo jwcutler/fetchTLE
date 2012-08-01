@@ -63,7 +63,7 @@ pre {
     </ul>
 </div>
 <div style="width: 70%; margin-top: 10px;">
-    <form action="/admin/source/<?php echo $source['Source']['id']; ?>/edit" method="POST" class="form-horizontal" id="edit_source_form">
+    <form action="<?php echo $this->webroot; ?>admin/source/<?php echo $source['Source']['id']; ?>/edit" method="POST" class="form-horizontal" id="edit_source_form">
         <div class="control-group">
             <label class="control-label" for="source_name">Source Name</label>
             <div class="controls">
@@ -85,56 +85,56 @@ pre {
             </div>
         </div>
         <button type="submit" class="btn btn-success">Edit Source</button>
-        <a href="/admin/source/<?php echo $source['Source']['id']; ?>/delete" class="btn btn-danger">Delete Source</a>
+        <a href="<?php echo $this->webroot; ?>admin/source/<?php echo $source['Source']['id']; ?>/delete" class="btn btn-danger">Delete Source</a>
     </form>
 </div>
 <h3>Recent Updates</h3>
 <?php if (empty($source['Update'])): ?>
-	<p>There are no recent updates to report.</p>
-	<br /><br />
+    <p>There are no recent updates to report.</p>
+    <br /><br />
 <?php else: ?>
-	<p>The <?php echo $update_limit; ?> most recent updates for the <?php echo $source['Source']['name']; ?> are displayed below.</p>
-	<table class="table" width="60%">
-		<thead>
-			<tr>
-				<th width="30%">Date</th>
-				<th width="70%">Update Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<?php foreach($source['Update'] as $source_update): ?>
-				<tr>
-					<td width="30%">
-						<?php
-						$source_polled = strtotime($source_update['created_on']);
-						echo date("m/j/Y H:i:s", $source_polled);
-						?>
-					</td>
-					<td width="70%">
-						<?php
-						$update_status = (empty($source_update['update_message']))?"<span style='color: green;'>Okay</span>":"<span style='color: red;'>".$source_update['update_message']."</span>";
-						echo $update_status;
-						?>
-					</td>
-				</tr>
-			<?php endforeach; ?>
-		</tbody>
-	</table>
+    <p>The <?php echo $update_limit; ?> most recent updates for the <?php echo $source['Source']['name']; ?> are displayed below.</p>
+    <table class="table" width="60%">
+	<thead>
+	    <tr>
+		<th width="30%">Date</th>
+		<th width="70%">Update Status</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    <?php foreach($source['Update'] as $source_update): ?>
+		<tr>
+		    <td width="30%">
+			<?php
+			$source_polled = strtotime($source_update['created_on']);
+			echo date("m/j/Y H:i:s", $source_polled);
+			?>
+		    </td>
+		    <td width="70%">
+			<?php
+			$update_status = (empty($source_update['update_message']))?"<span style='color: green;'>Okay</span>":"<span style='color: red;'>".$source_update['update_message']."</span>";
+			echo $update_status;
+			?>
+		    </td>
+		</tr>
+	    <?php endforeach; ?>
+	</tbody>
+    </table>
 <?php endif; ?>
 <h3>Most Recent TLEs</h3>
 <?php if (empty($latest_tles)): ?>
-	<p>No TLE's have recently been fetched for this source.</p>
+    <p>No TLE's have recently been fetched for this source.</p>
 <?php else: ?>
-	All <?php echo count($latest_tles['Tle']); ?> TLE's from the last <i>successful</i> update (which occured on <?php $successful_update_time = strtotime($latest_tles['Update']['created_on']); echo date("m/j/Y H:i:s", $successful_update_time); ?>) are displayed below.
-	<div style='font-size: 10px;'>
-		<?php foreach($latest_tles['Tle'] as $latest_tle): ?>
-			<a id="expand_tle_<?php echo $latest_tle['id']; ?>" title="<?php echo $latest_tle['id']; ?>" style="cursor: pointer; font-size: 8px;">[+]</a> <?php echo $latest_tle['name']; ?><br />
-			<div id="expanded_tle_<?php echo $latest_tle['id']; ?>" class="tle_expansion">
-				<pre><?php echo $latest_tle['raw_l1']; ?></pre>
-				<pre><?php echo $latest_tle['raw_l2']; ?></pre>
-			</div>
-		<?php endforeach; ?>
-	</div>
+    All <?php echo count($latest_tles['Tle']); ?> TLE's from the last <i>successful</i> update (which occured on <?php $successful_update_time = strtotime($latest_tles['Update']['created_on']); echo date("m/j/Y H:i:s", $successful_update_time); ?>) are displayed below.
+    <div style='font-size: 10px;'>
+	<?php foreach($latest_tles['Tle'] as $latest_tle): ?>
+	    <a id="expand_tle_<?php echo $latest_tle['id']; ?>" title="<?php echo $latest_tle['id']; ?>" style="cursor: pointer; font-size: 8px;">[+]</a> <?php echo $latest_tle['name']; ?><br />
+	    <div id="expanded_tle_<?php echo $latest_tle['id']; ?>" class="tle_expansion">
+		<pre><?php echo $latest_tle['raw_l1']; ?></pre>
+		<pre><?php echo $latest_tle['raw_l2']; ?></pre>
+	    </div>
+	<?php endforeach; ?>
+    </div>
 <?php endif; ?>
 <?php
 $this->end();

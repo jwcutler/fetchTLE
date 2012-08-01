@@ -49,7 +49,7 @@ This page is used to create a new password hash for use with the <?php echo Conf
 </div>
 <div style="display: none; color: green; margin: 10px 0px 10px 0px;" id="post_response"></div>
 <div style="width: 70%; margin-top: 10px;">
-    <form action="/admin/panel/generatehash" method="POST" class="form-horizontal" id="generate_password_hash">
+    <form action="<?php echo $this->Html->url(array('controller' => 'panel', 'action' => 'admin_generatehash')); ?>" method="POST" class="form-horizontal" id="generate_password_hash">
         <div class="control-group">
             <label class="control-label" for="password">Desired Password</label>
             <div class="controls">

@@ -38,7 +38,7 @@ Use the form below to create a new TLE source.
     </ul>
 </div>
 <div style="width: 70%; margin-top: 10px;">
-    <form action="/admin/source/add" method="POST" class="form-horizontal" id="new_source_form">
+    <form action="<?php echo $this->Html->url(array('controller' => 'source', 'action' => 'add', 'admin' => true)); ?>" method="POST" class="form-horizontal" id="new_source_form">
         <div class="control-group">
             <label class="control-label" for="source_name">Source Name</label>
             <div class="controls">

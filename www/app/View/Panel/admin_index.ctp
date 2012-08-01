@@ -15,7 +15,7 @@ $(document).ready(function(){
 	$("#spinner_container").css('visibility', 'visible');
 
 	// Attempt to update the TLE's
-	$.get('/admin/source/sourceupdate', function(data) {
+	$.get('<?php echo $this->Html->url(array('controller' => 'source', 'action' => 'admin_sourceupdate')); ?>', function(data) {
 	    // Regardless of what happenes, just refresh the page. Any errors will get reported below.
 	    $("#update_tles").removeAttr('disabled');
 	    $("#update_tles").removeClass('disabled');
@@ -27,9 +27,9 @@ $(document).ready(function(){
 });
 </script>
 <h3>TLE Source Status</h3>
-<p>To refresh individual sources, visit the <a href="/admin/source" class="link">source management page</a>.</p>
+<p>To refresh individual sources, visit the <a href="<?php echo $this->Html->url(array('controller' => 'source', 'action' => 'admin_index')); ?>" class="link">source management page</a>.</p>
 <button name="update_tles" id="update_tles" class="btn btn-primary">Manually Refresh TLE's</button>
-<div id="spinner_container" style="display: inline; visibility: hidden;position: relative; top: 5px;"><img src='/img/ajax_spinner_small.gif' alt='Currently Loading TLEs' /></div>
+<div id="spinner_container" style="display: inline; visibility: hidden;position: relative; top: 5px;"><?php echo $this->Html->image('ajax_spinner_small.gif'); ?></div>
 <br /><br />
 <h4>Source Update Alerts</h4>
 <?php if (empty($error_updates)): ?>
@@ -54,7 +54,7 @@ $(document).ready(function(){
                         echo date("m/j/Y H:i:s", $source_polled);
                         ?>
                     </td>
-		    <td width="31%"><a href="/admin/source/<?php echo $error_update['Source']['id']; ?>/edit" target="_blank" class="link"><?php echo $error_update['Source']['name']; ?></a></td>
+		    <td width="31%"><a href="<?php echo $this->webroot; ?>admin/source/<?php echo $error_update['Source']['id']; ?>/edit" target="_blank" class="link"><?php echo $error_update['Source']['name']; ?></a></td>
 		    <td width="38%"><?php echo $error_update['Update']['update_message']; ?></td>
 		</tr>
 	    <?php endforeach; ?>

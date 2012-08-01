@@ -19,7 +19,7 @@ $(document).ready(function(){
 		$("#buttons_container_"+source_id).hide();
 
 		// Attempt to update the TLE's
-		$.get('/admin/source/sourceupdate/'+source_name, function(data) {
+		$.get('<?php echo $this->webroot; ?>admin/source/sourceupdate/'+source_name, function(data) {
 			// Regardless of what happenes, just refresh the page. Any errors will get reported by the flash.
 			$(this).removeAttr('disabled');
 			$(this).removeClass('disabled');
@@ -61,9 +61,9 @@ $(document).ready(function(){
 						<?php endif; ?>
 					</td>
 					<td width="23%">
-						<div id="spinner_container_<?php echo $source['Source']['id']; ?>" style="display: none; position: relative; top: 5px;"><center><img src='/img/ajax_spinner_small.gif' alt='Currently Loading TLEs' /></center></div>
+						<div id="spinner_container_<?php echo $source['Source']['id']; ?>" style="display: none; position: relative; top: 5px;"><center><?php echo $this->Html->image('ajax_spinner_small.gif'); ?></center></div>
 						<div id="buttons_container_<?php echo $source['Source']['id']; ?>">
-							<a id="refresh_<?php echo $source['Source']['id']; ?>" rel="<?php echo $source['Source']['id']; ?>" title="<?php echo $source['Source']['name']; ?>" class="btn btn-mini btn-primary" style="cursor: pointer;">Refresh</a> <a href="/admin/source/<?php echo $source['Source']['id']; ?>/edit" class="btn btn-mini btn-primary">Manage</a>
+							<a id="refresh_<?php echo $source['Source']['id']; ?>" rel="<?php echo $source['Source']['id']; ?>" title="<?php echo $source['Source']['name']; ?>" class="btn btn-mini btn-primary" style="cursor: pointer;">Refresh</a> <a href="<?php echo $this->webroot; ?>admin/source/<?php echo $source['Source']['id']; ?>/edit" class="btn btn-mini btn-primary">Manage</a>
 						</div>
 					</td>
 				</tr>
@@ -72,7 +72,7 @@ $(document).ready(function(){
 	</table>
 <?php endif; ?>
 <div style="padding-top: 5px;">
-	<a href="/admin/source/add" class="btn btn-primary">Add New TLE Source</a>
+	<a href="<?php echo $this->Html->url(array('controller' => 'source', 'action' => 'add', 'admin' => true)); ?>" class="btn btn-primary">Add New TLE Source</a>
 </div>
 <?php
 $this->end();

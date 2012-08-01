@@ -354,9 +354,9 @@ CUTE-1 (CO-55)
 <p>As stated in the <a href="#making_request" class="link">Making An API Request</a> section, all satellite names must be URL encoded (like the "CUTE-1.7+APD II (CO-65)" satellite is in the example request above) before being joined with the underscore.</p>
 <p>Instead of explaining every field returned in the response, portions of the response (clipped parts of the response are indicated by a "...") from the example request above are displayed below in every available format.</p>
 <ul class="nav nav-tabs" id="satellites_examples">
-	<li class="active"><a href="#satellites_json">JSON</a></li>
-	<li><a href="#satellites_xml">XML</a></li>
-	<li><a href="#satellites_raw">Raw TLEs</a></li>
+    <li class="active"><a href="#satellites_json">JSON</a></li>
+    <li><a href="#satellites_xml">XML</a></li>
+    <li><a href="#satellites_raw">Raw TLEs</a></li>
 </ul>
 <div class="tab-content">
 	<div class="tab-pane active" id="satellites_json">

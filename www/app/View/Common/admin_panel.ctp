@@ -17,14 +17,14 @@
                 <?php echo Configure::read('Website.name'); ?> Settings
             </li>
             <li <?php if($this->params['controller']=='panel'){echo "class=\"active\"";} ?>>
-                <a href="/admin"><?php echo Configure::read('Website.name'); ?> Status</a>
+                <a href="<?php echo $this->Html->url(array('controller' => 'panel', 'action' => 'index')); ?>"><?php echo Configure::read('Website.name'); ?> Status</a>
             </li>
             <li <?php if($this->params['controller']=='source'){echo "class=\"active\"";} ?>>
-                <a href="/admin/source">TLE Source Management</a>
+                <a href="<?php echo $this->Html->url(array('controller' => 'source', 'action' => 'admin_index')); ?>">TLE Source Management</a>
             </li>
             <li class="divider"></li>
             <li>
-                <a href="/admin/panel/logout">Logout</a>
+                <a href="<?php echo $this->Html->url(array('controller' => 'panel', 'action' => 'admin_logout')); ?>">Logout</a>
             </li>
         </ul>
     </div>
