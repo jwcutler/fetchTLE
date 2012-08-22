@@ -1,0 +1,33 @@
+% Load required classes and packages
+\documentclass{mxl-note}
+\usepackage{listings}
+
+% Set up document variables
+\begin{document}
+\title{Proposed fetchTLE Position API}
+\author{Jimmy Blanchard}
+\docnum{0.1}
+\setcounter{secnumdepth}{5}
+
+% Table of Contents
+\maketitle
+\tableofcontents
+\newpage 
+
+% Definitions
+\section{Introduction}
+Recently, there has been a need for an API to provide satellite positions within a specified range of time. The positions calculated by the API would be used by existing systems to calculate satellite pass times, among other things. Earlier this summer the fetchTLE API\footnote{http://exploration.engin.umich.edu/satops/fetchtle/} was developed, which maintains a collection of historical and current TLEs and provides access to them via a simple web API. The new position API would be added to the existing collection of APIs provided by fetchTLE.
+
+\section{Proposed Design}
+The satellite position API will consist of a simple web-accessible RESTful API\footnote{A common web api design pattern.}, similar to the fetchTLE API. Because this API will depend so heavily on the time stamped TLEs provided by the fetchTLE API, it will be bundled into fetchTLE as another API service.
+
+\subsection{Fetching Positions From The API}
+To make a request to the API, you would simply pass the start timestamp\footnote{A UNIX Timestamp}, end timestamp, satellite name (TLE identifier), and desired position resolution (i.e. how many seconds between position calculations). The API would respond with a JSON, XML, or plaintext representation of the position (longitude and latitude) of the specified satellite at regular time intervals (defined by the specified resolution) between the start and end timestamps. For more information about the existing fetchTLE API (on which the satellite positions API will be based), see the fetchTLE documentation at http://exploration.engin.umich.edu/satops/fetchtle/.
+
+\subsection{Calculating Positions From TLEs}
+Calculating longitude and latitude from TLEs is a well studied and understood task. The TLEs for the objects that the satellite position API will need to calculate positions for are generated using the SGP4 propagation model. Samples of code that calculates longitude and latitude from SGP4 TLEs exists online for Fortran, Pascal, and a few other languages, but not for PHP (what the API is coded in). Using the equations defined in \textit{Spacetrack Report Number 3: Models of Propagation of Norad Element Sets}, a series of PHP functions will be written to perform the position calculations. The results of which will be presented to the user via the API. 
+
+\subsubsection{Calculation Persistence}
+Because of the nature of the calculations performed, and because of the amount of data generated, the positions requested will be recalculated every time (instead of say, getting stored into a database). The calculations are simple enough (from a CPU perspective) that it shouldn't bog down the server. However, server side caching will be used. This means that if a user requests the exact same set of positions (i.e. all of the parameters remain the same between requests), a cached version will be presented instead. This will prevent unnecessary load if the API is used by an automated scripted that frequently makes identical requests. 
+
+\end{document}
