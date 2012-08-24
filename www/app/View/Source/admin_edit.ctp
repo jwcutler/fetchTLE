@@ -106,9 +106,10 @@ pre {
 		<tr>
 		    <td width="30%">
 			<?php
-			$source_polled = strtotime($source_update['created_on']);
-			echo date("m/j/Y H:i:s", $source_polled);
+			$source_polled = $source_update['created_on'];
+			echo date("m/j/Y H:i:s T", $source_polled);
 			?>
+			 - <?php echo $source_update['id']; ?>
 		    </td>
 		    <td width="70%">
 			<?php
@@ -125,7 +126,7 @@ pre {
 <?php if (empty($latest_tles)): ?>
     <p>No TLE's have recently been fetched for this source.</p>
 <?php else: ?>
-    All <?php echo count($latest_tles['Tle']); ?> TLE's from the last <i>successful</i> update (which occured on <?php $successful_update_time = strtotime($latest_tles['Update']['created_on']); echo date("m/j/Y H:i:s", $successful_update_time); ?>) are displayed below.
+    All <?php echo count($latest_tles['Tle']); ?> TLE's from the last <i>successful</i> update (which occured on <?php $successful_update_time = $latest_tles['Update']['created_on']; echo date("m/j/Y H:i:s T", $successful_update_time); ?>) are displayed below.
     <div style='font-size: 10px;'>
 	<?php foreach($latest_tles['Tle'] as $latest_tle): ?>
 	    <a id="expand_tle_<?php echo $latest_tle['id']; ?>" title="<?php echo $latest_tle['id']; ?>" style="cursor: pointer; font-size: 8px;">[+]</a> <?php echo $latest_tle['name']; ?><br />

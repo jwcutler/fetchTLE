@@ -53,8 +53,8 @@ $(document).ready(function(){
 					<td width="30%">
 						<?php if (!empty($source['Update'])): ?>
 							<?php
-							$source_polled = strtotime($source['Update'][count($source['Update'])-1]['created_on']);
-							echo date("m/j/Y H:i:s", $source_polled);
+							$source_polled = $source['Update'][count($source['Update'])-1]['created_on'];
+							echo date("m/j/Y H:i:s T", $source_polled);
 							?>
 						<?php else: ?>
 							Not Polled Yet

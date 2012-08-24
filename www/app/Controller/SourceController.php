@@ -85,6 +85,7 @@ class SourceController extends AppController {
         */
         
         // Load all configured sources
+        $this->Source->hasMany['Update']['order'] = 'Update.created_on ASC';
         $this->set('sources', $this->Source->find('all'));
     }
     

@@ -12,7 +12,7 @@ CREATE TABLE admins (
 CREATE TABLE updates (
     id int AUTO_INCREMENT,
     source_id int NOT NULL,
-    created_on datetime NOT NULL,
+    created_on int NOT NULL,
     update_message text,
     PRIMARY KEY(`id`)
 );
@@ -55,7 +55,7 @@ CREATE TABLE tles (
     checksum_l2 int NOT NULL,
     raw_l1 text NOT NULL,
     raw_l2 text NOT NULL,
-    created_on datetime NOT NULL,
+    created_on int NOT NULL,
     PRIMARY KEY(`id`)
 );
 

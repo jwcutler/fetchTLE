@@ -37,7 +37,7 @@ class Tle extends AppModel {
         // Check if a timestamp was set
         if ($timestamp){
             // Find the TLE's that are the closest to the specified timestamp along with their associated updates
-            $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(UNIX_TIMESTAMP(Tle.created_on) - \''.Sanitize::clean($timestamp).'\') > ABS(UNIX_TIMESTAMP(TleAlt.created_on) - \''.Sanitize::clean($timestamp).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
+            $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(Tle.created_on - \''.Sanitize::clean($timestamp).'\') > ABS(TleAlt.created_on - \''.Sanitize::clean($timestamp).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
         } else {
             // Grab the most recent TLE for each specified satellite along with its associated update
             $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND Tle.created_on < TleAlt.created_on) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
@@ -82,6 +82,90 @@ class Tle extends AppModel {
         }
         
         return $result;
+    }
+    
+    public function api_loadpositions($satellite_names, $start = false, $end = false, $resolution = false){
+        /*
+        Fetches position information for the specified satellites from $start to $end.
+        
+        @param $satellites: An array of satellite names.
+        @param $start: Unix timestamp representing the beginning of the range of positions to calculate.
+        @param $end: Unix timestamp representing the end of the range of positions to calculate.
+        @param $resolution: How often to calculate the position (how many seconds between calculations).
+        */
+        
+        // Setup
+        $result = Array();
+        $mod_update = ClassRegistry::init('Update');
+        
+        // Setup default values
+        $resolution = ($resolution)?$resolution:60; // Default to a minute between calculations
+        $default_range = 24*60*60; // Jump by a day
+        if ($start&&!$end){
+            // Start timestamp specified but no end timestamp
+            $end = $start+$default_range;
+        } else if ($end&&!$start){
+            // End timestamp specified but no start timestamp
+            $start = $end-$default_range;
+        } else if (!$start&&!$end){
+            // Neither specified, just get the next $default_range
+            $start = time();
+            $end = $start+$default_range;
+        }
+		
+        // Construct a query out of the satellite names
+        $query_satellite_names = Array();
+        foreach($satellite_names as $satellite_name){
+			//var_dump(urldecode($satellite_name));
+            array_push($query_satellite_names, 'Tle.name=\''.$satellite_name.'\'');
+        }
+        $query_satellite_names = implode(' OR ',$query_satellite_names);
+		
+        // Load the TLEs that are closest to the starting timestamp
+        $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(Tle.created_on - \''.Sanitize::clean($start).'\') > ABS(TleAlt.created_on - \''.Sanitize::clean($start).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
+        
+		//echo $this->getLastQuery().'<br /.';
+		var_dump($satellites);
+        
+        if (empty($satellites)){
+            // No matching satellites found
+            $result['status']['status'] = 'error';
+            $result['status']['message'] = 'None of the provided satellites could be located or have been updated recently.';
+            $result['status']['timestamp'] = time();
+            $result['status']['satellites_fetched'] = 0;
+        } else {
+            // Needed TLEs loaded, calculate the positions
+            
+            /*// Results found, loop through each satellite and assemble the result
+            foreach ($satellites as $satellite){
+                $satellite_name = $satellite['Tle']['name'];
+                
+                // Set the satellite's status
+                $result['satellites'][$satellite_name]['status']['updated'] = strtotime($satellite['Tle']['created_on']);
+                
+                // Set the satellite's TLE info
+                $result['satellites'][$satellite_name]['tle'] = $satellite['Tle'];
+                unset($result['satellites'][$satellite_name]['tle']['id']);
+                unset($result['satellites'][$satellite_name]['tle']['created_on']);
+                unset($result['satellites'][$satellite_name]['tle']['update_id']);
+            }
+                
+            // At least 1 satellite loaded successfully
+            if (count($result['satellites'])>=1){
+                $result['status']['status'] = 'okay';
+                $result['status']['message'] = 'At least one of the specified satellites was loaded.';
+                $result['status']['timestamp'] = time();
+                $result['status']['satellites_fetched'] = count($result['satellites']);
+            } else {
+                $result['status']['status'] = 'error';
+                $result['status']['message'] = 'None of the specified satellites could be loaded.';
+                $result['status']['timestamp'] = time();
+                $result['status']['satellites_fetched'] = 0;
+            }*/
+        }
+        
+        var_dump($result);
+        //return $result;
     }
     
     public function arrayToXML($satellites){
@@ -220,7 +304,7 @@ class Tle extends AppModel {
                 if ($tle_line_counter == 0){
                     $new_tle_entries[$tle_entry_counter]['name'] = trim($tle_line);
                     $new_tle_entries[$tle_entry_counter]['update_id'] = $update_id;
-                    $new_tle_entries[$tle_entry_counter]['created_on'] = date('Y-m-d H:i:s', time());
+                    $new_tle_entries[$tle_entry_counter]['created_on'] = time();
                 }
                 
                 // Parse the second line
