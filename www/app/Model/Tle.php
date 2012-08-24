@@ -97,9 +97,10 @@ class Tle extends AppModel {
         // Setup
         $result = Array();
         $mod_update = ClassRegistry::init('Update');
+        $calculation_limit = 2000;
         
         // Setup default values
-        $resolution = ($resolution)?$resolution:60; // Default to a minute between calculations
+        $resolution = ($resolution&&$resolution>=1)?$resolution:60; // Default to a minute between calculations
         $default_range = 24*60*60; // Jump by a day
         if ($start&&!$end){
             // Start timestamp specified but no end timestamp
@@ -112,60 +113,113 @@ class Tle extends AppModel {
             $start = time();
             $end = $start+$default_range;
         }
-		
-        // Construct a query out of the satellite names
-        $query_satellite_names = Array();
-        foreach($satellite_names as $satellite_name){
-			//var_dump(urldecode($satellite_name));
-            array_push($query_satellite_names, 'Tle.name=\''.$satellite_name.'\'');
-        }
-        $query_satellite_names = implode(' OR ',$query_satellite_names);
-		
-        // Load the TLEs that are closest to the starting timestamp
-        $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(Tle.created_on - \''.Sanitize::clean($start).'\') > ABS(TleAlt.created_on - \''.Sanitize::clean($start).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
         
-		//echo $this->getLastQuery().'<br /.';
-		var_dump($satellites);
-        
-        if (empty($satellites)){
-            // No matching satellites found
+        // Validate parameters
+        if ($start>=$end){
+            // Start timestamp later than the end timestamp
             $result['status']['status'] = 'error';
-            $result['status']['message'] = 'None of the provided satellites could be located or have been updated recently.';
+            $result['status']['message'] = 'End timestamp occurs earlier than the start timestamp (or they are equal).';
             $result['status']['timestamp'] = time();
-            $result['status']['satellites_fetched'] = 0;
+            $result['status']['satellites_calculated'] = 0;
+        } else if ((($end-$start)/$resolution)>$calculation_limit) {
+            // Too small of a resolution
+            $result['status']['status'] = 'error';
+            $result['status']['message'] = 'Too many calculations ('.(($end-$start)/$resolution).') would be performed with that resolution (the limit is '.$calculation_limit.')';
+            $result['status']['timestamp'] = time();
+            $result['status']['satellites_calculated'] = 0;
         } else {
-            // Needed TLEs loaded, calculate the positions
-            
-            /*// Results found, loop through each satellite and assemble the result
-            foreach ($satellites as $satellite){
-                $satellite_name = $satellite['Tle']['name'];
-                
-                // Set the satellite's status
-                $result['satellites'][$satellite_name]['status']['updated'] = strtotime($satellite['Tle']['created_on']);
-                
-                // Set the satellite's TLE info
-                $result['satellites'][$satellite_name]['tle'] = $satellite['Tle'];
-                unset($result['satellites'][$satellite_name]['tle']['id']);
-                unset($result['satellites'][$satellite_name]['tle']['created_on']);
-                unset($result['satellites'][$satellite_name]['tle']['update_id']);
+            // Construct a query out of the satellite names
+            $query_satellite_names = Array();
+            foreach($satellite_names as $satellite_name){
+                //var_dump(urldecode($satellite_name));
+                array_push($query_satellite_names, 'Tle.name=\''.$satellite_name.'\'');
             }
-                
-            // At least 1 satellite loaded successfully
-            if (count($result['satellites'])>=1){
-                $result['status']['status'] = 'okay';
-                $result['status']['message'] = 'At least one of the specified satellites was loaded.';
-                $result['status']['timestamp'] = time();
-                $result['status']['satellites_fetched'] = count($result['satellites']);
-            } else {
+            $query_satellite_names = implode(' OR ',$query_satellite_names);
+            
+            // Load the TLEs that are closest to the starting timestamp
+            $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(Tle.created_on - \''.Sanitize::clean($start).'\') > ABS(TleAlt.created_on - \''.Sanitize::clean($start).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
+            
+            //echo $this->getLastQuery().'<br /.';
+            //var_dump($satellites);
+            
+            if (empty($satellites)){
+                // No matching satellites found
                 $result['status']['status'] = 'error';
-                $result['status']['message'] = 'None of the specified satellites could be loaded.';
+                $result['status']['message'] = 'None of the provided satellites could be located or have been updated recently.';
                 $result['status']['timestamp'] = time();
                 $result['status']['satellites_fetched'] = 0;
-            }*/
+            } else {
+                // Needed TLEs loaded, calculate the positions
+                $error_count = 0;
+                foreach($satellites as $satellite){
+                    $satellite_name = $satellite['Tle']['name'];
+                    
+                    // Perform the calculation
+                    $position_results = Array();
+                    exec(APP.'Vendor/satpos "'.$satellite_name.'" "'.$satellite['Tle']['raw_l1'].'" "'.$satellite['Tle']['raw_l2'].'" '.escapeshellarg($start).' '.escapeshellarg($end).' '.escapeshellarg($resolution), $position_results);
+                    
+                    // Check for calculation errors
+                    if (strpos($position_results[0], '[ERROR]')!==FALSE){
+                        $error_message = substr($position_results[0], 7);
+                        
+                        // Error calculating satellite positions
+                        $error_count++;
+                        $result['satellites'][$satellite_name]['status']['status'] = 'error';
+                        $result['satellites'][$satellite_name]['status']['message'] = 'There was an error calculating the satellite positions: '.$error_message;
+                        $result['satellites'][$satellite_name]['status']['generated_at'] = time();
+                        $result['satellites'][$satellite_name]['status']['positions_calculated'] = 0;
+                        $result['satellites'][$satellite_name]['status']['name'] = $satellite_name;
+                        $result['satellites'][$satellite_name]['status']['raw_tle_line_1'] = $satellite['Tle']['raw_l1'];
+                        $result['satellites'][$satellite_name]['status']['raw_tle_line_2'] = $satellite['Tle']['raw_l2'];
+                        $result['satellites'][$satellite_name]['status']['timestamp_start'] = $start;
+                        $result['satellites'][$satellite_name]['status']['timestamp_end'] = $end;
+                        $result['satellites'][$satellite_name]['status']['resolution'] = $resolution;
+                    } else {
+                        // Parse the calculation results
+                        foreach($position_results as $position_result){
+                            list($timestamp, $latitude, $longitude, $altitude) = explode(':', $position_result);
+                            $result['satellites'][$satellite_name]['positions'][$timestamp]['timestamp'] = $timestamp;
+                            $result['satellites'][$satellite_name]['positions'][$timestamp]['latitude'] = $latitude;
+                            $result['satellites'][$satellite_name]['positions'][$timestamp]['longitude'] = $longitude;
+                            $result['satellites'][$satellite_name]['positions'][$timestamp]['altitude'] = $altitude;
+                        }
+                        
+                        // Add the satellite status
+                        $result['satellites'][$satellite_name]['status']['status'] = 'okay';
+                        $result['satellites'][$satellite_name]['status']['message'] = 'Satellite positions calculated successfully.';
+                        $result['satellites'][$satellite_name]['status']['generated_at'] = time();
+                        $result['satellites'][$satellite_name]['status']['positions_calculated'] = sizeof($position_results);
+                        $result['satellites'][$satellite_name]['status']['name'] = $satellite_name;
+                        $result['satellites'][$satellite_name]['status']['raw_tle_line_1'] = $satellite['Tle']['raw_l1'];
+                        $result['satellites'][$satellite_name]['status']['raw_tle_line_2'] = $satellite['Tle']['raw_l2'];
+                        $result['satellites'][$satellite_name]['status']['timestamp_start'] = $start;
+                        $result['satellites'][$satellite_name]['status']['timestamp_end'] = $end;
+                        $result['satellites'][$satellite_name]['status']['resolution'] = $resolution;
+                    }
+                }
+                
+                // Add the main status element
+                if ($error_count!=0){
+                    $result['status']['status'] = 'error';
+                    $result['status']['message'] = 'There was an error calculating the positions of '.$error_count.' of the specified satellites.';
+                    $result['status']['timestamp'] = time();
+                    $result['status']['satellites_calculated'] = count($result['satellites'])-$error_count;
+                } else if (count($result['satellites'])>=1){
+                    $result['status']['status'] = 'okay';
+                    $result['status']['message'] = 'The positions of the specified satellites were calculated successfully.';
+                    $result['status']['timestamp'] = time();
+                    $result['status']['satellites_calculated'] = count($result['satellites']);
+                } else {
+                    $result['status']['status'] = 'error';
+                    $result['status']['message'] = 'None of the specified satellites could be loaded.';
+                    $result['status']['timestamp'] = time();
+                    $result['status']['satellites_calculated'] = 0;
+                }
+            }
         }
         
-        var_dump($result);
-        //return $result;
+        //var_dump($result);
+        return $result;
     }
     
     public function arrayToXML($satellites){
@@ -239,6 +293,72 @@ class Tle extends AppModel {
         return $xml_string;
     }
     
+    public function arrayToXMLPositions($satellites){
+        /*
+        Converts $satellites into an XML string.
+        
+        @param $satellites: Array containing satellite data.
+        
+        Returns:
+            An XML string representing the array.
+        */
+        
+        // Start XML document.
+        $xml_string = '<?xml version="1.0"?>';
+        $xml_string .= '<api_positions>';
+        
+        // Add the status element
+        $xml_string .= '<status>';
+        $xml_string .= '<status>'.htmlspecialchars($satellites['status']['status']).'</status>';
+        $xml_string .= '<message>'.htmlspecialchars($satellites['status']['message']).'</message>';
+        $xml_string .= '<timestamp>'.htmlspecialchars($satellites['status']['timestamp']).'</timestamp>';
+        $xml_string .= '<satellites_calculated>'.htmlspecialchars($satellites['status']['satellites_calculated']).'</satellites_calculated>';
+        $xml_string .= '</status>';
+        
+        // Add the satellites
+        if (isset($satellites['satellites']) && !empty($satellites['satellites'])){
+            $xml_string .= '<satellites>';
+            foreach($satellites['satellites'] as $satellite_name => $satellite){
+                $xml_string .= '<satellite name=\''.htmlspecialchars($satellite_name).'\'>';
+                
+                // Add the satellite status
+                $xml_string .= '<status>';
+                $xml_string .= '<status>'.htmlspecialchars($satellite['status']['status']).'</status>';
+                $xml_string .= '<message>'.htmlspecialchars($satellite['status']['message']).'</message>';
+                $xml_string .= '<generated_at>'.htmlspecialchars($satellite['status']['generated_at']).'</generated_at>';
+                $xml_string .= '<positions_calculated>'.htmlspecialchars($satellite['status']['positions_calculated']).'</positions_calculated>';
+                $xml_string .= '<name>'.htmlspecialchars($satellite['status']['name']).'</name>';
+                $xml_string .= '<raw_tle_line_1>'.htmlspecialchars($satellite['status']['raw_tle_line_1']).'</raw_tle_line_1>';
+                $xml_string .= '<raw_tle_line_2>'.htmlspecialchars($satellite['status']['raw_tle_line_2']).'</raw_tle_line_2>';
+                $xml_string .= '<timestamp_start>'.htmlspecialchars($satellite['status']['timestamp_start']).'</timestamp_start>';
+                $xml_string .= '<timestamp_end>'.htmlspecialchars($satellite['status']['timestamp_end']).'</timestamp_end>';
+                $xml_string .= '<resolution>'.htmlspecialchars($satellite['status']['resolution']).'</resolution>';
+                $xml_string .= '</status>';
+                
+                // Add the TLE information
+                if (array_key_exists('positions', $satellite)){
+                    $xml_string .= '<positions>';
+                    foreach ($satellite['positions'] as $satellite_position){
+                        $xml_string .= '<position timestamp=\''.$satellite_position['timestamp'].'\'>';
+                        $xml_string .= '<latitude>'.$satellite_position['latitude'].'</latitude>';
+                        $xml_string .= '<longitude>'.$satellite_position['longitude'].'</longitude>';
+                        $xml_string .= '<altitude>'.$satellite_position['altitude'].'</altitude>';
+                        $xml_string .= '</position>';
+                    }
+                    $xml_string .= '</positions>';
+                }
+                
+                $xml_string .= '</satellite>';
+            }
+            $xml_string .= '</satellites>';
+        }
+        
+        // Close XML
+        $xml_string .= '</api_positions>';
+        
+        return $xml_string;
+    }
+    
     public function arrayToRaw($satellites){
         /*
         Converts the supplied array into a raw TLE file. Duplicates all ready handled by the queries in api_loadsatellites().
@@ -261,6 +381,35 @@ class Tle extends AppModel {
         }
         
         return $raw_tles;
+    }
+    
+    public function arrayToRawPositions($satellites){
+        /*
+        Converts $satellites to a Text/HTML position output.
+        
+        @param $satellites: Array of calculated satellite positions.
+        */
+        
+        $raw_positions = Array();
+        
+        if (isset($satellites['satellites']) && !empty($satellites['satellites'])){
+            foreach($satellites['satellites'] as $satellite){
+                if ($satellite['status']['status']=='okay'){
+                    foreach ($satellite['positions'] as $satellite_position){
+                        $temp_satellite = Array(
+                            'name' => $satellite['status']['name'],
+                            'timestamp' => $satellite_position['timestamp'],
+                            'latitude' => $satellite_position['latitude'],
+                            'longitude' => $satellite_position['longitude'],
+                            'altitude' => $satellite_position['altitude']
+                        );
+                        array_push($raw_positions, $temp_satellite);
+                    }
+                }
+            }
+        }
+        
+        return $raw_positions;
     }
     
     public function parse_tle_source($raw_tle_data, $update_id){

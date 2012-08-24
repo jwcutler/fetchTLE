@@ -89,6 +89,9 @@ int main(int argc, char *argv[]){
 		// Collect and output satellite parameters
 		sat_lat = Degrees(sat_geodetic.lat);
 		sat_lon = Degrees(sat_geodetic.lon);
+		if (sat_lon>180){
+			sat_lon = sat_lon-360;
+		}
 		sat_alt = sat_geodetic.alt;
 		printf("%d:%f:%f:%f\n", curr_time, sat_lat, sat_lon, sat_alt);
 		

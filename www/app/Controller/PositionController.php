@@ -8,10 +8,10 @@ class PositionController extends AppController {
     var $components = array('RequestHandler');
 	
 	// Setup Caching
-	/*public $helpers = array('Cache');
+	public $helpers = array('Cache');
     public $cacheAction = array(
 		'api_positions' => 1800 // Cache API for 30 minutes (1800 seconds)
-	);*/
+	);
     
     function beforeFilter(){
         parent::beforeFilter();

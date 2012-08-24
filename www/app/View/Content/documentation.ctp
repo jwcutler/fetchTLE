@@ -14,6 +14,10 @@ $(document).ready(function(){
 	e.preventDefault();
 	$(this).tab('show');
     })
+    $('#positions_examples a').click(function (e) {
+	e.preventDefault();
+	$(this).tab('show');
+    })
     $('#error_examples a').click(function (e) {
 	e.preventDefault();
 	$(this).tab('show');
@@ -82,7 +86,7 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 
 <!-- Using the API -->
 <h2 class="docs"><a name="using_api"><a href="#using_api" class="doc_link">1.0 Using the API</a></a></h2>
-<p>The <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> API uses a standard <a href="http://en.wikipedia.org/wiki/Representational_state_transfer" target="_blank" class="link">HTTP RESTful API scheme</a>. <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> works by aggregating several TLE sources (such as <a href="http://celestrak.com/" target="_blank" class="link">CelesTrak's</a> TLE collections) into a timestamped index of satellite TLE's accessible by an API. This API allows you to retrieve the TLE information for any collection of TLE sources or available satellites. Currently, no authentication is required to use the <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> API and there are no usage limits, however this is subject to change. If you are unfamiliar with using REST APIs, <a href="http://rest.elkstein.org/" target="_blank" class="link">this</a> is a good resource.</p>
+<p>The <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> API uses a standard <a href="http://en.wikipedia.org/wiki/Representational_state_transfer" target="_blank" class="link">HTTP RESTful API scheme</a>. <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> works by aggregating several TLE sources (such as <a href="http://celestrak.com/" target="_blank" class="link">CelesTrak's</a> TLE collections) into a timestamped index of satellite TLE's accessible by an API. This API allows you to retrieve the TLE information for any collection of TLE sources or available satellites. In addition, this API allows you calculate the position of a satellite at given intervals within an arbitrary range of time. Currently, no authentication is required to use the <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> API and there are no usage limits, however this is subject to change. If you are unfamiliar with using REST APIs, <a href="http://rest.elkstein.org/" target="_blank" class="link">this</a> is a good resource.</p>
 
 <h3 class="docs"><a name="making_request"><a href="#making_request" class="doc_link">1.1 Making An API Request</a></a></h3>
 <p>The API is a simple collection of URL's that respond to GET requests. Such resources are commonly accessed using utilities such as <a href="http://www.gnu.org/software/wget/" target="_blank" class="link">wget</a> or <a href="http://curl.haxx.se/" target="_blank" class="link">cURL</a>. All API endpoints have the same basic format:</p>
@@ -94,50 +98,74 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 <p>Currently, the results of an API request are cached for 30 minutes for performance reasons.</p>
 
 <h3 class="docs"><a name="making_request"><a href="#making_request" class="doc_link">1.2 Response Formats</a></a></h3>
-<p>Currently, <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> can respond in four different formats: XML, JSON, JSONP, and raw TLE format. To request a result in JSON/JSONP or XML just append .json or .xml, respectively, to the API endpoint URL. To request a raw TLE file, simple remove the <span style="font-style: italic;">[format]</span> postfix all together. Note that to generate a JSONP response (which allows for the cross-domain resource loading commonly used in AJAX scripts), you must specify a callback. For example:</p>
+<p>Currently, <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> can respond in four different formats: XML, JSON, JSONP, and raw TEXT format. To request a result in JSON/JSONP or XML just append .json or .xml, respectively, to the API endpoint URL. To request the raw resource dump, simple remove the <span style="font-style: italic;">[format]</span> postfix all together. Note that to generate a JSONP response (which allows for the cross-domain resource loading commonly used in AJAX scripts), you must specify a callback. For example:</p>
 <pre>
 <?php echo Router::url('/', true); ?>api/sources/CUBESAT.json?callback=yourcallback
 </pre>
 
-<h3 class="docs"><a name="parameters"><a href="#parameters" class="doc_link">1.3 Shared Resource Parameters</a></a></h3>
+<h3 class="docs"><a name="parameters"><a href="#parameters" class="doc_link">1.3 Request Parameters</a></a></h3>
 <p>There are several parameters that you can append to your API request that allow you to customize the results returned.</p>
 <table class="table table-condensed">
-	<thead>
-		<tr>
-			<th width="10%">Parameter</th>
-			<th width="10%">Type</th>
-			<th width="50%">Effect</th>
-			<th width="30%">Example</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td width="10%">callback</td>
-			<td width="10%">String</td>
-			<td width="50%">Adding the callback parameter to your request (when the format is set to .json) returns the results in JSONP format. This use commonly used when making requests from an AJAX or otherwise client-side script.</td>
-			<td width="30%"><span style="font-style: italic;">/sources/CUBESAT.json?callback=yourcallback</span></td>
-		</tr>
-		<tr>
-			<td width="10%">timestamp</td>
-			<td width="10%">Integer (UNIX Timestamp)</td>
-			<td width="50%">The timestamp parameter allows you to supply a <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a> with your request. The result will consist of the TLE's that <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> has that are closest to the timestamp you provided. Without a timestamp, <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> returns the most recent TLE for each satellite included in the response. Note this parameter is relative to server time (EST).</td>
-			<td width="30%"><span style="font-style: italic;">/satellites/RAX-2.xml?timestamp=1339736400</span></td>
-		</tr>
-		<!--<tr>
-			<td width="10%">limit</td>
-			<td width="10%">Integer</td>
-			<td width="50%">This parameter allows you to limit the number of satellite TLEs returned in any given request. Note that this always limits the number of TLEs, not the number of sources. So the query to the right, for example, would return the first 3 satellites for both sources (GPS and CUBESAT).</td>
-			<td width="30%"><span style="font-style: italic;">/sources/GPS+CUBESAT.xml?limit=3</span></td>
-		</tr>
-		<tr>
-			<td width="10%">offset</td>
-			<td width="10%">Integer</td>
-			<td width="50%">The offset parameter allows you to specify how to offset the response. This must be used with the limit parameter defined above. For example, you may limit the results to 3 and then use offset to retrieve the next group of 3 TLEs.</td>
-			<td width="30%"><span style="font-style: italic;">/sources/GPS+CUBESAT.xml?limit=3&offset=1</span></td>
-		</tr>-->
+    <thead>
+	<tr>
+	    <th width="10%">Parameter</th>
+	    <th width="10%">Type</th>
+	    <th width="10%">Works With</th>
+	    <th width="40%">Effect</th>
+	    <th width="30%">Example</th>
+	</tr>
+    </thead>
+    <tbody>
+	<tr>
+	    <td colspan='1'>callback</td>
+	    <td colspan='1'>String</td>
+	    <td colspan='1'>satellites<br />sources<br />positions</td>
+	    <td colspan='1'>Adding the callback parameter to your request (when the format is set to .json) returns the results in JSONP format. This use commonly used when making requests from an AJAX or otherwise client-side script.</td>
+	    <td colspan='1'><span style="font-style: italic;">/sources/CUBESAT.json?callback=yourcallback</span></td>
+	</tr>
+	<tr>
+	    <td colspan='1'>timestamp</td>
+	    <td colspan='1'>Integer (UNIX Timestamp)</td>
+	    <td colspan='1'>satellites<br />sources</td>
+	    <td colspan='1'>The timestamp parameter allows you to supply a <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a> with your request. The result will consist of the TLE's that <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> has that are closest to the timestamp you provided. Without a timestamp, <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> returns the most recent TLE for each satellite included in the response. Note this parameter is relative to UTC.</td>
+	    <td colspan='1'><span style="font-style: italic;">/satellites/RAX-2.xml?timestamp=1339736400</span></td>
+	</tr>
+	<tr>
+	    <td colspan='1'>start</td>
+	    <td colspan='1'>Integer (UNIX Timestamp)</td>
+	    <td colspan='1'>positions</td>
+	    <td colspan='1'>This parameter, when used with the positions API, allows you to specify the beginning of the range of times that you would like to calculate satellite positions during. This timestamp will be used to select the TLE for the specified satellite(s) that is closest to the beginning of the range. That TLE will then be used to calculate the satellite positions during the interval. If no start timestamp is specified, the time that the request was submitted will be used instead. It is a UTC <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a>.</td>
+	    <td colspan='1'><span style="font-style: italic;">/positions/RAX-2.xml?start=1339736400</span></td>
+	</tr>
+	<tr>
+	    <td colspan='1'>end</td>
+	    <td colspan='1'>Integer (UNIX Timestamp)</td>
+	    <td colspan='1'>positions</td>
+	    <td colspan='1'>This parameter, when used with the positions API, allows you to specify the end of the range of times that you would like to calculate satellite positions during. If no end timestamp is specified, it will automatically be set to be 24 hours ahead of the start timestamp. It is a UTC <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a>.</td>
+	    <td colspan='1'><span style="font-style: italic;">/positions/RAX-2.xml?start=1339736400&end=1339822800</span></td>
+	</tr>
+	<tr>
+	    <td colspan='1'>resolution</td>
+	    <td colspan='1'>Integer (seconds)</td>
+	    <td colspan='1'>positions</td>
+	    <td colspan='1'>This parameter specifies how often you would like satellite position calculations to occur during the specified range. For example, if set to '60' the satellite positions calculated will be 60 seconds apart. Defaults to 60 if not specified.</td>
+	    <td colspan='1'><span style="font-style: italic;">/positions/RAX-2.xml?resolution=10</span></td>
+	</tr>
+	<!--<tr>
+	    <td width="10%">limit</td>
+	    <td width="10%">Integer</td>
+	    <td width="50%">This parameter allows you to limit the number of satellite TLEs returned in any given request. Note that this always limits the number of TLEs, not the number of sources. So the query to the right, for example, would return the first 3 satellites for both sources (GPS and CUBESAT).</td>
+	    <td width="30%"><span style="font-style: italic;">/sources/GPS+CUBESAT.xml?limit=3</span></td>
+	</tr>
+	<tr>
+	    <td width="10%">offset</td>
+	    <td width="10%">Integer</td>
+	    <td width="50%">The offset parameter allows you to specify how to offset the response. This must be used with the limit parameter defined above. For example, you may limit the results to 3 and then use offset to retrieve the next group of 3 TLEs.</td>
+	    <td width="30%"><span style="font-style: italic;">/sources/GPS+CUBESAT.xml?limit=3&offset=1</span></td>
+	</tr>-->
 	</tbody>
 </table>
-<p>These shared parameters can be used on any resource type.</p>
+<p>The resources that each of these parameters can be used on is indicated in the "Works With" column.</p>
 
 <h3 class="docs"><a name="resource_sources"><a href="#resource_sources" class="doc_link">1.4 Sources Resources: /api/sources/[sources].[format]</a></a></h3>
 <p>The <span style="font-style: italic;">sources</span> resource allows you to retrieve the TLE's for the specified sources. Any number of sources can be requested by joining their identifiers together with underscores. For example, to retrieve the most recent TLEs in JSON for both the GPS and CUBESAT sources this request would be used:</p>
@@ -147,9 +175,9 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 <p>As stated in the <a href="#making_request" class="doc_link">Making An API Request</a> section, all source names must be URL encoded before being joined with the underscore.</p>
 <p>Instead of explaining every field returned in the response, portions of the response (clipped parts of the response are indicated by a "...") from the example request above are displayed below in every available format.</p>
 <ul class="nav nav-tabs" id="sources_examples">
-	<li class="active"><a href="#sources_json">JSON</a></li>
-	<li><a href="#sources_xml">XML</a></li>
-	<li><a href="#sources_raw">Raw TLEs</a></li>
+    <li class="active"><a href="#sources_json">JSON</a></li>
+    <li><a href="#sources_xml">XML</a></li>
+    <li><a href="#sources_raw">Raw TLEs</a></li>
 </ul>
 <div class="tab-content">
 	<div class="tab-pane active" id="sources_json">
@@ -521,15 +549,183 @@ RAX-2
 </div>
 <p>If any of the satellites can't be located, they will simply be omitted from the response. However, if none of the satellites are valid an error will be generated.</p>
 
-<h3 class="docs"><a name="errors"><a href="#errors" class="doc_link">1.6 API Errors</a></a></h3>
-<p>The top level status element for both the sources and satellites resources will always be returned, even in the event of an error (although this will not occur with the occasional server error). For example, the result of requesting a single non-existent satellite would be:</p>
-<ul class="nav nav-tabs" id="error_examples">
-	<li class="active"><a href="#error_json">JSON</a></li>
-	<li><a href="#error_xml">XML</a></li>
-	<li><a href="#error_raw">Raw TLEs</a></li>
+<h3 class="docs"><a name="resource_positions"><a href="#resource_positions" class="doc_link">1.6 Satellite Position Resources: /api/positions/[satellites].[format]</a></a></h3>
+<p>The <span style="font-style: italic;">positions</span> resource allows you to retrieve the estimated positions of satellites during a specified range. Satellite positions are calculated using the SGP4 propagation model. The positions of any number of satellites can be requested by joining their identifiers together with underscores. For example, to retrieve the estimated positions for the "RAX-2" and "CUTE-1.7+APD II (CO-65)" satellites during the next 24 hours in JSON, this request would be used:</p>
+<pre>
+<?php echo Router::url('/', true); ?>api/positions/RAX-2_CUTE-1.7%2BAPD%20II%20(CO-65).json
+</pre>
+<p>As stated in the <a href="#making_request" class="link">Making An API Request</a> section, all satellite names must be URL encoded (like the "CUTE-1.7+APD II (CO-65)" satellite is in the example request above) before being joined with the underscore.</p>
+<p>Instead of explaining every field returned in the response, portions of the response (clipped parts of the response are indicated by a "...") from the example request above are displayed below in every available format.</p>
+<ul class="nav nav-tabs" id="positions_examples">
+    <li class="active"><a href="#positions_json">JSON</a></li>
+    <li><a href="#positions_xml">XML</a></li>
+    <li><a href="#positions_raw">Raw Satellite Positions</a></li>
 </ul>
 <div class="tab-content">
-	<div class="tab-pane active" id="error_json">
+	<div class="tab-pane active" id="positions_json">
+<pre class="prettyprint pre-scrollable">
+{
+  "satellites":{
+    "RAX-2":{
+      "positions":{
+	"1345830113":{
+	  "timestamp":"1345830113",
+	  "latitude":"55.351346",
+	  "longitude":"52.918618",
+	  "altitude":"658.076145"
+	},
+	"1345830173":{
+	  "timestamp":"1345830173",
+	  "latitude":"58.765731",
+	  "longitude":"50.151246",
+	  "altitude":"647.762654"
+	},
+        ...
+      },
+      "status":{
+        "status":"okay",
+	"message":"Satellite positions calculated successfully.",
+	"generated_at":1345830175,
+	"positions_calculated":60,
+	"name":"RAX-2",
+	"raw_tle_line_1":"1 37853U 11061D   12235.83404004  .00003153  00000-0  25520-3 0  2645",
+	"raw_tle_line_2":"2 37853 101.7092 306.3753 0246038 160.8856 200.1781 14.80426852 44256",
+	"timestamp_start":"1345830113",
+	"timestamp_end":"1345833713",
+	"resolution":60
+      }
+    },
+    "CUTE-1.7+APD II (CO-65)":{
+      "positions":{
+        "1345830113":{
+	  "timestamp":"1345830113",
+	  "latitude":"60.801292",
+	  "longitude":"44.181864",
+	  "altitude":"636.395418"
+	},
+	"1345830173":{
+	  "timestamp":"1345830173",
+	  "latitude":"64.330966",
+	  "longitude":"41.576805",
+	  "altitude":"636.611687"
+	},
+        ...
+      },
+      "status":{
+        "status":"okay",
+	"message":"Satellite positions calculated successfully.",
+	"generated_at":1345830175,
+	"positions_calculated":60,
+	"name":"CUTE-1.7+APD II (CO-65)",
+	"raw_tle_line_1":"1 32785U 08021C   12236.17412516  .00000497  00000-0  67364-4 0  3957",
+	"raw_tle_line_2":"2 32785  97.7916 295.6249 0014096 198.2384 161.8322 14.83121379233693",
+	"timestamp_start":"1345830113",
+	"timestamp_end":"1345833713",
+        "resolution":60
+      }
+    }
+  },
+  "status":{
+    "status":"okay",
+    "message":"The positions of the specified satellites were calculated successfully.",
+    "timestamp":1345830175,
+    "satellites_calculated":2
+  }
+}
+</pre>
+	</div>
+	<div class="tab-pane" id="positions_xml">
+<pre class="prettyprint pre-scrollable">
+&lt;?xml version="1.0"?&gt;
+&lt;api_positions&gt;
+  &lt;status&gt;
+    &lt;status&gt;okay&lt;/status&gt;
+    &lt;message&gt;The positions of the specified satellites were calculated successfully.&lt;/message&gt;
+    &lt;timestamp&gt;1345830822&lt;/timestamp&gt;
+    &lt;satellites_calculated&gt;2&lt;/satellites_calculated&gt;
+  &lt;/status&gt;
+  &lt;satellites&gt;
+    &lt;satellite name='RAX-2'&gt;
+      &lt;status&gt;
+        &lt;status&gt;okay&lt;/status&gt;
+	&lt;message&gt;Satellite positions calculated successfully.&lt;/message&gt;
+	&lt;generated_at&gt;1345830822&lt;/generated_at&gt;
+	&lt;positions_calculated&gt;60&lt;/positions_calculated&gt;
+	&lt;name&gt;RAX-2&lt;/name&gt;
+	&lt;raw_tle_line_1&gt;1 37853U 11061D   12235.83404004  .00003153  00000-0  25520-3 0  2645&lt;/raw_tle_line_1&gt;
+	&lt;raw_tle_line_2&gt;2 37853 101.7092 306.3753 0246038 160.8856 200.1781 14.80426852 44256&lt;/raw_tle_line_2&gt;
+	&lt;timestamp_start&gt;1345830113&lt;/timestamp_start&gt;
+	&lt;timestamp_end&gt;1345833713&lt;/timestamp_end&gt;
+	&lt;resolution&gt;60&lt;/resolution&gt;
+      &lt;/status&gt;
+      &lt;positions&gt;
+        &lt;position timestamp='1345830113'&gt;
+	  &lt;latitude&gt;55.351346&lt;/latitude&gt;
+	  &lt;longitude&gt;52.918618&lt;/longitude&gt;
+	  &lt;altitude&gt;658.076145&lt;/altitude&gt;
+	&lt;/position&gt;
+	&lt;position timestamp='1345830173'&gt;
+	  &lt;latitude&gt;58.765731&lt;/latitude&gt;
+	  &lt;longitude&gt;50.151246&lt;/longitude&gt;
+	  &lt;altitude&gt;647.762654&lt;/altitude&gt;
+	&lt;/position&gt;
+	...
+      &lt;/positions&gt;
+    &lt;/satellite&gt;
+    &lt;satellite name='CUTE-1.7+APD II (CO-65)'&gt;
+      &lt;status&gt;
+        &lt;status&gt;okay&lt;/status&gt;
+	&lt;message&gt;Satellite positions calculated successfully.&lt;/message&gt;
+	&lt;generated_at&gt;1345830822&lt;/generated_at&gt;
+	&lt;positions_calculated&gt;60&lt;/positions_calculated&gt;
+	&lt;name&gt;CUTE-1.7+APD II (CO-65)&lt;/name&gt;
+	&lt;raw_tle_line_1&gt;1 32785U 08021C   12236.17412516  .00000497  00000-0  67364-4 0  3957&lt;/raw_tle_line_1&gt;
+	&lt;raw_tle_line_2&gt;2 32785  97.7916 295.6249 0014096 198.2384 161.8322 14.83121379233693&lt;/raw_tle_line_2&gt;
+	&lt;timestamp_start&gt;1345830113&lt;/timestamp_start&gt;
+	&lt;timestamp_end&gt;1345833713&lt;/timestamp_end&gt;
+	&lt;resolution&gt;60&lt;/resolution&gt;
+      &lt;/status&gt;
+      &lt;positions&gt;
+        &lt;position timestamp='1345830113'&gt;
+	  &lt;latitude&gt;60.801292&lt;/latitude&gt;
+	  &lt;longitude&gt;44.181864&lt;/longitude&gt;
+	  &lt;altitude&gt;636.395418&lt;/altitude&gt;
+	&lt;/position&gt;
+	&lt;position timestamp='1345830173'&gt;
+	  &lt;latitude&gt;64.330966&lt;/latitude&gt;
+	  &lt;longitude&gt;41.576805&lt;/longitude&gt;
+	  &lt;altitude&gt;636.611687&lt;/altitude&gt;
+	&lt;/position&gt;
+        ...
+      &lt;/positions&gt;
+    &lt;/satellite&gt;
+  &lt;/satellites&gt;
+&lt;/api_positions&gt;
+</pre>
+    </div>
+    <div class="tab-pane" id="positions_raw">
+	<div style="font-style: italic;margin-bottom: 10px;">[satellite name]:[timestamp]:[latitude]:[longitude]:[altitude]</div>
+<pre class="pre-scrollable">
+RAX-2:1345830113:55.351346:52.918618:658.076145
+RAX-2:1345830173:58.765731:50.151246:647.762654
+..
+CUTE-1.7+APD II (CO-65):1345830113:60.801292:44.181864:636.395418
+CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
+..
+</pre>
+    </div>
+</div>
+<p>If any of the satellites can't be located, they will simply be omitted from the response. However, if one or more of the valid satellites generates an error (e.g. calculation error), the whole request will return an error response.</p>
+
+<h3 class="docs"><a name="errors"><a href="#errors" class="doc_link">1.7 API Errors</a></a></h3>
+<p>The top level status element for the sources, satellites, and positions resources will always be returned, even in the event of an error (although this will not occur with the occasional server error). For example, the result of requesting a single non-existent satellite would be:</p>
+<ul class="nav nav-tabs" id="error_examples">
+    <li class="active"><a href="#error_json">JSON</a></li>
+    <li><a href="#error_xml">XML</a></li>
+    <li><a href="#error_raw">Raw TLEs</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane active" id="error_json">
 <pre class="prettyprint pre-scrollable">
 {
   "status":{
@@ -540,8 +736,8 @@ RAX-2
   }
 }
 </pre>
-	</div>
-	<div class="tab-pane" id="error_xml">
+    </div>
+    <div class="tab-pane" id="error_xml">
 <pre class="prettyprint pre-scrollable">
 &lt;?xml version="1.0"?&gt;
 &lt;api_satellites&gt;
@@ -553,12 +749,12 @@ RAX-2
   &lt;/status&gt;
 &lt;/api_satellites&gt;
 </pre>
-	</div>
-	<div class="tab-pane" id="error_raw">
+    </div>
+    <div class="tab-pane" id="error_raw">
 <pre class="pre-scrollable">
 [ERROR] No TLEs could be found. 
 </pre>
-	</div>
+    </div>
 </div>
 
 <!-- Available Satellites & Sources -->
