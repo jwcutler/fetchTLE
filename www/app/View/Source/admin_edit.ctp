@@ -32,28 +32,28 @@ $(document).ready(function(){
 	
 	// Handle TLE detail expansions
 	$('[id^="expand_tle_"]').click(function() {
-		id = $(this).attr('title');
-		
-		// Toggle the box
-		$("#expanded_tle_"+id).toggle();
-		
-		// Toggle the indicator
-		curr_indicator = $(this).html();
-		if (curr_indicator=="[+]"){
-			$(this).html("[-]");
-		} else {
-			$(this).html("[+]");
-		}
+	    id = $(this).attr('title');
+	    
+	    // Toggle the box
+	    $("#expanded_tle_"+id).toggle();
+	    
+	    // Toggle the indicator
+	    curr_indicator = $(this).html();
+	    if (curr_indicator=="[+]"){
+		$(this).html("[-]");
+	    } else {
+		$(this).html("[+]");
+	    }
 	});
 });
 </script>
 <style type="text/css">
 pre {
-	background-color: #EEEEEE;
-	padding: 0px;
-	margin: 0px;
-	border: none;
-	font-size: 11px;
+    background-color: #EEEEEE;
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    font-size: 11px;
 }
 </style>
 <h3>Edit the '<?php echo $source['Source']['name']; ?>' TLE Source</h3>
@@ -109,7 +109,6 @@ pre {
 			$source_polled = $source_update['created_on'];
 			echo date("m/j/Y H:i:s T", $source_polled);
 			?>
-			 - <?php echo $source_update['id']; ?>
 		    </td>
 		    <td width="70%">
 			<?php
