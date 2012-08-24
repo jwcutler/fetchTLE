@@ -778,7 +778,7 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
 		<td width="15%"><?php echo rawurlencode($source['Source']['name']); ?></td>
 		<td width="20%">
 		    <?php if (isset($source['Update'][0]['created_on'])): ?>
-			<?php echo date('m/d/Y G:i:s T', strtotime($source['Update'][0]['created_on'])); ?>
+			<?php echo date('m/d/Y G:i:s T', $source['Update'][0]['created_on']); ?>
 		    <?php else: ?>
 			<span style="font-style: italic;">Not Updated Yet</span>
 		    <?php endif; ?>
