@@ -278,5 +278,5 @@ Cache::config('_cake_model_', array(
 ));
 
 // Configure route prefixes
-Configure::write('Routing.prefixes', array('admin', 'api', 'cron'));
+Configure::write('Routing.prefixes', array('admin', 'api', 'cron', 'tools'));
 

@@ -39,6 +39,9 @@ Router::connect('/admin/source/:id/delete', array('[method]' => 'POST', 'control
 Router::connect('/admin/source/:id/edit', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'edit', 'admin' => true));
 Router::connect('/admin/source/:id/edit', array('[method]' => 'POST', 'controller' => 'source', 'action' => 'change', 'admin' => true));
 
+// Tool routes
+Router::connect('/tools/passtimes', array('[method]' => 'GET', 'controller' => 'pass', 'action' => 'index', 'tools' => true));
+
 // API routes
 Router::connect('/api/sources/:sources', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'sources', 'api' => true));
 Router::connect('/api/sources', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'sources', 'api' => true));
