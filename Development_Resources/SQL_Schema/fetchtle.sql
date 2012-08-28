@@ -59,5 +59,27 @@ CREATE TABLE tles (
     PRIMARY KEY(`id`)
 );
 
+CREATE TABLE configurations (
+    id int AUTO_INCREMENT,
+    name varchar(50) NOT NULL,
+    value text,
+    PRIMARY KEY (`id`)
+);
+
+CREATE TABLE stations (
+    id int AUTO_INCREMENT,
+    longitude text NOT NULL,
+    latitude text NOT NULL,
+    name varchar(50) NOT NULL,
+    description text,
+    created_on datetime NOT NULL,
+    updated_on datetime NOT NULL,
+    PRIMARY KEY(`id`)
+);
+
 /* Load in the default values. */
 INSERT INTO `admins` (`id`, `username`, `password`) VALUES (1, 'admin', 'dummypassword');
+INSERT INTO `configurations` (`name`, `value`) VALUES ('passes_default_min_el', '30');
+INSERT INTO `configurations` (`name`, `value`) VALUES ('passes_available_ground_stations', '');
+INSERT INTO `configurations` (`name`, `value`) VALUES ('passes_default_pass_count', '10');
+INSERT INTO `configurations` (`name`, `value`) VALUES ('passes_max_pass_count', '20');

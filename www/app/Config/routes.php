@@ -38,6 +38,13 @@ Router::connect('/admin/source/:id/delete', array('[method]' => 'GET', 'controll
 Router::connect('/admin/source/:id/delete', array('[method]' => 'POST', 'controller' => 'source', 'action' => 'delete', 'admin' => true));
 Router::connect('/admin/source/:id/edit', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'edit', 'admin' => true));
 Router::connect('/admin/source/:id/edit', array('[method]' => 'POST', 'controller' => 'source', 'action' => 'change', 'admin' => true));
+Router::connect('/admin/pass', array('[method]' => 'GET', 'controller' => 'pass', 'action' => 'index', 'admin' => true));
+Router::connect('/admin/pass', array('[method]' => 'POST', 'controller' => 'pass', 'action' => 'update', 'admin' => true));
+Router::connect('/admin/station/add', array('[method]' => 'POST', 'controller' => 'station', 'action' => 'create', 'admin' => true));
+Router::connect('/admin/station/:id/delete', array('[method]' => 'GET', 'controller' => 'station', 'action' => 'remove', 'admin' => true));
+Router::connect('/admin/station/:id/delete', array('[method]' => 'POST', 'controller' => 'station', 'action' => 'delete', 'admin' => true));
+Router::connect('/admin/station/:id/edit', array('[method]' => 'GET', 'controller' => 'station', 'action' => 'edit', 'admin' => true));
+Router::connect('/admin/station/:id/edit', array('[method]' => 'POST', 'controller' => 'station', 'action' => 'change', 'admin' => true));
 
 // Tool routes
 Router::connect('/tools/passtimes', array('[method]' => 'GET', 'controller' => 'pass', 'action' => 'index', 'tools' => true));
