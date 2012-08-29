@@ -47,7 +47,9 @@ Router::connect('/admin/station/:id/edit', array('[method]' => 'GET', 'controlle
 Router::connect('/admin/station/:id/edit', array('[method]' => 'POST', 'controller' => 'station', 'action' => 'change', 'admin' => true));
 
 // Tool routes
-Router::connect('/tools/passtimes', array('[method]' => 'GET', 'controller' => 'pass', 'action' => 'index', 'tools' => true));
+Router::connect('/tools/passes', array('[method]' => 'GET', 'controller' => 'pass', 'action' => 'index', 'tools' => true));
+Router::connect('/tools/passes/:satellite', array('[method]' => 'GET', 'controller' => 'pass', 'action' => 'calculator', 'tools' => true));
+Router::connect('/tools/passes/:satellite', array('[method]' => 'POST', 'controller' => 'pass', 'action' => 'calculate', 'tools' => true));
 
 // API routes
 Router::connect('/api/sources/:sources', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'sources', 'api' => true));

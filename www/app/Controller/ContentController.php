@@ -14,17 +14,17 @@ class ContentController extends AppController {
     }
 	
     public function documentation(){
-		/*
-		This action displays the primary fetchTLE documentation.
-		*/
-		
-		// Load the sources
-		$this->Source->hasMany['Update']['limit'] = 1;
-		$this->Source->hasMany['Update']['order'] = 'id DESC';
-		$this->Source->recursive = 2;
-		$this->set('sources', $this->Source->find('all'));
-		
-		$this->set("title_for_layout", "fetchTLE Documentation");
+	/*
+	This action displays the primary fetchTLE documentation.
+	*/
+	
+	// Load the sources
+	$this->Source->hasMany['Update']['limit'] = 1;
+	$this->Source->hasMany['Update']['order'] = 'id DESC';
+	$this->Source->recursive = 2;
+	$this->set('sources', $this->Source->find('all'));
+	
+	$this->set("title_for_layout", "fetchTLE Documentation");
     }
 }
 ?>

@@ -12,6 +12,9 @@ $(document).ready(function(){
     
     // Form validation
     var container = $("div.form_errors");
+    jQuery.validator.setDefaults({ 
+        ignore: ".hidden"
+    });
     $("#pass_tool_configuration").validate({
         errorContainer: container,
         errorLabelContainer: $("ul", container),

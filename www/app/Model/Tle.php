@@ -14,11 +14,52 @@ class Tle extends AppModel {
     // Define associations
     public $belongsTo = 'Update';
     
+    public function tools_loadsatellites($satellite_names, $timestamp = false){
+        /*
+        Fetches the raw TLE information for the specified satellites(s) and returns it.
+        
+        @param $satellite_names: An array containing the names of all satellites to load.
+        @param $timestamp: A UNIX timestamp to filter results.
+        
+        Returns:
+            The raw database query result array on success.
+            FALSE if none of the satellites can be found.
+        */
+        
+        // Setup
+        $mod_update = ClassRegistry::init('Update');
+        $satellites = null;
+		
+        // Construct a query out of the names
+        $query_satellite_names = Array();
+        foreach($satellite_names as $satellite_name){
+			//var_dump(urldecode($satellite_name));
+            array_push($query_satellite_names, 'Tle.name=\''.$satellite_name.'\'');
+        }
+        $query_satellite_names = implode(' OR ',$query_satellite_names);
+		
+        // Check if a timestamp was set
+        if ($timestamp){
+            // Find the TLE's that are the closest to the specified timestamp along with their associated updates
+            $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(Tle.created_on - \''.Sanitize::clean($timestamp).'\') > ABS(TleAlt.created_on - \''.Sanitize::clean($timestamp).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
+        } else {
+            // Grab the most recent TLE for each specified satellite along with its associated update
+            $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND Tle.created_on < TleAlt.created_on) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
+        }
+        
+        if (empty($satellites)){
+            // Satellites could not be loaded
+            return false;
+        } else {
+            return $satellites;
+        }
+    }
+    
     public function api_loadsatellites($satellite_names, $timestamp = false){
         /*
-        Fetches the TLE information for the specified satellite(s).
+        Fetches the TLE information for the specified satellite(s) and packages it into a custom array for use with the API.
         
-        @param $satellite_names: And array containing the name of all satellites to load.
+        @param $satellite_names: An array containing the names of all satellites to load.
         @param $timestamp: A UNIX timestamp to filter results.
         */
         
@@ -58,7 +99,7 @@ class Tle extends AppModel {
                 $satellite_name = $satellite['Tle']['name'];
                 
                 // Set the satellite's status
-                $result['satellites'][$satellite_name]['status']['updated'] = strtotime($satellite['Tle']['created_on']);
+                $result['satellites'][$satellite_name]['status']['updated'] = $satellite['Tle']['created_on'];
                 
                 // Set the satellite's TLE info
                 $result['satellites'][$satellite_name]['tle'] = $satellite['Tle'];

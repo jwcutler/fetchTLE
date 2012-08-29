@@ -81,14 +81,14 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 }
 </style>
 
-<h1 class="docs"><?php echo Configure::read('Website.name'); ?> API Documentation</h1>
+<h1 class="titles"><?php echo Configure::read('Website.name'); ?> API Documentation</h1>
 <p><span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> is a publically accessible API that allows users or programs to retrieve TLE's for specified sources and satellites in a variety of formats. <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> was developed by <a href="http://exploration.engin.umich.edu/blog/" target="_blank" class="link">The Michigan Exploration Laboratory</a> for use as an internal TLE management system.</p>
 
 <!-- Using the API -->
-<h2 class="docs"><a name="using_api"><a href="#using_api" class="doc_link">1.0 Using the API</a></a></h2>
+<h2 class="titles"><a name="using_api"><a href="#using_api" class="doc_link">1.0 Using the API</a></a></h2>
 <p>The <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> API uses a standard <a href="http://en.wikipedia.org/wiki/Representational_state_transfer" target="_blank" class="link">HTTP RESTful API scheme</a>. <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> works by aggregating several TLE sources (such as <a href="http://celestrak.com/" target="_blank" class="link">CelesTrak's</a> TLE collections) into a timestamped index of satellite TLE's accessible by an API. This API allows you to retrieve the TLE information for any collection of TLE sources or available satellites. In addition, this API allows you calculate the position of a satellite at given intervals within an arbitrary range of time. Currently, no authentication is required to use the <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> API and there are no usage limits, however this is subject to change. If you are unfamiliar with using REST APIs, <a href="http://rest.elkstein.org/" target="_blank" class="link">this</a> is a good resource.</p>
 
-<h3 class="docs"><a name="making_request"><a href="#making_request" class="doc_link">1.1 Making An API Request</a></a></h3>
+<h3 class="titles"><a name="making_request"><a href="#making_request" class="doc_link">1.1 Making An API Request</a></a></h3>
 <p>The API is a simple collection of URL's that respond to GET requests. Such resources are commonly accessed using utilities such as <a href="http://www.gnu.org/software/wget/" target="_blank" class="link">wget</a> or <a href="http://curl.haxx.se/" target="_blank" class="link">cURL</a>. All API endpoints have the same basic format:</p>
 <pre>
 <?php echo Router::url('/', true); ?>api/[resource type]/[collection of resources].[format]
@@ -97,13 +97,13 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 <p>The resources specified in the list of resources passed to the API, indicated above by <span style="font-style: italic;">[collection of resources]</span> <strong>must</strong> be <a href="http://us2.php.net/manual/en/function.rawurlencode.php" target="_blank" class="link">URL encoded</a> before being joined together and submitted. This is required so that <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> can successfully process the request. It is very important to URL encode each item separately before joining them with the underscore ("_") character. In addition, spaces must be encoded as "&20" instead of "+" (use the PHP function rawurlencode instead of urlencode).</p>
 <p>Currently, the results of an API request are cached for 30 minutes for performance reasons.</p>
 
-<h3 class="docs"><a name="making_request"><a href="#making_request" class="doc_link">1.2 Response Formats</a></a></h3>
+<h3 class="titles"><a name="making_request"><a href="#making_request" class="doc_link">1.2 Response Formats</a></a></h3>
 <p>Currently, <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> can respond in four different formats: XML, JSON, JSONP, and raw TEXT format. To request a result in JSON/JSONP or XML just append .json or .xml, respectively, to the API endpoint URL. To request the raw resource dump, simple remove the <span style="font-style: italic;">[format]</span> postfix all together. Note that to generate a JSONP response (which allows for the cross-domain resource loading commonly used in AJAX scripts), you must specify a callback. For example:</p>
 <pre>
 <?php echo Router::url('/', true); ?>api/sources/CUBESAT.json?callback=yourcallback
 </pre>
 
-<h3 class="docs"><a name="parameters"><a href="#parameters" class="doc_link">1.3 Request Parameters</a></a></h3>
+<h3 class="titles"><a name="parameters"><a href="#parameters" class="doc_link">1.3 Request Parameters</a></a></h3>
 <p>There are several parameters that you can append to your API request that allow you to customize the results returned.</p>
 <table class="table table-condensed">
     <thead>
@@ -167,7 +167,7 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 </table>
 <p>The resources that each of these parameters can be used on is indicated in the "Works With" column.</p>
 
-<h3 class="docs"><a name="resource_sources"><a href="#resource_sources" class="doc_link">1.4 Sources Resources: /api/sources/[sources].[format]</a></a></h3>
+<h3 class="titles"><a name="resource_sources"><a href="#resource_sources" class="doc_link">1.4 Sources Resources: /api/sources/[sources].[format]</a></a></h3>
 <p>The <span style="font-style: italic;">sources</span> resource allows you to retrieve the TLE's for the specified sources. Any number of sources can be requested by joining their identifiers together with underscores. For example, to retrieve the most recent TLEs in JSON for both the GPS and CUBESAT sources this request would be used:</p>
 <pre>
 <?php echo Router::url('/', true); ?>api/sources/CUBESAT_GPS.json
@@ -180,7 +180,7 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
     <li><a href="#sources_raw">Raw TLEs</a></li>
 </ul>
 <div class="tab-content">
-	<div class="tab-pane active" id="sources_json">
+    <div class="tab-pane active" id="sources_json">
 <pre class="prettyprint pre-scrollable">
 {
   "sources":{
@@ -265,8 +265,8 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
   }
 }
 </pre>
-	</div>
-	<div class="tab-pane" id="sources_xml">
+    </div>
+    <div class="tab-pane" id="sources_xml">
 <pre class="prettyprint pre-scrollable">
 &lt;?xml version="1.0"?&gt;
 &lt;api_sources&gt;
@@ -352,8 +352,8 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
   &lt;/sources&gt;
 &lt;/api_sources&gt;
 </pre>
-	</div>
-	<div class="tab-pane" id="sources_raw">
+    </div>
+    <div class="tab-pane" id="sources_raw">
 <pre class="pre-scrollable">
 GPS BIIA-10 (PRN 32)
 1 20959U 90103A   12208.35547222  .00000064  00000-0  10000-3 0  6510
@@ -370,11 +370,11 @@ CUTE-1 (CO-55)
 2 27844  98.7023 216.8548 0010504 104.6696 255.5651 14.21046409470553
 ...
 </pre>
-	</div>
+    </div>
 </div>
 <p>If any of the sources can't be located, they will simply be omitted from the response. However, if none of the sources are valid an error will be generated.</p>
 
-<h3 class="docs"><a name="resource_satellites"><a href="#resource_satellites" class="doc_link">1.5 Satellites Resources: /api/satellites/[satellites].[format]</a></a></h3>
+<h3 class="titles"><a name="resource_satellites"><a href="#resource_satellites" class="doc_link">1.5 Satellites Resources: /api/satellites/[satellites].[format]</a></a></h3>
 <p>The <span style="font-style: italic;">satellites</span> resource allows you to retrieve the TLE's for the specified satellites. Any number of satellites can be requested by joining their identifiers together with underscores. For example, to retrieve the most recent TLEs in JSON for the "RAX-2" and "CUTE-1.7+APD II (CO-65)" satellites this request would be used:</p>
 <pre>
 <?php echo Router::url('/', true); ?>api/satellites/RAX-2_CUTE-1.7%2BAPD%20II%20(CO-65).json
@@ -387,7 +387,7 @@ CUTE-1 (CO-55)
     <li><a href="#satellites_raw">Raw TLEs</a></li>
 </ul>
 <div class="tab-content">
-	<div class="tab-pane active" id="satellites_json">
+    <div class="tab-pane active" id="satellites_json">
 <pre class="prettyprint pre-scrollable">
 {
   "satellites":{
@@ -460,8 +460,8 @@ CUTE-1 (CO-55)
   }
 }
 </pre>
-	</div>
-	<div class="tab-pane" id="satellites_xml">
+    </div>
+    <div class="tab-pane" id="satellites_xml">
 <pre class="prettyprint pre-scrollable">
 &lt;?xml version="1.0"?&gt;
 &lt;api_satellites&gt;
@@ -535,8 +535,8 @@ CUTE-1 (CO-55)
   &lt;/satellites&gt;
 &lt;/api_satellites&gt;
 </pre>
-	</div>
-	<div class="tab-pane" id="satellites_raw">
+    </div>
+    <div class="tab-pane" id="satellites_raw">
 <pre class="pre-scrollable">
 CUTE-1.7+APD II (CO-65)
 1 32785U 08021C   12210.06412002  .00000537  00000-0  72400-4 0  3713
@@ -549,7 +549,7 @@ RAX-2
 </div>
 <p>If any of the satellites can't be located, they will simply be omitted from the response. However, if none of the satellites are valid an error will be generated.</p>
 
-<h3 class="docs"><a name="resource_positions"><a href="#resource_positions" class="doc_link">1.6 Satellite Position Resources: /api/positions/[satellites].[format]</a></a></h3>
+<h3 class="titles"><a name="resource_positions"><a href="#resource_positions" class="doc_link">1.6 Satellite Position Resources: /api/positions/[satellites].[format]</a></a></h3>
 <p>The <span style="font-style: italic;">positions</span> resource allows you to retrieve the estimated positions of satellites during a specified range. Satellite positions are calculated using the SGP4 propagation model. The positions of any number of satellites can be requested by joining their identifiers together with underscores. For example, to retrieve the estimated positions for the "RAX-2" and "CUTE-1.7+APD II (CO-65)" satellites during the next 24 hours in JSON, this request would be used:</p>
 <pre>
 <?php echo Router::url('/', true); ?>api/positions/RAX-2_CUTE-1.7%2BAPD%20II%20(CO-65).json
@@ -562,7 +562,7 @@ RAX-2
     <li><a href="#positions_raw">Raw Satellite Positions</a></li>
 </ul>
 <div class="tab-content">
-	<div class="tab-pane active" id="positions_json">
+    <div class="tab-pane active" id="positions_json">
 <pre class="prettyprint pre-scrollable">
 {
   "satellites":{
@@ -633,8 +633,8 @@ RAX-2
   }
 }
 </pre>
-	</div>
-	<div class="tab-pane" id="positions_xml">
+    </div>
+    <div class="tab-pane" id="positions_xml">
 <pre class="prettyprint pre-scrollable">
 &lt;?xml version="1.0"?&gt;
 &lt;api_positions&gt;
@@ -717,7 +717,7 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
 </div>
 <p>If any of the satellites can't be located, they will simply be omitted from the response. However, if one or more of the valid satellites generates an error (e.g. calculation error), the whole request will return an error response.</p>
 
-<h3 class="docs"><a name="errors"><a href="#errors" class="doc_link">1.7 API Errors</a></a></h3>
+<h3 class="titles"><a name="errors"><a href="#errors" class="doc_link">1.7 API Errors</a></a></h3>
 <p>The top level status element for the sources, satellites, and positions resources will always be returned, even in the event of an error (although this will not occur with the occasional server error). For example, the result of requesting a single non-existent satellite would be:</p>
 <ul class="nav nav-tabs" id="error_examples">
     <li class="active"><a href="#error_json">JSON</a></li>
@@ -758,7 +758,7 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
 </div>
 
 <!-- Available Satellites & Sources -->
-<h2 class="docs"><a name="available_satellites"><a href="#available_satellites" class="doc_link">2.0 Available Sources and Satellites</a></a></h2>
+<h2 class="titles"><a name="available_satellites"><a href="#available_satellites" class="doc_link">2.0 Available Sources and Satellites</a></a></h2>
 <p>Below, lists of the available sources and their satellites along with their URL encoding are displayed for your convenience.</p>
 <?php if (!empty($sources)): ?>
     <table class="table">
@@ -813,5 +813,5 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
     </tbody>
     </table>
 <?php else: ?>
-	<span style="font-style: italic;">No sources are currently available for use.</span>
+    <span style="font-style: italic;">No sources are currently available for use.</span>
 <?php endif; ?>

@@ -79,19 +79,19 @@ a.doc_link:visited {color: black; text-decoration: none;}
 a.doc_link:hover {color: #224479; text-decoration: none;}
 a.doc_link:active {color: black; text-decoration: none;}
 
-h1.docs {
+h1.titles {
 	color: #224479;
     margin-bottom: 10px;
 }
 
-h2.docs {
+h2.titles {
     margin: 10px 0px 10px 0px;
 	border: 1px solid #cccccc;
 	border-width: 0px 0px 1px 0px;
 	padding-bottom: 5px;
 }
 
-h3.docs{
+h3.titles {
 	margin: 10px 0px 5px 0px;
 }
 
@@ -195,5 +195,12 @@ h3.docs{
     margin: 5px;
     border-radius: 2px;
     -moz-border-radius: 2px;
+}
+
+.large_error {
+    font-size: 18px;
+    margin: 0px auto 0px auto;
+    width: 80%;
+    text-align: center;
 }
 
