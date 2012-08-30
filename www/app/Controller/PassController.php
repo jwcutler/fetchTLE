@@ -10,7 +10,7 @@ class PassController extends AppController {
     function beforeFilter(){
         parent::beforeFilter();
         
-        $this->Auth->allow('tools_index', 'tools_calculator'); 
+        $this->Auth->allow('tools_index', 'tools_calculator', 'api_passes'); 
     }
     
     public function tools_index(){
@@ -83,6 +83,42 @@ class PassController extends AppController {
         }
     }
     
+    public function api_passes(){
+        /*
+        Provides access to the pass time calculator API.
+        */
+        
+        // Setup
+        $pass_times = null;
+        
+        // Collect the parameters
+        $minelevation = (isset($_GET['minelevation']))?$_GET['minelevation']:false;
+        $passcount = (isset($_GET['passcount']))?$_GET['passcount']:false;
+        $ground_stations = (isset($_GET['ground_stations']))?$_GET['ground_stations']:false;
+        
+        // Submit the request
+        if (isset($this->request->params['satellite'])){
+            // Parse the ground station names
+            $satellite_name = $this->request->params['satellite'];
+            $ground_station_names = ($ground_stations)?explode('_', $ground_stations):false;
+            $pass_times = $this->Station->api_loadpasses($satellite_name, $ground_station_names, $minelevation, $passcount);
+            
+            if (isset($this->request->params['ext']) && $this->request->params['ext']=='xml'){
+                // Convert the array to an XML string
+                $this->set('passes', $this->Station->arrayToXMLPasses($pass_times));
+            } else if (isset($this->request->params['ext']) && $this->request->params['ext']=='json'){
+                // $sources is encoded to JSON in the view using json_encode
+                $this->set('passes', $pass_times);
+				$callback = (isset($_GET['callback'])&&!empty($_GET['callback']))?$_GET['callback']:false;
+				$this->set('callback', $callback);
+            } else {
+                // Convert the response to RAW tle output and display
+                $this->layout = 'ajax';
+                $this->set('passes', $this->Station->arrayToRawPasses($pass_times));
+            }
+        }
+    }
+    
     public function admin_index(){
         /*
         Allows administrators to configure the pass time tool.
@@ -93,7 +129,7 @@ class PassController extends AppController {
         // Load and set the configuration options
         $configurations = $this->Configuration->find('all', array(
             'conditions' => array(
-                'Configuration.name' => array('passes_default_min_el', 'passes_available_ground_stations', 'passes_default_pass_count', 'passes_max_pass_count')
+                'Configuration.name' => array('passes_default_min_el', 'passes_available_ground_stations', 'passes_default_ground_stations', 'passes_default_pass_count', 'passes_max_pass_count')
             )
         ));
         foreach($configurations as $configuration){
@@ -121,11 +157,21 @@ class PassController extends AppController {
                 array_push($new_configuration, $temp_field);
             }
             
-            // Package the default ground stations
+            // Package the available ground stations
             if (isset($_POST['available_ground_stations'])){
                 $ground_station_string = implode(',', $_POST['available_ground_stations']);
                 $temp_field = array(
                     'id' => $_POST['available_ground_stations_id'],
+                    'value' => $ground_station_string
+                );
+                array_push($new_configuration, $temp_field);
+            }
+            
+            // Package the default ground stations
+            if (isset($_POST['default_ground_stations'])){
+                $ground_station_string = implode(',', $_POST['default_ground_stations']);
+                $temp_field = array(
+                    'id' => $_POST['default_ground_stations_id'],
                     'value' => $ground_station_string
                 );
                 array_push($new_configuration, $temp_field);

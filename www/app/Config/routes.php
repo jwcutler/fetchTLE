@@ -56,6 +56,7 @@ Router::connect('/api/sources/:sources', array('[method]' => 'GET', 'controller'
 Router::connect('/api/sources', array('[method]' => 'GET', 'controller' => 'source', 'action' => 'sources', 'api' => true));
 Router::connect('/api/satellites/:satellites', array('[method]' => 'GET', 'controller' => 'satellite', 'action' => 'satellites', 'api' => true));
 Router::connect('/api/positions/:satellites', array('[method]' => 'GET', 'controller' => 'position', 'action' => 'positions', 'api' => true));
+Router::connect('/api/passes/:satellite', array('[method]' => 'GET', 'controller' => 'pass', 'action' => 'passes', 'api' => true));
 Router::parseExtensions();
 
 /**

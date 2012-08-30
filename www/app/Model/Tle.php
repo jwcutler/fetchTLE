@@ -5,7 +5,7 @@ TLE Model
 This model handles all TLE management and interaction options.
 */
 
-// Load required classes
+// Load required classess
 App::uses('Sanitize', 'Utility');
 
 class Tle extends AppModel {
@@ -71,7 +71,7 @@ class Tle extends AppModel {
         $query_satellite_names = Array();
         foreach($satellite_names as $satellite_name){
 			//var_dump(urldecode($satellite_name));
-            array_push($query_satellite_names, 'Tle.name=\''.$satellite_name.'\'');
+            array_push($query_satellite_names, 'Tle.name=\''.Sanitize::clean($satellite_name).'\'');
         }
         $query_satellite_names = implode(' OR ',$query_satellite_names);
 		
@@ -173,7 +173,7 @@ class Tle extends AppModel {
             $query_satellite_names = Array();
             foreach($satellite_names as $satellite_name){
                 //var_dump(urldecode($satellite_name));
-                array_push($query_satellite_names, 'Tle.name=\''.$satellite_name.'\'');
+                array_push($query_satellite_names, 'Tle.name=\''.Sanitize::clean($satellite_name).'\'');
             }
             $query_satellite_names = implode(' OR ',$query_satellite_names);
             

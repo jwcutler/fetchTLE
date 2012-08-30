@@ -83,3 +83,4 @@ INSERT INTO `configurations` (`name`, `value`) VALUES ('passes_default_min_el', 
 INSERT INTO `configurations` (`name`, `value`) VALUES ('passes_available_ground_stations', '');
 INSERT INTO `configurations` (`name`, `value`) VALUES ('passes_default_pass_count', '10');
 INSERT INTO `configurations` (`name`, `value`) VALUES ('passes_max_pass_count', '20');
+INSERT INTO `configurations` (`name`, `value`) VALUES ('passes_default_ground_stations', '');
