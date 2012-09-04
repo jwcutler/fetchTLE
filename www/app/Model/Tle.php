@@ -197,7 +197,7 @@ class Tle extends AppModel {
                     
                     // Perform the calculation
                     $position_results = Array();
-                    exec(APP.'Vendor/satpos "'.$satellite_name.'" "'.$satellite['Tle']['raw_l1'].'" "'.$satellite['Tle']['raw_l2'].'" '.escapeshellarg($start).' '.escapeshellarg($end).' '.escapeshellarg($resolution), $position_results);
+                    exec(APP.'Vendor/Satellite_Position/satpos "'.$satellite_name.'" "'.$satellite['Tle']['raw_l1'].'" "'.$satellite['Tle']['raw_l2'].'" '.escapeshellarg($start).' '.escapeshellarg($end).' '.escapeshellarg($resolution), $position_results);
                     
                     // Check for calculation errors
                     if (strpos($position_results[0], '[ERROR]')!==FALSE){

@@ -1,0 +1,8 @@
+This is a heavily modified version of SatTrack modified to work with
+fetchTLE.
+
+It is modified as such:
+- Only builds 'sattrack'
+- Takes TLE Name, Line 1, and Line 2 as arguments instead of a file
+- Takes ground station name and position instead of reading from it from a file
+- 
