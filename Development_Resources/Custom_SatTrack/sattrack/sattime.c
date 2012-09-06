@@ -454,7 +454,7 @@ FILE   *outFile;
 
     getDate(dayNum,&year,&month,&day,&yearDay);
 
-    fprintf(outFile,"%d-%d-%d$",day,month,year%100);
+    fprintf(outFile,"%d-%d-%d$",month,day,year);
 
     lastDayNum = dayNum;
     return;

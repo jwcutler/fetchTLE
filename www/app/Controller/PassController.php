@@ -96,13 +96,14 @@ class PassController extends AppController {
         $passcount = (isset($_GET['passcount']))?$_GET['passcount']:false;
         $ground_stations = (isset($_GET['ground_stations']))?$_GET['ground_stations']:false;
         $timestamp = (isset($_GET['timestamp']))?$_GET['timestamp']:false;
+        $show_all_passes = (isset($_GET['show_all_passes'])&&$_GET['show_all_passes']=='false')?false:true;
         
         // Submit the request
         if (isset($this->request->params['satellite'])){
             // Parse the ground station names
             $satellite_name = $this->request->params['satellite'];
             $ground_station_names = ($ground_stations)?explode('_', $ground_stations):false;
-            $pass_times = $this->Station->api_loadpasses($satellite_name, $ground_station_names, $minelevation, $passcount, $timestamp);
+            $pass_times = $this->Station->api_loadpasses($satellite_name, $ground_station_names, $minelevation, $passcount, $timestamp, $show_all_passes);
             
             if (isset($this->request->params['ext']) && $this->request->params['ext']=='xml'){
                 // Convert the array to an XML string
