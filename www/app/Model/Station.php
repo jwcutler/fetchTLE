@@ -19,7 +19,7 @@ class Station extends AppModel {
         )
     );
     
-    public function api_loadpasses($satellite_name, $ground_stations = false, $min_elevation = false, $pass_count = false){
+    public function api_loadpasses($satellite_name, $ground_stations = false, $min_elevation = false, $pass_count = false, $start_date = false){
         /*
         This API calculates the first $passcount passes over $ground_stations using the most recent TLE for $satellite_name.
         
@@ -27,6 +27,7 @@ class Station extends AppModel {
         @param $ground_stations: An array containing the names of the ground stations to consider when calculating passes.
         @param $min_elevation: The minimum elevation to accept when calculating passes.
         @param $pass_count: The number of valid (i.e. meets parameters) passes to calculate.
+        @param $start_date: A unix timestamp of when to start calculating passes. 
         
         Returns:
             An array containing all of the passes (invalid or valid) for the specified satellite over the specified ground stations.
@@ -54,6 +55,9 @@ class Station extends AppModel {
         if (!$pass_count){
             $pass_count = $passes_default_pass_count;
         }
+        if (!$start_date){
+            $start_date = time();
+        }
         
         // Verify the extra parameters
         $error_message = null;
@@ -69,6 +73,9 @@ class Station extends AppModel {
         } else if ($pass_count > $passes_max_pass_count){
             // Pass count above limit
             $error_message = 'Pass count above limit. Maximum pass count: '.$passes_max_pass_count;
+        } else if (!is_numeric($start_date)) {
+            // Invalid timestamp
+            $error_message = 'Your starting timestamp is invalid.';
         }
         
         // Attempt to load the specified ground stations
@@ -121,14 +128,47 @@ class Station extends AppModel {
         
         // Check if any errors have occured
         if (!$error_message){
-            // No errors, perform science
+            // Iterate through ground stations
+            $satellite_passes = array();
+            foreach ($stations as $station){
+                // Invoke the propagator and load the results
+                $gs_satellite_passes = array();
+                exec(APP.'Vendor/SatTrack/sattrack -b UTC "'.$station['Station']['name'].'" '.$station['Station']['latitude'].' '.$station['Station']['longitude'].' "'.$satellite[0]['Tle']['name'].'" "'.$satellite[0]['Tle']['raw_l1'].'" "'.$satellite[0]['Tle']['raw_l2'].'" shortpr '.date("dMy", $start_date).' 0:0:0 auto 30 0 nohardcopy', $gs_satellite_passes);
+                
+                if (strpos($gs_satellite_passes[0], 'SUCCESS')===FALSE){
+                    // Some sort of error occured, set the error response
+                    $result['status']['status'] = 'error';
+                    $result['status']['message'] = 'There was an error calculating the pass times for \''.$satellite[0]['Tle']['name'].'\'.';
+                    $result['status']['timestamp'] = time();
+                    $result['status']['total_passes_loaded'] = 0;
+                    $result['status']['valid_passes_loaded'] = 0;
+                } else {
+                    // Everything okay, first remove the "SUCCESS" message
+                    array_shift($gs_satellite_passes);
+                    
+                    // Build the array item for each pass
+                    foreach ($gs_satellite_passes as $gs_satellite_pass){
+                        // Parse the line
+                        list($pass_date, $pass_aos, $pass_mel, $pass_los, $pass_duration, $pass_aos_az, $pass_mel_az, $pass_los_az, $pass_peak_elev, $pass_vis, $pass_orbit) = explode('$', $gs_satellite_pass);
+                        
+                        // Convert the date into a timestamp
+                        $pass_date_timestamp = strtotime($pass_date.' '.$pass_aos);
+                        
+                        echo $pass_date.'-'.$pass_date_timestamp."<br />";
+                    }
+                }
+            }
             
+            // Sort the passes by timestamp
+            
+            // Check if $pass_count was too big
         } else {
             // Some sort of error occured when setting up the API
             $result['status']['status'] = 'error';
             $result['status']['message'] = $error_message;
             $result['status']['timestamp'] = time();
-            $result['status']['satellites_included'] = 0;
+            $result['status']['total_passes_loaded'] = 0;
+            $result['status']['valid_passes_loaded'] = 0;
         }
         
         return $result;

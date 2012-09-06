@@ -202,49 +202,32 @@ void readCities()
     if (verboseFlag)
         printf("\nreading city data base ...\n");
 
-    sprintf(cityDat,"%s/%s/%s",strpHome,DATA,CITIES);
-
-    if ((cityFile = fopen(cityDat,"r")) == NULL)
-    {
-        printf("cannot open input file '%s'\n",cityDat);
-        exit(-1);
-    }
-
     numCities = 0;
+    
+    // Manually add the city specified in the program arguments
+    city[numCities].lat = atof(batchSiteLat);
+    city[numCities].lng = atof(batchSiteLong);
+    city[numCities].alt = 0;
+    if ((int) strlen(batchSiteName) > MAXCITYLEN){
+        // Make sure the name is not too long
+        i = MAXCITYLEN;
 
-    while (fgets(str,80,cityFile) && numCities < MAXCITIES)
-    {
-        sscanf(str,"`%[^`]`,%lf,%lf,%lf",cityName,&lat,&lng,&alt);
-
-        city[numCities].lat = lat;
-        city[numCities].lng = lng;
-        city[numCities].alt = alt;
-
-        if ((int) strlen(cityName) > MAXCITYLEN)
+        do
         {
-            i = MAXCITYLEN;
-
-            do
-            {
-                i--;
-            }
-            while (cityName[i] != ' ');
-
-            if (cityName[i-1] == ',')
-                i--;
-
-            cityName[i] = '\0';
+            i--;
         }
+        while (batchSiteName[i] != ' ');
 
-        strcpy(city[numCities].cty,cityName);
+        if (batchSiteName[i-1] == ',')
+            i--;
 
-        city[numCities].lat *= CDR;
-        city[numCities].lng *= CDR;
-
-        numCities++;
+        batchSiteName[i] = '\0';
     }
-
-    fclose(cityFile);
+    strcpy(city[numCities].cty, batchSiteName);
+    city[numCities].lat *= CDR;
+    city[numCities].lng *= CDR;
+    
+    numCities++;
 
     if (verboseFlag)
         printf("data base contains %d locations\n",numCities);

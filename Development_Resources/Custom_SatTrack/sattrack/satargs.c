@@ -156,8 +156,9 @@ char *argV[];
         quickStartFlag   = FALSE;
         timeZoneFlag     = FALSE;
         verboseFlag      = FALSE;
-
-        if (argC != 14)
+        
+        // Verify the the number of arguments for batch mode
+        if (argC != 16)
         {
             nl();
             printf("%s %s Batch Mode",sattrName,sattrVersion);
@@ -176,22 +177,30 @@ char *argV[];
             normal();
             bl();
             underline();
-            printf("ground-station");
+            printf("station-name");
             normal();
             bl();
             underline();
-            printf("satellite");
+            printf("station-lat");
             normal();
             bl();
             underline();
-            printf("tle-file");
+            printf("station-lon");
             normal();
             bl();
             underline();
-            printf("tle-type");
+            printf("sat-name");
             normal();
             nl();
             printf("          ");
+            underline();
+            printf("sat-tle-l1");
+            normal();
+            bl();
+            underline();
+            printf("sat-tle-l2");
+            normal();
+            bl();
             underline();
             printf("prediction-type");
             normal();
@@ -203,7 +212,8 @@ char *argV[];
             underline();
             printf("start-time");
             normal();
-            bl();
+            nl();
+            printf("          ");
             underline();
             printf("time-step [s]");
             normal();
@@ -211,27 +221,14 @@ char *argV[];
             underline();
             printf("duration [d]");
             normal();
-            nl();
-            printf("          ");
+            bl();
             underline();
             printf("min-elev [deg]");
             normal();
             bl();
             printf("[no]hardcopy");
             nl(); nl();
-
-            printf("Examples: ");
-            printf("sattrack -b UTC Berkeley ");
-            printf("16609 tlex.dat nasa shortpr\n");
-            printf("          ");
-            printf("now now auto 6 0 hardcopy\n");
-            nl();
-            printf("          ");
-            printf("sattrack -b EST Melbourne,_FL,_USA ");
-            printf("sts-55 sts.dat norad longpr\n");
-            printf("          ");
-            printf("24Apr93 12:0:0 20 1.5 0 nohardcopy\n");
-            nl();
+            
             exit(-1);
         }
 
@@ -239,16 +236,19 @@ char *argV[];
         {
             strcpy(batchTimeZone,argV[2]);
             strcpy(batchSiteName,argV[3]);
-            strcpy(batchSatName,argV[4]);
-            strcpy(batchTleFile,argV[5]);
-            strcpy(batchTleType,argV[6]);
-            strcpy(batchPredType,argV[7]);
-            strcpy(batchStartDate,argV[8]);
-            strcpy(batchStartTime,argV[9]);
-            strcpy(batchStepTime,argV[10]);
-            strcpy(batchDuration,argV[11]);
-            strcpy(batchMinElev,argV[12]);
-            strcpy(batchHardcopy,argV[13]);
+            strcpy(batchSiteLat,argV[4]);
+            strcpy(batchSiteLong,argV[5]);
+            strcpy(batchSatName,argV[6]);
+            strcpy(batchTleL1,argV[7]);
+            strcpy(batchTleL2,argV[8]);
+            strcpy(batchPredType,argV[9]);
+            strcpy(batchStartDate,argV[10]);
+            strcpy(batchStartTime,argV[11]);
+            strcpy(batchStepTime,argV[12]);
+            strcpy(batchDuration,argV[13]);
+            strcpy(batchMinElev,argV[14]);
+            strcpy(batchHardcopy,argV[15]);
+            //printf("%s-%s\n", batchMinElev, batchDuration);
 
             replaceBlanks(batchSiteName);
             replaceBlanks(batchSatName);

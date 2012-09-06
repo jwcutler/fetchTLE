@@ -140,57 +140,27 @@ char *homeDir, *elementFile;
 {
     int  k, duplFlag;
     char str[80], line0[80], line1[80], line2[80], inputFile[120];
-    FILE *fpi;
-
-    lowerCase(elementFile);
-    sprintf(inputFile,"%s/%s/%s",homeDir,TLE,elementFile);
-
-    if ((fpi = fopen(inputFile, "r")) == NULL)
-        return(1);
 
     if (verboseFlag)
-        printf("\nreading TLE data from %s ...\n",elementFile);
+        printf("\nreading TLE data from program arguments.\n");
+    
+    // Copy in the satellite TLE information
+    strcpy(line0, batchSatName);
+    truncBlanks(line0);
+    cleanSatName(line0);
+    strcpy(line1, batchTleL1);
+    truncBlanks(line1);
+    strcpy(line2, batchTleL2);
+    truncBlanks(line2);
+    satNum = (long)(getElement(line1,3,7)+ONEPPM);
+    duplFlag = FALSE;
+    strcpy(tle[nTle].tleLine0,line0);
+    strcpy(tle[nTle].tleLine1,line1);
+    strcpy(tle[nTle].tleLine2,line2);
+    tle[nTle].tleSatNum = satNum;
+    nTle++;
 
-    while (fgets(str,80,fpi) && nTle < MAXSATS)
-    {
-        sprintf(line0,"%s",str);
-        line0[(int) strlen(line0) - 1] = '\0';
-        truncBlanks(line0);
-        cleanSatName(line0);
-
-        fgets(str,80,fpi);
-        sprintf(line1,"%s",str);
-        line1[(int) strlen(line1) - 1] = '\0';
-        truncBlanks(line1);
-
-        fgets(str,80,fpi);
-        sprintf(line2,"%s",str);
-        line2[(int) strlen(line2) - 1] = '\0';
-        truncBlanks(line2);
-
-        satNum   = (long) (getElement(line1,3,7) + ONEPPM);
-        duplFlag = FALSE;
-
-        for (k = 0; k < nTle; k++)             /* check for duplicate entries */
-        {                                      /* using the object number     */
-            if (satNum == tle[k].tleSatNum)
-                duplFlag = TRUE;
-        }
-
-        if (!duplFlag)                         /* add TLE set to structure    */
-        {
-            strcpy(tle[nTle].tleLine0,line0);
-            strcpy(tle[nTle].tleLine1,line1);
-            strcpy(tle[nTle].tleLine2,line2);
-       
-            tle[nTle].tleSatNum = satNum;
-            nTle++;
-        }
-    }
-
-    fclose(fpi);
     numTle = nTle;
-
     if (verboseFlag)
         printf("data base contains %d element sets\n",numTle);
 
@@ -276,7 +246,7 @@ char   *satNameTle;
 
     error = FALSE;
     m     = 0;
-
+    
     for (i = 0; i < numTle; i++)               /* check for ambiguous entries */
     {
         if (m == 1)
@@ -333,9 +303,9 @@ char   *satNameTle;
         nl();
     }
 
-    for (j = 2; j <= 3; j++)             /* perform CRC test on lines 1 and 2 */
+    for (j = 2; j <= 3; j++)        
     {
-        if (j == 2) sprintf(str,"%s",line1);                /* j = error code */
+        if (j == 2) sprintf(str,"%s",line1);        
         if (j == 3) sprintf(str,"%s",line2);
 
         checkSum = 0;
@@ -347,7 +317,7 @@ char   *satNameTle;
             checkValue = atoi(strng);
 
             if (!strcmp(strng,"-"))
-                checkValue = 1;              /* assign check sum value to '-' */
+                checkValue = 1;              
 
             checkSum += checkValue;
         }

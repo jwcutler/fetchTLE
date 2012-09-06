@@ -13,8 +13,8 @@ sattrack: $(SATTRACK_OBJECTS) $(INCDIR)/sattrack.h $(INCDIR)/satglobals.h $(INCD
 
 # Utilities
 clean:
-	cd $(BUILDDIR)
-	rm -f *.o
+	rm -f $(BUILDDIR)/*.o
+	rm $(BUILDDIR)/sattrack
 
 # Compile Object Files
 $(BUILDDIR)/satargs.o: $(SATDIR)/satargs.c $(INCDIR)/sattrack.h $(INCDIR)/satglobalsx.h

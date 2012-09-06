@@ -454,16 +454,7 @@ FILE   *outFile;
 
     getDate(dayNum,&year,&month,&day,&yearDay);
 
-    if (shortPredFlag && lastDayNum != dayNum)
-        fprintf(outFile,"\n");
-
-    if (shortPredFlag && !firstLine && lastDayNum == dayNum)
-        fprintf(outFile,"            ");
-    else
-    {
-        fprintf(outFile,"%s ",dayName(dayNum%7));
-        fprintf(outFile," %02d%3s%02d",day,monthName(month),year%100);
-    }
+    fprintf(outFile,"%d-%d-%d$",day,month,year%100);
 
     lastDayNum = dayNum;
     return;

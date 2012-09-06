@@ -155,21 +155,6 @@ void getDefaultData()
 
 {
     char defLine[120];
-    FILE *defFile;
-
-    if (defaultsFileFlag)
-        sprintf(defaultsDat,"%s/%s/defaults%d.dat",
-                strpHome,DATA,defaultsFileNum);
-    else
-        sprintf(defaultsDat,"%s/%s/%s",strpHome,DATA,DEFAULTS);
-
-    if ((defFile = fopen(defaultsDat,"r")) == NULL)
-    {
-        doBeep(); nl(); reverseBlink();
-        printf(" Cannot open input file '%s' \n",defaultsDat);
-        normal(); nl();
-        exit(-1);
-    }
 
     sprintf(defSite,"%s",DEFSITE);
     sprintf(callSign,"%s",DEFCALLSIGN);
@@ -194,55 +179,10 @@ void getDefaultData()
     ambTemperature  = DEFAMBTEMP;
     relHumidity     = DEFRELHUMID;
 
-    while (fgets(defLine,100,defFile))
-    {
-        defLine[strlen(defLine) - 1] = '\0';
-        truncBlanks(defLine);
-
-        if (!strncmp(defLine,"Site:",5))
-        {
-            clipString(defLine,5);
-            sprintf(defSite,"%s",defLine);
-        }
-
-        if (!strncmp(defLine,"Call sign:",10))
-        {
-            clipString(defLine,10);
-            sprintf(callSign,"%s",defLine);
-        }
-
-        if (!strncmp(defLine,"Satellite:",10))
-        {
-            clipString(defLine,10);
-            sprintf(defSat,"%s",defLine);
-        }
-
-        sscanf(defLine,"Satellite group: %s",defSatGroup);
-        sscanf(defLine,"Element set TLE: %s",defSetTLE);
-        sscanf(defLine,"Element set STS: %s",defSetSTS);
-        sscanf(defLine,"Element set type: %s",defSetType);
-        sscanf(defLine,"Live display type: %s",defDispType);
-        sscanf(defLine,"Time zone: %s",defTimeZoneStr);
-        sscanf(defLine,"Duration: %lf",&defDuration);
-        sscanf(defLine,"Min elevation: %lf",&defMinElevation);
-        sscanf(defLine,"Tracking: %d",&trackingFlag);
-        sscanf(defLine,"Antenna: %s",antennaIO);
-        sscanf(defLine,"Radio A: %s",radioIOA);
-        sscanf(defLine,"Radio B: %s",radioIOB);
-        sscanf(defLine,"Display lines: %d",&numLines);
-        sscanf(defLine,"X display lines: %d",&numLinesX);
-        sscanf(defLine,"X terminal type: %s",termTypeX);
-        sscanf(defLine,"Pressure: %lf",&atmPressure);
-        sscanf(defLine,"Temperature: %lf",&ambTemperature);
-        sscanf(defLine,"Humidity: %lf",&relHumidity);
-    }
-
     upperCase(defDispType);
 
     strcpy(timeZoneStr,defTimeZoneStr);
     getTimeZone();
-
-    fclose(defFile);
 
     if (verboseFlag)
     {
@@ -369,7 +309,7 @@ void getSatParams()
         sprintf(defSet,"%s",(satTypeFlag == STS) ? defSetSTS : defSetTLE);
 
         if (batchModeFlag)
-            strcpy(elementFile,batchTleFile);
+            strcpy(elementFile,"doesnt matter yo");
 
         else
         {
@@ -385,22 +325,8 @@ void getSatParams()
 
         if (!strlen(elementFile))
             sprintf(elementFile,"%s",defSet);
-
-        if (strcmp(TLEX,elementFile))
-        {
-            error = readTleFile(strpHome,elementFile,numTle);
-
-            if (error)
-            {
-                doBeep(); nl(); reverseBlink();
-                printf(" File '%s' not found \n",elementFile);
-                normal(); nl();
-
-                if (batchModeFlag || quickStartFlag)
-                    exit(-1);
-            }
-        }
-
+        
+        // Attempt to read in the satellite name
         error = readTle(TRUE,satName,&satNum,&elementSet,
                    &epochDay,&inclination,&epochRaan, &eccentricity,
                    &epochArgPerigee,&epochMeanAnomaly,&epochMeanMotion,
@@ -449,7 +375,7 @@ void getSatParams()
         while (error1)
         {
             if (batchModeFlag)
-                strcpy(elementType,batchTleType);
+                strcpy(elementType,"nasa");
 
             else
             {
@@ -491,7 +417,7 @@ void getSatParams()
     }
 
     else
-        sprintf(elementType,"%s",defSetType);
+        sprintf(elementType,"%s","nasa");
 
     getSatFileName();                                   /* remove blanks etc. */
     changeElementUnits();

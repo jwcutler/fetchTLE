@@ -145,21 +145,22 @@ void killProgram()
 void makeOutputFile()
 
 {
-    if (predictionFlag)
+    if (predictionFlag){
         outFile = stdout;
- 
-    if (writeFlag)
-    {
-        sprintf(fileName,"%s/%s/%s",strpHome,PRED,satFileName);
-
-        if ((outFile = fopen(fileName,"w")) == NULL)
+    } else {
+        if (writeFlag)
         {
-            printf("\ncannot open output file %s\n\n",fileName);
-            exit(-1);
-        }
+            sprintf(fileName,"%s/%s/%s",strpHome,PRED,satFileName);
 
-        if (!batchModeFlag)
-            printf("\ndata are written into '%s'\n\n",fileName);
+            if ((outFile = fopen(fileName,"w")) == NULL)
+            {
+                printf("\ncannot open output file %s\n\n",fileName);
+                exit(-1);
+            }
+
+            if (!batchModeFlag)
+                printf("\ndata are written into '%s'\n\n",fileName);
+        }
     }
 
     return;
@@ -492,7 +493,8 @@ void doLongPrediction()
 void doShortPrediction()
 
 {
-    printPredHeader();
+    //printPredHeader();
+    printf("SUCCESS\n");
 
     if (curTime < realTime)
         predTime = curTime;
@@ -505,13 +507,13 @@ void doShortPrediction()
 
     cUnit = (satTypeFlag == STS) ? CKMNM : 1.0;
 
-    fprintf(outFile,"\n\n");
-    fprintf(outFile," Date (%s)        ",timeZoneStr);
-    if (strlen(timeZoneStr) == 3) fprintf(outFile," ");
-    fprintf(outFile," Time (%s) of       ",timeZoneStr);
-    if (strlen(timeZoneStr) == 3) fprintf(outFile," ");
+    //fprintf(outFile,"\n\n");
+    //fprintf(outFile," Date (%s)        ",timeZoneStr);
+    //if (strlen(timeZoneStr) == 3) fprintf(outFile," ");
+    //fprintf(outFile," Time (%s) of       ",timeZoneStr);
+    //if (strlen(timeZoneStr) == 3) fprintf(outFile," ");
 
-    if (visibPassesFlag)
+    /*if (visibPassesFlag)
     {
         fprintf(outFile,"  Azimuth at   Peak  Height  Vis Orbit");
 
@@ -533,7 +535,7 @@ void doShortPrediction()
         fprintf(outFile,"\n");
         fprintf(outFile,"                 AOS      MEL      LOS     ");
         fprintf(outFile,"of Pass  AOS MEL LOS  Elev\n");
-    }
+    }*/
 
     do
     {
@@ -580,26 +582,23 @@ void doShortPrediction()
             else
             {
                 printDate(outFile,nextRiseTime+timeZone);
-                fprintf(outFile,"  ");
                 printTime(outFile,nextRiseTime+timeZone);
-                fprintf(outFile," ");
+                fprintf(outFile,"$");
                 printTime(outFile,nextMaxTime+timeZone);
-                fprintf(outFile," ");
+                fprintf(outFile,"$");
                 printTime(outFile,nextSetTime+timeZone);
-                fprintf(outFile,"  ");
+                fprintf(outFile,"$");
                 printTime(outFile,nextSetTime-nextRiseTime);
-                fprintf(outFile,"  %3.0f %3.0f %3.0f",
+                fprintf(outFile,"$%.0f$%.0f$%.0f",
                     riseAzimuth*CRD,maxAzimuth*CRD,setAzimuth*CRD);
-                fprintf(outFile,"  %4.1f",maxElevation*CRD);
+                fprintf(outFile,"$%.1f",maxElevation*CRD);
 
-                if (maxElevation > MAXELELIMIT)
-                    fprintf(outFile,"*");
-                else
-                    fprintf(outFile," ");
+                //if (maxElevation > MAXELELIMIT)
+                 //   fprintf(outFile,"*");
 
-                fprintf(outFile," %s%s%s",visibCode[eclipseRise],
+                fprintf(outFile,"$%s%s%s",visibCode[eclipseRise],
                     visibCode[eclipseMax],visibCode[eclipseSet]);
-                fprintf(outFile," %5ld",riseOrbitNum);
+                fprintf(outFile,"$%5ld",riseOrbitNum);
 
                 if (launchFlag && satTypeFlag == STS && writeFlag)
                 {
