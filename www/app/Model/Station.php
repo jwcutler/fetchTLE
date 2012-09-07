@@ -242,7 +242,7 @@ class Station extends AppModel {
         return $result;
     }
     
-    public function arrayToRaw($pass_times){
+    public function arrayToRawPasses($pass_times){
         /*
         Converts the supplied array into a raw satellite pass file. Duplicates all ready handled by the queries in api_loadpasses().
         
@@ -251,18 +251,111 @@ class Station extends AppModel {
         
         $raw_passes = Array();
         
-        if (isset($pass_times['passes']) && !empty($pass_times['passes'])){
-            foreach($pass_times['passes'] as $temp_pass){
-                $temp_pass = Array(
-                    'satellite_name' => $pass_times['status']['params']['satellite'],
+        // Check if there were any errors
+        if ($pass_times['status']['status']=='okay'){
+            if (isset($pass_times['passes']) && !empty($pass_times['passes'])){
+                foreach($pass_times['passes'] as $temp_pass){
+                    $temp_pass = Array(
+                        'satellite_name' => $pass_times['status']['params']['satellite'],
+                        'orbit_number' => $temp_pass['pass']['orbit_number'],
+                        'aos' => $temp_pass['pass']['aos'],
+                        'aos_az' => $temp_pass['pass']['aos_az'],
+                        'mel' => $temp_pass['pass']['mel'],
+                        'mel_az' => $temp_pass['pass']['mel_az'],
+                        'los' => $temp_pass['pass']['los'],
+                        'los_az' => $temp_pass['pass']['los_az'],
+                        'duration' => $temp_pass['pass']['duration'],
+                        'peak_elevation' => $temp_pass['pass']['peak_elevation'],
+                        'acceptable' => $temp_pass['pass']['acceptable'],
+                        'ground_station' => $temp_pass['pass']['ground_station']
+                    );
                     
-                );
-                
-                array_push($raw_passes, $temp_pass);
+                    array_push($raw_passes, $temp_pass);
+                }
             }
+        } else {
+            // Some sort of error
+            $raw_passes = null;
+            $raw_passes = $pass_times['status']['message'];
         }
         
         return $raw_passes;
+    }
+    
+    public function arrayToXMLPasses($pass_times){
+        /*
+        Converts $pass_times into an XML string.
+        
+        @param $pass_times: Array of passes to convert into XML.
+        
+        Returns:
+            An XML string representing the array.
+        */
+        
+        // Start XML document.
+        $xml_string = '<?xml version="1.0"?>';
+        $xml_string .= '<api_passes>';
+        
+        // Add the status element
+        $xml_string .= '<status>';
+            $xml_string .= '<status>'.htmlspecialchars($pass_times['status']['status']).'</status>';
+            $xml_string .= '<message>'.htmlspecialchars($pass_times['status']['message']).'</message>';
+            $xml_string .= '<timestamp>'.htmlspecialchars($pass_times['status']['timestamp']).'</timestamp>';
+            $xml_string .= '<total_passes_loaded>'.htmlspecialchars($pass_times['status']['total_passes_loaded']).'</total_passes_loaded>';
+            $xml_string .= '<acceptable_passes_loaded>'.htmlspecialchars($pass_times['status']['acceptable_passes_loaded']).'</acceptable_passes_loaded>';
+            $xml_string .= '<params>';
+                $xml_string .= '<minelevation>'.htmlspecialchars($pass_times['status']['params']['minelevation']).'</minelevation>';
+                $xml_string .= '<passcount>'.htmlspecialchars($pass_times['status']['params']['passcount']).'</passcount>';
+                $xml_string .= '<timestamp>'.htmlspecialchars($pass_times['status']['params']['timestamp']).'</timestamp>';
+                $xml_string .= '<show_all_passes>'.htmlspecialchars($pass_times['status']['params']['show_all_passes']).'</show_all_passes>';
+                $xml_string .= '<satellite>'.htmlspecialchars($pass_times['status']['params']['satellite']).'</satellite>';
+                if (isset($pass_times['status']['params']['raw_tle_line_1'])){
+                    $xml_string .= '<raw_tle_line_1>'.htmlspecialchars($pass_times['status']['params']['raw_tle_line_1']).'</raw_tle_line_1>';
+                }
+                if (isset($pass_times['status']['params']['raw_tle_line_2'])){
+                    $xml_string .= '<raw_tle_line_2>'.htmlspecialchars($pass_times['status']['params']['raw_tle_line_2']).'</raw_tle_line_2>';
+                }
+                if (isset($pass_times['status']['params']['ground_stations'])){
+                    $xml_string .= '<ground_stations>';
+                        foreach ($pass_times['status']['params']['ground_stations'] as $ground_station_name => $ground_station){
+                            $xml_string .= '<ground_station name=\''.htmlspecialchars($ground_station_name).'\'>';
+                                $xml_string .= '<name>'.htmlspecialchars($ground_station_name).'</name>';
+                                $xml_string .= '<latitude>'.htmlspecialchars($ground_station['latitude']).'</latitude>';
+                                $xml_string .= '<longitude>'.htmlspecialchars($ground_station['longitude']).'</longitude>';
+                                $xml_string .= '<description>'.htmlspecialchars($ground_station['description']).'</description>';
+                            $xml_string .= '</ground_station>';
+                        }
+                    $xml_string .= '</ground_stations>';
+                }
+            $xml_string .= '</params>';
+        $xml_string .= '</status>';
+        
+        // Add the satellites
+        if (isset($pass_times['passes']) && !empty($pass_times['passes'])){
+            $xml_string .= '<passes>';
+            foreach($pass_times['passes'] as $temp_pass){
+                $xml_string .= '<pass aos=\''.htmlspecialchars($temp_pass['pass']['aos']).'\'>';
+                    $xml_string .= '<orbit_number>'.htmlspecialchars($temp_pass['pass']['orbit_number']).'</orbit_number>';
+                    $xml_string .= '<aos>'.htmlspecialchars($temp_pass['pass']['aos']).'</aos>';
+                    $xml_string .= '<aos_az>'.htmlspecialchars($temp_pass['pass']['aos_az']).'</aos_az>';
+                    $xml_string .= '<mel>'.htmlspecialchars($temp_pass['pass']['mel']).'</mel>';
+                    $xml_string .= '<mel_az>'.htmlspecialchars($temp_pass['pass']['mel_az']).'</mel_az>';
+                    $xml_string .= '<los>'.htmlspecialchars($temp_pass['pass']['los']).'</los>';
+                    $xml_string .= '<los_az>'.htmlspecialchars($temp_pass['pass']['los_az']).'</los_az>';
+                    $xml_string .= '<duration>'.htmlspecialchars($temp_pass['pass']['duration']).'</duration>';
+                    $xml_string .= '<peak_elevation>'.htmlspecialchars($temp_pass['pass']['peak_elevation']).'</peak_elevation>';
+                    $acceptable_text = ($temp_pass['pass']['acceptable'])?'true':'false';
+                    $xml_string .= '<acceptable>'.htmlspecialchars($acceptable_text).'</acceptable>';
+                    $xml_string .= '<ground_station>'.htmlspecialchars($temp_pass['pass']['ground_station']).'</ground_station>';
+                $xml_string .= '</pass>';
+            }
+            $xml_string .= '</passes>';
+        }
+        
+        // Close XML
+        $xml_string .= '</api_passes>';
+        
+        return $xml_string;
     }
     
     private function sort_passes($first_pass, $second_pass){
