@@ -105,7 +105,7 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 
 <h3 class="titles"><a name="parameters"><a href="#parameters" class="doc_link">1.3 Request Parameters</a></a></h3>
 <p>There are several parameters that you can append to your API request that allow you to customize the results returned.</p>
-<table class="table table-condensed">
+<table class="table table-condensed table-hover">
     <thead>
 	<tr>
 	    <th width="10%">Parameter</th>
@@ -761,7 +761,7 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
 <h2 class="titles"><a name="available_satellites"><a href="#available_satellites" class="doc_link">2.0 Available Sources and Satellites</a></a></h2>
 <p>Below, lists of the available sources and their satellites along with their URL encoding are displayed for your convenience.</p>
 <?php if (!empty($sources)): ?>
-    <table class="table">
+    <table class="table table-hover">
 	<thead>
 	    <tr>
 		<th width="15%">Source Name</th>
@@ -792,8 +792,8 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
 		    <?php if (!empty($source['Update'][0]['Tle'])): ?>
 			<table style="width: 50%;" class="table table-condensed satellite_table">
 			    <thead>
-				<th width="50%">Satellite Name</th>
-				<th width="50%">Encoded Satellite Name</th>
+				<th>Satellite Name</th>
+				<th>Encoded Satellite Name</th>
 			    </thead>
 			    <tbody>
 				<?php foreach($source['Update'][0]['Tle'] as $tle): ?>

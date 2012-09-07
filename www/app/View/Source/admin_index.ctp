@@ -36,7 +36,7 @@ $(document).ready(function(){
 	No TLE sources are currently defined. Try adding some.
 <?php else: ?>
 	All currently configured sources are displayed below.
-	<table class="table" width="100%">
+	<table class="table table-hover" width="100%">
 		<thead>
 			<tr>
 				<th width="20%">Name</th>

@@ -37,7 +37,7 @@ $(document).ready(function(){
     <br /><br />
 <?php else: ?>
     <p>A few errors have occured recently while trying to update TLE sources. They are listed below.</p>
-    <table class="table" width="100%">
+    <table class="table table-hover" width="100%">
 	<thead>
 	    <tr>
 		<th width="30%">Error Date</th>

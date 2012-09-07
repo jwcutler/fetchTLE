@@ -94,7 +94,7 @@ pre {
     <br /><br />
 <?php else: ?>
     <p>The <?php echo $update_limit; ?> most recent updates for the <?php echo $source['Source']['name']; ?> are displayed below.</p>
-    <table class="table" width="60%">
+    <table class="table table-hover" width="60%">
 	<thead>
 	    <tr>
 		<th width="30%">Date</th>
