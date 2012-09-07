@@ -147,6 +147,10 @@ $(document).ready(function(){
                     // General request error
                     $("#error_message").html(thrownError);
                     $("#error_modal").modal('show');
+                    
+                    // Show the button again
+                    $("#calculate_pass_times").show();
+                    $("#loading_passes").hide();
                 }
             });
         }
