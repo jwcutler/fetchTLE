@@ -207,7 +207,7 @@ extern char   modesDat[80], sitesDat[80], defaultsDat[80], defSatGroup[10],
               batchSiteLong[80], batchSatName[80], batchTleL1[80],
               batchTleL2[80], batchPredType[80], batchStartDate[80],
               batchStartTime[80], batchStepTime[80], batchDuration[80],
-              batchMinElev[80], batchHardcopy[80], helpStr[80], licenseFile[80],
+              batchMinElev[80], batchAcceptElev[80], batchHardcopy[80], helpStr[80], licenseFile[80],
               graphicsTitle[80], sattrackTitle[80], xTimeStr[80], xMetStr[25],
               xGndTrkStr[80];
 

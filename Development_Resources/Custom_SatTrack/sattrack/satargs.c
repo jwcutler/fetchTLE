@@ -158,7 +158,7 @@ char *argV[];
         verboseFlag      = FALSE;
         
         // Verify the the number of arguments for batch mode
-        if (argC != 16)
+        if (argC != 17)
         {
             nl();
             printf("%s %s Batch Mode",sattrName,sattrVersion);
@@ -226,6 +226,11 @@ char *argV[];
             printf("min-elev [deg]");
             normal();
             bl();
+            printf("accept-elev [deg]");
+            normal();
+            nl();
+            printf("          ");
+            underline();
             printf("[no]hardcopy");
             nl(); nl();
             
@@ -247,7 +252,8 @@ char *argV[];
             strcpy(batchStepTime,argV[12]);
             strcpy(batchDuration,argV[13]);
             strcpy(batchMinElev,argV[14]);
-            strcpy(batchHardcopy,argV[15]);
+            strcpy(batchAcceptElev,argV[15]);
+            strcpy(batchHardcopy,argV[16]);
             //printf("%s-%s\n", batchMinElev, batchDuration);
 
             replaceBlanks(batchSiteName);

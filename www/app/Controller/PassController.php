@@ -41,15 +41,19 @@ class PassController extends AppController {
             // Satellite loaded
             $this->set('satellite', $satellite);
             
-            // Load the ground stations
-            $station_id_fetch = $this->Configuration->find('first', array(
+            // Load the ground station configurations
+            $gs_configurations = $this->Configuration->find('all', array(
                 'conditions' => array(
-                    'Configuration.name' => 'passes_available_ground_stations'
+                    'Configuration.name' => array('passes_available_ground_stations', 'passes_default_ground_stations')
                 )
             ));
-            if ($station_id_fetch['Configuration']['value']){
+            foreach ($gs_configurations as $gs_configuration){
+                $$gs_configuration['Configuration']['name'] = $gs_configuration['Configuration'];
+            }
+            
+            if ($passes_available_ground_stations['value']){
                 // Load the indicated ground stations
-                $active_station_ids = explode(',', $station_id_fetch['Configuration']['value']);
+                $active_station_ids = explode(',', $passes_available_ground_stations['value']);
                 $ground_stations = $this->Station->find('all', array(
                     'conditions' => array(
                         'Station.id' => $active_station_ids
@@ -58,6 +62,13 @@ class PassController extends AppController {
                 if (!empty($ground_stations)){
                     // Ground stations loaded
                     $this->set('ground_stations', $ground_stations);
+                    
+                    // Load the default ground stations into an array
+                    $default_ground_station_ids = array();
+                    if ($passes_default_ground_stations['value']){
+                        $default_ground_station_ids = explode(',', $passes_default_ground_stations['value']);
+                    }
+                    $this->set('default_ground_stations', $default_ground_station_ids);
                     
                     // Load the configurations
                     $configurations = $this->Configuration->find('all', array(
@@ -92,7 +103,7 @@ class PassController extends AppController {
         $pass_times = null;
         
         // Collect the parameters
-        $minelevation = (isset($_GET['minelevation']))?$_GET['minelevation']:false;
+        $minelevation = (isset($_GET['minelevations']))?$_GET['minelevations']:false;
         $passcount = (isset($_GET['passcount']))?$_GET['passcount']:false;
         $ground_stations = (isset($_GET['ground_stations']))?$_GET['ground_stations']:false;
         $timestamp = (isset($_GET['timestamp']))?$_GET['timestamp']:false;
@@ -103,7 +114,8 @@ class PassController extends AppController {
             // Parse the ground station names
             $satellite_name = $this->request->params['satellite'];
             $ground_station_names = ($ground_stations)?explode('_', $ground_stations):false;
-            $pass_times = $this->Station->api_loadpasses($satellite_name, $ground_station_names, $minelevation, $passcount, $timestamp, $show_all_passes);
+            $min_elevations = ($minelevation)?explode('_', $minelevation):false;
+            $pass_times = $this->Station->api_loadpasses($satellite_name, $ground_station_names, $min_elevations, $passcount, $timestamp, $show_all_passes);
             
             if (isset($this->request->params['ext']) && $this->request->params['ext']=='xml'){
                 // Convert the array to an XML string

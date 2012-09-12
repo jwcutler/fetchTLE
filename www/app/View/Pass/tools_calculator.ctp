@@ -32,12 +32,6 @@ $(document).ready(function(){
         errorClass: "form_error",
         wrapper: 'li',
         rules: {
-            minimum_elevation: {
-                required: true,
-                digits: true,
-                min: 0,
-                max: 90
-            },
             pass_count: {
                 required: true,
                 digits: true,
@@ -50,12 +44,6 @@ $(document).ready(function(){
             }
         },
         messages: {
-            minimum_elevation: {
-                required: "Please enter a minimum elevation.",
-                digits: "The minimum elevation must be an integer.",
-                min: "The minimum elevation must be at least 0 degrees.",
-                max: "The minimum elevation can't be larger than 90 degrees."
-            },
             pass_count: {
                 required: "Please enter the number of passes requested.",
                 digits: "The number of passes must be an integer.",
@@ -74,10 +62,13 @@ $(document).ready(function(){
             $("#loading_passes").show();
             
             // Load the form parameters
+            minimum_elevations = new Array();
             pass_count = $('#pass_count').val();
             minimum_elevation = $('#minimum_elevation').val();
             show_all_passes = ($('#show_all_passes').is(':checked'))?'true':'false';
-            ground_stations = $('#ground_stations').val().join('_');
+            show_utc = ($('#show_utc').is(':checked'))?true:false;
+            ground_stations_temp = $('#ground_stations').val();
+            ground_stations = ground_stations_temp.join('_');
             start_date = null;
             if ($('#start_date').val()){
                 start_date = $('#start_date').val().split("/");
@@ -85,11 +76,20 @@ $(document).ready(function(){
             } else {
                 start_date = '';
             }
+            for (ground_station_index in ground_stations_temp){
+                // Load the min elevation for the specified ground station
+                if ($("#minimum_elevation_"+ground_stations_temp[ground_station_index]).length){
+                    minimum_elevations.push($("#minimum_elevation_"+ground_stations_temp[ground_station_index]).val());
+                } else {
+                    minimum_elevations.push('<?php echo $passes_default_min_el['Configuration']['value']; ?>');
+                }
+            }
+            minelevations = minimum_elevations.join('_');
 
             $.ajax({
                 type: "GET",
                 url: api_endpoint,
-                data: {minelevation: minimum_elevation, passcount: pass_count, ground_stations: ground_stations, timestamp: start_date, show_all_passes: show_all_passes},
+                data: {minelevations: minelevations, passcount: pass_count, ground_stations: ground_stations, timestamp: start_date, show_all_passes: show_all_passes},
                 success: function(response){
                     // Check if the API generated any errors
                     if (response['status']['status'] == 'okay'){
@@ -98,10 +98,9 @@ $(document).ready(function(){
                             // Convert Times
                             AOS = new Date(response['passes'][pass_index]['pass']['aos']*1000);
                             MEL = new Date(response['passes'][pass_index]['pass']['mel']*1000);
-                            MEL_25 = new Date((response['passes'][pass_index]['pass']['mel']*1000)-(150*1000));
-                            MEL_3 = new Date((response['passes'][pass_index]['pass']['mel']*1000)-(180*1000));
-                            MEL_35 = new Date((response['passes'][pass_index]['pass']['mel']*1000)-(210*1000));
                             LOS = new Date(response['passes'][pass_index]['pass']['los']*1000);
+                            acceptable_el_start = (response['passes'][pass_index]['pass']['acceptable_el_start']==false)?false:new Date(response['passes'][pass_index]['pass']['acceptable_el_start']*1000);
+                            acceptable_el_end = (response['passes'][pass_index]['pass']['acceptable_el_end']==false)?false:new Date(response['passes'][pass_index]['pass']['acceptable_el_end']*1000);
                             pass_result_row = '<tr>';
                             if (response['passes'][pass_index]['pass']['acceptable']){
                                 pass_result_row += '<td style="border-top: none;"><img src=\'<?php echo $this->webroot; ?>img/icons/small_success.png\' alt=\'Acceptable Pass\' /></td>';
@@ -110,16 +109,49 @@ $(document).ready(function(){
                             }
                             pass_result_row += '<td>'+response['passes'][pass_index]['pass']['orbit_number']+'</td>';
                             pass_result_row += '<td>'+response['passes'][pass_index]['pass']['ground_station']+'</td>';
-                            pass_result_row += '<td>'+AOS.toLocaleDateString()+' '+pad(AOS.getHours())+':'+pad(AOS.getMinutes())+':'+pad(AOS.getSeconds())+'</td>';
-                            pass_result_row += '<td>'+pad(AOS.getUTCMonth()+1)+'/'+pad(AOS.getUTCDate())+'/'+AOS.getUTCFullYear()+'</td>';
-                            pass_result_row += '<td>'+pad(AOS.getUTCHours())+':'+pad(AOS.getUTCMinutes())+':'+pad(AOS.getUTCSeconds())+'</td>';
-                            pass_result_row += '<td>'+pad(MEL.getUTCHours())+':'+pad(MEL.getUTCMinutes())+':'+pad(MEL.getUTCSeconds())+'</td>';
-                            pass_result_row += '<td>'+pad(LOS.getUTCHours())+':'+pad(LOS.getUTCMinutes())+':'+pad(LOS.getUTCSeconds())+'</td>';
-                            pass_result_row += '<td>'+response['passes'][pass_index]['pass']['duration']+'</td>';
                             pass_result_row += '<td>'+response['passes'][pass_index]['pass']['peak_elevation']+'&deg;</td>';
-                            pass_result_row += '<td>'+pad(MEL_25.getUTCHours())+':'+pad(MEL_25.getUTCMinutes())+':'+pad(MEL_25.getUTCSeconds())+'</td>';
-                            pass_result_row += '<td>'+pad(MEL_3.getUTCHours())+':'+pad(MEL_3.getUTCMinutes())+':'+pad(MEL_3.getUTCSeconds())+'</td>';
-                            pass_result_row += '<td>'+pad(MEL_35.getUTCHours())+':'+pad(MEL_35.getUTCMinutes())+':'+pad(MEL_35.getUTCSeconds())+'</td>';
+                            if (show_utc){
+                                // Display all times in UTC
+                                pass_result_row += '<td>'+pad(AOS.getUTCMonth()+1)+'/'+pad(AOS.getUTCDate())+'/'+AOS.getUTCFullYear()+'</td>';
+                                pass_result_row += '<td>'+pad(AOS.getUTCHours())+':'+pad(AOS.getUTCMinutes())+':'+pad(AOS.getUTCSeconds())+'</td>';
+                                pass_result_row += '<td>'+pad(MEL.getUTCHours())+':'+pad(MEL.getUTCMinutes())+':'+pad(MEL.getUTCSeconds())+'</td>';
+                                pass_result_row += '<td>'+pad(LOS.getUTCHours())+':'+pad(LOS.getUTCMinutes())+':'+pad(LOS.getUTCSeconds())+'</td>';
+                                if (!acceptable_el_start){
+                                    pass_result_row += '<td>NA</td>';
+                                } else {
+                                    pass_result_row += '<td>'+pad(acceptable_el_start.getUTCHours())+':'+pad(acceptable_el_start.getUTCMinutes())+':'+pad(acceptable_el_start.getUTCSeconds())+'</td>';
+                                }
+                                if (!acceptable_el_end){
+                                    pass_result_row += '<td>NA</td>';
+                                } else {
+                                    pass_result_row += '<td>'+pad(acceptable_el_end.getUTCHours())+':'+pad(acceptable_el_end.getUTCMinutes())+':'+pad(acceptable_el_end.getUTCSeconds())+'</td>';
+                                }
+                                
+                                // Display the timezone
+                                $("#timezone_notification").html("Note: All times and dates are in UTC.");
+                            } else {
+                                // Display times in local timezone
+                                pass_result_row += '<td>'+pad(AOS.getMonth()+1)+'/'+pad(AOS.getDate())+'/'+AOS.getFullYear()+'</td>';
+                                pass_result_row += '<td>'+pad(AOS.getHours())+':'+pad(AOS.getMinutes())+':'+pad(AOS.getSeconds())+'</td>';
+                                pass_result_row += '<td>'+pad(MEL.getHours())+':'+pad(MEL.getMinutes())+':'+pad(MEL.getSeconds())+'</td>';
+                                pass_result_row += '<td>'+pad(LOS.getHours())+':'+pad(LOS.getMinutes())+':'+pad(LOS.getSeconds())+'</td>';
+                                if (!acceptable_el_start){
+                                    pass_result_row += '<td>NA</td>';
+                                } else {
+                                    pass_result_row += '<td>'+pad(acceptable_el_start.getHours())+':'+pad(acceptable_el_start.getMinutes())+':'+pad(acceptable_el_start.getSeconds())+'</td>';
+                                }
+                                if (!acceptable_el_end){
+                                    pass_result_row += '<td>NA</td>';
+                                } else {
+                                    pass_result_row += '<td>'+pad(acceptable_el_end.getHours())+':'+pad(acceptable_el_end.getMinutes())+':'+pad(acceptable_el_end.getSeconds())+'</td>';
+                                }
+                                
+                                // Display the timezone
+                                time_zone_string = AOS.toTimeString();
+                                time_zone_string = time_zone_string.substr(-4, 3);
+                                $("#timezone_notification").html("Note: All times and dates are in "+time_zone_string+".");
+                            }
+                            pass_result_row += '<td>'+response['passes'][pass_index]['pass']['duration']+'</td>';
                             pass_result_row += '</tr>';
                             $("#pass_results tbody").append(pass_result_row);
                         }
@@ -153,6 +185,54 @@ $(document).ready(function(){
                     $("#loading_passes").hide();
                 }
             });
+        }
+    });
+    
+    // Detect ground station changes
+    $("#ground_stations").change(function(){
+        // Hide the default text
+        $("#minimum_elevation_no_stations").hide();
+        
+        // Add a minimum elevation field for each ground station (if it doesn't all ready exist)
+        selected_stations = $(this).val();
+        for (station_index in selected_stations){
+            station_name = selected_stations[station_index]
+            
+            // Add the elevation field if it doesn't all ready exist
+            if (!$("#elevation_field_"+station_name).length){
+                $("#minimum_elevation_container").append("<div id='elevation_field_"+station_name+"' title ='"+station_name+"' style='margin-bottom: 3px;'><div class=\"input-prepend input-append\"><span class=\"add-on\">"+station_name+"</span><input type=\"text\" name=\"minimum_elevation_"+station_name+"\" id=\"minimum_elevation_"+station_name+"\" value=\"<?php echo $passes_default_min_el['Configuration']['value']; ?>\" style=\"width: 50px;\" /><span class=\"add-on\">&deg;</span></div></div>");
+                
+                // Add form validation for the new elevation field
+                $("#minimum_elevation_"+station_name).rules("add", {
+                    required: true,
+                    digits: true,
+                    min: 0,
+                    max: 90,
+                    messages: {
+                        required: "Please enter a minimum elevation for '"+station_name+"'.",
+                        digits: "The minimum elevation for '"+station_name+"' must be an integer.",
+                        min: "The minimum elevation for '"+station_name+"' must be at least 0 degrees.",
+                        max: "The maximum elevation for '"+station_name+"' can't be larger than 90 degrees."
+                    }
+                });
+            }
+        }
+        
+        // Remove any elevation fields for deleted ground stations
+        $("[id^=elevation_field_]").each(function(){
+            // Check if the station is selected
+            if (jQuery.inArray($(this).attr('title'), selected_stations)==-1){
+                // Remove the form validation
+                $("#minimum_elevation_"+$(this).attr('title')).rules("remove");
+                
+                // Not selected, so remove it
+                $(this).remove();
+            }
+        });
+        
+        // Check if any ground stations are left
+        if (!$('[id^=elevation_field_]').length){
+            $("#minimum_elevation_no_stations").show();
         }
     });
     
@@ -200,12 +280,14 @@ function pad(n){
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="minimum_elevation">Minimum Elevation*</label>
+                    <label class="control-label" for="minimum_elevation">Minimum Elevations*</label>
                     <div class="controls">
-                        <div class="input-append">
-                            <input type="text" name="minimum_elevation" id="minimum_elevation" value="<?php echo $passes_default_min_el['Configuration']['value']; ?>" style="width: 50px;" /><span class="add-on">&deg;</span>
+                        <div id="minimum_elevation_container">
+                            <div id="minimum_elevation_no_stations" style="font-style: italic;">
+                                Select some ground stations above to specify the elevations.
+                            </div>
                         </div>
-                        <p class="help-block">The minimum elevation that a satellite needs to have over a ground station to be considered "acceptable".</p>
+                        <p class="help-block" style="margin-top: 10px;">The minimum elevation that a satellite needs to have over a specific ground station to be considered "acceptable".</p>
                     </div>
                 </div>
                 <div class="control-group">
@@ -226,7 +308,14 @@ function pad(n){
                     <label class="control-label" for="show_all_passes">Show All Passes</label>
                     <div class="controls">
                         <input type="checkbox" name="show_all_passes" id="show_all_passes" value="true" />
-                        <p class="help-block">If selected, all passes calculated during the selected time frame (including unacceptable) will be included in the response.</p>
+                        <p class="help-block">If selected, all passes calculated during the selected time frame (including unacceptable passes) will be included in the response.</p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="show_utc">Display UTC Times</label>
+                    <div class="controls">
+                        <input type="checkbox" name="show_utc" id="show_utc" value="true" checked='checked' />
+                        <p class="help-block">If selected, all dates and times displayed will be in UTC. Otherwise, all dates and times will be displayed in your local timezone.</p>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-success" id="calculate_pass_times">Calculate Pass Times</button>
@@ -238,22 +327,20 @@ function pad(n){
     </div>
     <div id="passes_results">
         <button class="btn btn-primary btn-small" type="button" id="return_to_calculator">Return To Calculator</button>
-        <div style="margin: 10px 0px 10px 0px;">All times are in UTC except for the "AOS Local Time" column.</div>
+        <div style="margin: 10px 0px 10px 0px;" id="timezone_notification"></div>
         <table class="table table-condensed table-hover" id="pass_results">
             <thead>
                 <th width="20px"></th>
                 <th>Orbit #</th>
                 <th>Station</th>
-                <th>AOS Local Time</th>
-                <th>UTC Date</th>
+                <th>Peak El.</th>
+                <th>Date</th>
                 <th>AOS</th>
                 <th>MEL</th>
                 <th>LOS</th>
+                <th>Acceptable El. Start</th>
+                <th>Acceptable El. End</th>
                 <th>Duration</th>
-                <th>Peak El.</th>
-                <th>MEL-2.5 min</th>
-                <th>MEL-3 min</th>
-                <th>MEL-3.5 min</th>
             </thead>
             <tbody>
             </tbody>

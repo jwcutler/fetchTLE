@@ -90,6 +90,7 @@ double maxAzimuth;                     /* [rad]                               */
 double maxElevation, relMaxElev;       /* [rad]                               */
 double maxRange;                       /* range  at MEL [km]                  */
 double maxHeight;                      /* height at MEL [km]                  */
+double acceptableElevation;
 
 double curTime, tmpTime, stepTime;     /* time [d]                            */
 double orbitTime;                      /* time [d]                            */
@@ -99,6 +100,7 @@ double fastStepTime, medStepTime;      /* time [d]                            */
 double slowStepTime;
 double nextRiseTime, nextSetTime;      /* rise and set times [d]              */
 double nextMaxTime;
+double nextStartElTime, nextEndElTime; /* The start and end time of the acceptable elevation range */
 double maxDays;
 
 double sunProxLimit;
@@ -109,7 +111,7 @@ long   riseOrbitNum, printOrbitNum, lastYearSec;
 long   trackInt, singleSatUpdateInt, multiSatUpdateInt;
 
 int    sysYear, sysMonth, sysDay, sysYearDay, sysHour, sysMin, sysSec;
-int    ns, sameOrbitPass, foundSatFlag, foundRiseFlag, foundSetFlag;
+int    ns, sameOrbitPass, foundSatFlag, foundRiseFlag, foundSetFlag, foundStartElFlag, foundEndElFlag;
 int    startFlag, predictionFlag, writeFlag, firstMultiSat, firstMultiSatCalc;
 int    finishPass, newPassFlag, dispUpdateFlag, switchSatFlag, visibPassesFlag;
 int    didSwitchFlag, reinitSingleSat, reinitMultiSat, key, keyBoard;
@@ -588,9 +590,12 @@ void doShortPrediction()
                 fprintf(outFile,"$");
                 printTime(outFile,nextSetTime+timeZone);
                 fprintf(outFile,"$");
+                printTime(outFile,nextStartElTime+timeZone);
+                fprintf(outFile,"$");
+                printTime(outFile,nextEndElTime+timeZone);
+                fprintf(outFile,"$");
                 printTime(outFile,nextSetTime-nextRiseTime);
-                fprintf(outFile,"$%.0f$%.0f$%.0f",
-                    riseAzimuth*CRD,maxAzimuth*CRD,setAzimuth*CRD);
+                fprintf(outFile,"$%.0f$%.0f$%.0f",riseAzimuth*CRD,maxAzimuth*CRD,setAzimuth*CRD);
                 fprintf(outFile,"$%.1f",maxElevation*CRD);
 
                 //if (maxElevation > MAXELELIMIT)
@@ -725,11 +730,16 @@ void getNextPass()
     slowStepTime = 1.0 / epochMeanMotion / 750.0;
     medStepTime  = slowStepTime * 3.0;
     fastStepTime = medStepTime * 15.0;
+    
+    // Reset the acceptable elevation time range
+    nextStartElTime = 0;
+    nextEndElTime = 0;
 
     tmpTime      = predTime;
     riseOrbitNum = -1;
     initNorad    = TRUE;
-
+    acceptableElevation = atof(batchAcceptElev);
+    
     maxDays = (geoSyncFlag == GEOSYNC) ? MAXDAYSSYNC : MAXDAYS;
 
     do
@@ -739,6 +749,8 @@ void getNextPass()
         riseAzimuth   = ZERO;
         foundRiseFlag = FALSE;
         foundSetFlag  = FALSE;
+        foundStartElFlag = FALSE;
+        foundEndElFlag = FALSE;
         noPassFlag    = FALSE;
 
         do
@@ -750,7 +762,7 @@ void getNextPass()
             getStateVector(tmpTime);
 
             getAziElev(SAT);
-
+            
             if (satElevation > ZERO && !foundRiseFlag)
             {
                 getShuttleOrbit();
@@ -762,6 +774,19 @@ void getNextPass()
                 riseAzimuth   = satAzimuth;
                 eclipseRise   = satEclipse(CASR);
                 foundRiseFlag = TRUE;
+            }
+            
+            // Record the start time of the acceptable elevation range
+            //printf("%d - %f - %f \n", foundStartElFlag, satElevation*CRD, acceptableElevation);
+            if (!foundStartElFlag && satElevation*CRD > acceptableElevation){
+                nextStartElTime = tmpTime;
+                foundStartElFlag = TRUE;
+            }
+            
+            // Record the end time of the acceptable elevation range
+            if (foundStartElFlag && !foundEndElFlag && satElevation*CRD < acceptableElevation){
+                nextEndElTime = tmpTime;
+                foundEndElFlag = TRUE;
             }
 
             if (foundRiseFlag && satElevation > maxElevation)
@@ -827,6 +852,8 @@ void getNextPass()
                 {
                     nextRiseTime  = tmpTime;
                     nextSetTime   = tmpTime;
+                    nextStartElTime = tmpTime;
+                    nextEndElTime = tmpTime;
                     riseAzimuth   = ZERO;
                     maxAzimuth    = ZERO;
                     setAzimuth    = ZERO;

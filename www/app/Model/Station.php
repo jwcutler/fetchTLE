@@ -19,13 +19,13 @@ class Station extends AppModel {
         )
     );
     
-    public function api_loadpasses($satellite_name, $ground_stations = false, $min_elevation = false, $pass_count = false, $start_date = false, $show_all_passes = true){
+    public function api_loadpasses($satellite_name, $ground_stations = false, $min_elevations = false, $pass_count = false, $start_date = false, $show_all_passes = true){
         /*
         This API calculates the first $passcount passes over $ground_stations using the most recent TLE for $satellite_name.
         
         @param $satellite_name: The name of the satellite to calculate pass times for.
         @param $ground_stations: An array containing the names of the ground stations to consider when calculating passes.
-        @param $min_elevation: The minimum elevation to accept when calculating passes.
+        @param $min_elevations: An array containing the minimum elevations to use for each ground station in $ground_stations.
         @param $pass_count: The number of valid (i.e. meets parameters) passes to calculate.
         @param $start_date: A unix timestamp of when to start calculating passes. 
         @param $show_all_passes: Whether or not all passes (including ones that don't meet the requirements) should be shown.
@@ -38,6 +38,8 @@ class Station extends AppModel {
         $result = array();
         $Configuration = ClassRegistry::init('Configuration');
         $Station = ClassRegistry::init('Station');
+        $gs_success = true;
+        $stations_elevations = array();
         
         // Load the required configuration
         $configurations = $Configuration->find('all', array(
@@ -50,9 +52,6 @@ class Station extends AppModel {
         }
         
         // Set the default parameters
-        if (!$min_elevation){
-            $min_elevation = $passes_default_min_el;
-        }
         if (!$pass_count){
             $pass_count = $passes_default_pass_count;
         }
@@ -65,9 +64,6 @@ class Station extends AppModel {
         if (empty($satellite_name)){
             // Empty satellite names
             $error_message = 'Invalid satellite name specified.';
-        } else if ($min_elevation < 0 || $min_elevation > 90){
-            // Minimum elevation out of range
-            $error_message = 'The minimum elevation must be >= 0 and <= 90.';
         } else if ($pass_count <= 1){
             // Too small of a pass count
             $error_message = 'At least one pass must be requested.';
@@ -77,6 +73,21 @@ class Station extends AppModel {
         } else if (!is_numeric($start_date)) {
             // Invalid timestamp
             $error_message = 'Your starting timestamp is invalid.';
+        }
+        
+        // Loop through and verify the elevations
+        if (is_array($min_elevations)){
+            foreach ($min_elevations as $min_elevation){
+                if (is_numeric($min_elevation)){
+                    if ($min_elevation < 0 || $min_elevation > 90){
+                        $error_message = 'Your minimum elevations must be >= 0 and <= 90.';
+                        break;
+                    }
+                } else {
+                    $error_message = 'Your minimum elevations must be numeric.';
+                    break;
+                }
+            }
         }
         
         // Attempt to load the specified ground stations
@@ -90,10 +101,19 @@ class Station extends AppModel {
             
             // Loop through and figure out what ground stations couldn't be loaded.
             $missing_stations = array();
-            foreach($ground_stations as $ground_station){
+            foreach($ground_stations as $ground_station_index => $ground_station){
                 $station_found = false;
                 foreach ($stations as $station){
                     if ($station['Station']['name'] == $ground_station){
+                        // Store the elevation to use for the ground station
+                        $station_elevation = $passes_default_min_el;
+                        if (is_array($min_elevations)){
+                            if (array_key_exists($ground_station_index, $min_elevations)){
+                                $station_elevation = $min_elevations[$ground_station_index];
+                            }
+                        }
+                        $stations_elevations[$station['Station']['name']] = $station_elevation;
+                        
                         $station_found = true;
                         break;
                     }
@@ -132,18 +152,20 @@ class Station extends AppModel {
             // Iterate through ground stations
             $satellite_passes = array();
             $result['passes'] = array();
-            foreach ($stations as $station){
+            foreach ($stations as $station_index => $station){
                 // Invoke the propagator and load the results
                 $gs_satellite_passes = array();
-                exec(APP.'Vendor/SatTrack/sattrack -b UTC "'.$station['Station']['name'].'" '.$station['Station']['latitude'].' '.$station['Station']['longitude'].' "'.$satellite[0]['Tle']['name'].'" "'.$satellite[0]['Tle']['raw_l1'].'" "'.$satellite[0]['Tle']['raw_l2'].'" shortpr '.gmdate("dMy", $start_date).' 0:0:0 auto 30 0 nohardcopy', $gs_satellite_passes);
+                exec(APP.'Vendor/SatTrack/sattrack -b UTC "'.$station['Station']['name'].'" '.$station['Station']['latitude'].' '.$station['Station']['longitude'].' "'.$satellite[0]['Tle']['name'].'" "'.$satellite[0]['Tle']['raw_l1'].'" "'.$satellite[0]['Tle']['raw_l2'].'" shortpr '.gmdate("dMy", $start_date).' 0:0:0 auto 30 0 '.$stations_elevations[$station['Station']['name']].' nohardcopy', $gs_satellite_passes);
                 
                 if (strpos($gs_satellite_passes[0], 'SUCCESS')===FALSE){
-                    // Some sort of error occured, set the error response
+                    // Some sort of error occured, set the error response and exit the loop
                     $result['status']['status'] = 'error';
                     $result['status']['message'] = 'There was an error calculating the pass times for \''.$satellite[0]['Tle']['name'].'\'.';
                     $result['status']['timestamp'] = time();
                     $result['status']['total_passes_loaded'] = 0;
                     $result['status']['valid_passes_loaded'] = 0;
+                    $gs_success = false;
+                    break;
                 } else {
                     // Everything okay, first remove the "SUCCESS" message
                     array_shift($gs_satellite_passes);
@@ -151,10 +173,10 @@ class Station extends AppModel {
                     // Build the array item for each pass
                     foreach ($gs_satellite_passes as $gs_satellite_pass){
                         // Parse the line
-                        list($pass_date, $pass_aos, $pass_mel, $pass_los, $pass_duration, $pass_aos_az, $pass_mel_az, $pass_los_az, $pass_peak_elev, $pass_vis, $pass_orbit) = explode('$', $gs_satellite_pass);
+                        list($pass_date, $pass_aos, $pass_mel, $pass_los, $pass_el_start, $pass_el_end, $pass_duration, $pass_aos_az, $pass_mel_az, $pass_los_az, $pass_peak_elev, $pass_vis, $pass_orbit) = explode('$', $gs_satellite_pass);
                         
-                        if ($show_all_passes || $pass_peak_elev>=$min_elevation){
-                            // Convert the date into a timestamp
+                        if ($show_all_passes || $pass_peak_elev>=$stations_elevations[$station['Station']['name']]){
+                            // Convert the times into a timestamp
                             $pass_date_array = explode('-', $pass_date);
                             $pass_aos_array = explode(':', $pass_aos);
                             $pass_aos_timestamp = mktime($pass_aos_array[0], $pass_aos_array[1], $pass_aos_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
@@ -162,6 +184,10 @@ class Station extends AppModel {
                             $pass_mel_timestamp = mktime($pass_mel_array[0], $pass_mel_array[1], $pass_mel_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
                             $pass_los_array = explode(':', $pass_los);
                             $pass_los_timestamp = mktime($pass_los_array[0], $pass_los_array[1], $pass_los_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
+                            $pass_el_start_array = explode(':', $pass_el_start);
+                            $pass_el_start_timestamp = ($pass_el_start_array[0]=='0'&&$pass_el_start_array[1]=='0'&&$pass_el_start_array[2]=='0')?false:mktime($pass_el_start_array[0], $pass_el_start_array[1], $pass_el_start_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
+                            $pass_el_end_array = explode(':', $pass_el_end);
+                            $pass_el_end_timestamp = ($pass_el_end_array[0]=='0'&&$pass_el_end_array[1]=='0'&&$pass_el_end_array[2]=='0')?false:mktime($pass_el_end_array[0], $pass_el_end_array[1], $pass_el_end_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
                             
                             // Add the pass to the array
                             $temp_pass = array();
@@ -172,9 +198,11 @@ class Station extends AppModel {
                             $temp_pass['pass']['mel_az'] = $pass_mel_az;
                             $temp_pass['pass']['los'] = $pass_los_timestamp;
                             $temp_pass['pass']['los_az'] = $pass_los_az;
+                            $temp_pass['pass']['acceptable_el_start'] = $pass_el_start_timestamp;
+                            $temp_pass['pass']['acceptable_el_end'] = $pass_el_end_timestamp;
                             $temp_pass['pass']['duration'] = $pass_duration;
                             $temp_pass['pass']['peak_elevation'] = $pass_peak_elev;
-                            $temp_pass['pass']['acceptable'] = ($pass_peak_elev>=$min_elevation)?true:false;
+                            $temp_pass['pass']['acceptable'] = ($pass_peak_elev>=$stations_elevations[$station['Station']['name']])?true:false;
                             $temp_pass['pass']['ground_station'] = $station['Station']['name'];
                             
                             array_push($result['passes'], $temp_pass);
@@ -183,31 +211,33 @@ class Station extends AppModel {
                 }
             }
             
-            // Sort the passes by timestamp
-            usort($result['passes'], array($this,"sort_passes"));
-            
-            // Loop through and remove extra passes
-            $acceptable_pass_count = 0;
-            foreach ($result['passes'] as $pass_number => $temp_pass){
-                if ($temp_pass['pass']['acceptable']){
-                    $acceptable_pass_count++;
+            if ($gs_success){
+                // Sort the passes by timestamp
+                usort($result['passes'], array($this,"sort_passes"));
+                
+                // Loop through and remove extra passes
+                $acceptable_pass_count = 0;
+                foreach ($result['passes'] as $pass_number => $temp_pass){
+                    if ($temp_pass['pass']['acceptable']){
+                        $acceptable_pass_count++;
+                    }
+                    
+                    if ($acceptable_pass_count >= $pass_count){
+                        // Reached the pass limit, remove the rest if there are any
+                        if ((count($result['passes'])-1)>=$pass_number+1){
+                            array_splice($result['passes'], $pass_number+1);
+                        }
+                        break;
+                    }
                 }
                 
-                if ($acceptable_pass_count >= $pass_count){
-                    // Reached the pass limit, remove the rest if there are any
-                    if ((count($result['passes'])-1)>=$pass_number+1){
-                        array_splice($result['passes'], $pass_number+1);
-                    }
-                    break;
-                }
+                // Construct status element
+                $result['status']['status'] = 'okay';
+                $result['status']['message'] = 'Passes were computed successfully.';
+                $result['status']['timestamp'] = time();
+                $result['status']['total_passes_loaded'] = count($result['passes']);
+                $result['status']['acceptable_passes_loaded'] = $acceptable_pass_count;
             }
-            
-            // Construct status element
-            $result['status']['status'] = 'okay';
-            $result['status']['message'] = 'Passes were computed successfully.';
-            $result['status']['timestamp'] = time();
-            $result['status']['total_passes_loaded'] = count($result['passes']);
-            $result['status']['acceptable_passes_loaded'] = $acceptable_pass_count;
         } else {
             // Some sort of error occured when setting up the API
             $result['status']['status'] = 'error';
@@ -218,7 +248,6 @@ class Station extends AppModel {
         }
         
         // Add the request parameters
-        $result['status']['params']['minelevation'] = $min_elevation;
         $result['status']['params']['passcount'] = $pass_count;
         $result['status']['params']['timestamp'] = $start_date;
         $result['status']['params']['show_all_passes'] = $show_all_passes;
@@ -229,7 +258,8 @@ class Station extends AppModel {
         }
         if (!empty($stations)){
             $result['status']['params']['ground_stations']  = array();
-            foreach($stations as $station){
+            foreach($stations as $station_index => $station){
+                $result['status']['params']['ground_stations'][$station['Station']['name']]['minelevation'] = $stations_elevations[$station['Station']['name']];
                 $result['status']['params']['ground_stations'][$station['Station']['name']]['name'] = $station['Station']['name'];
                 $result['status']['params']['ground_stations'][$station['Station']['name']]['latitude'] = $station['Station']['latitude'];
                 $result['status']['params']['ground_stations'][$station['Station']['name']]['longitude'] = $station['Station']['longitude'];
@@ -264,6 +294,8 @@ class Station extends AppModel {
                         'mel_az' => $temp_pass['pass']['mel_az'],
                         'los' => $temp_pass['pass']['los'],
                         'los_az' => $temp_pass['pass']['los_az'],
+                        'acceptable_el_start' => $temp_pass['pass']['acceptable_el_start'],
+                        'acceptable_el_end' => $temp_pass['pass']['acceptable_el_start'],
                         'duration' => $temp_pass['pass']['duration'],
                         'peak_elevation' => $temp_pass['pass']['peak_elevation'],
                         'acceptable' => $temp_pass['pass']['acceptable'],
@@ -304,7 +336,6 @@ class Station extends AppModel {
             $xml_string .= '<total_passes_loaded>'.htmlspecialchars($pass_times['status']['total_passes_loaded']).'</total_passes_loaded>';
             $xml_string .= '<acceptable_passes_loaded>'.htmlspecialchars($pass_times['status']['acceptable_passes_loaded']).'</acceptable_passes_loaded>';
             $xml_string .= '<params>';
-                $xml_string .= '<minelevation>'.htmlspecialchars($pass_times['status']['params']['minelevation']).'</minelevation>';
                 $xml_string .= '<passcount>'.htmlspecialchars($pass_times['status']['params']['passcount']).'</passcount>';
                 $xml_string .= '<timestamp>'.htmlspecialchars($pass_times['status']['params']['timestamp']).'</timestamp>';
                 $xml_string .= '<show_all_passes>'.htmlspecialchars($pass_times['status']['params']['show_all_passes']).'</show_all_passes>';
@@ -320,6 +351,7 @@ class Station extends AppModel {
                         foreach ($pass_times['status']['params']['ground_stations'] as $ground_station_name => $ground_station){
                             $xml_string .= '<ground_station name=\''.htmlspecialchars($ground_station_name).'\'>';
                                 $xml_string .= '<name>'.htmlspecialchars($ground_station_name).'</name>';
+                                $xml_string .= '<minelevation>'.htmlspecialchars($ground_station['minelevation']).'</minelevation>';
                                 $xml_string .= '<latitude>'.htmlspecialchars($ground_station['latitude']).'</latitude>';
                                 $xml_string .= '<longitude>'.htmlspecialchars($ground_station['longitude']).'</longitude>';
                                 $xml_string .= '<description>'.htmlspecialchars($ground_station['description']).'</description>';
@@ -342,6 +374,8 @@ class Station extends AppModel {
                     $xml_string .= '<mel_az>'.htmlspecialchars($temp_pass['pass']['mel_az']).'</mel_az>';
                     $xml_string .= '<los>'.htmlspecialchars($temp_pass['pass']['los']).'</los>';
                     $xml_string .= '<los_az>'.htmlspecialchars($temp_pass['pass']['los_az']).'</los_az>';
+                    $xml_string .= '<acceptable_el_start>'.htmlspecialchars($temp_pass['pass']['acceptable_el_start']).'</acceptable_el_start>';
+                    $xml_string .= '<acceptable_el_end>'.htmlspecialchars($temp_pass['pass']['acceptable_el_end']).'</acceptable_el_end>';
                     $xml_string .= '<duration>'.htmlspecialchars($temp_pass['pass']['duration']).'</duration>';
                     $xml_string .= '<peak_elevation>'.htmlspecialchars($temp_pass['pass']['peak_elevation']).'</peak_elevation>';
                     $acceptable_text = ($temp_pass['pass']['acceptable'])?'true':'false';

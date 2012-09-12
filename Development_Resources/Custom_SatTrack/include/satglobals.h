@@ -201,7 +201,7 @@ char   batchSiteName[80], batchSiteLat[80], batchSiteLong[80];
 char   batchSatName[80], batchTleL1[80], batchTleL2[80];
 char   batchTleType[80], batchPredType[80], batchStartDate[80];
 char   batchStartTime[80], batchStepTime[80], batchDuration[80];
-char   batchMinElev[80], batchHardcopy[80], helpStr[80], licenseFile[80];
+char   batchMinElev[80], batchAcceptElev[80], batchHardcopy[80], helpStr[80], licenseFile[80];
 char   graphicsTitle[80], xTimeStr[80], xMetStr[25], xGndTrkStr[80];
 char   sattrackTitle[80];
 char   *strpHome, *strpTerm, *strpDisp, *strpRgst;
