@@ -179,15 +179,15 @@ class Station extends AppModel {
                             // Convert the times into a timestamp
                             $pass_date_array = explode('-', $pass_date);
                             $pass_aos_array = explode(':', $pass_aos);
-                            $pass_aos_timestamp = mktime($pass_aos_array[0], $pass_aos_array[1], $pass_aos_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
+                            $pass_aos_timestamp = gmmktime($pass_aos_array[0], $pass_aos_array[1], $pass_aos_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
                             $pass_mel_array = explode(':', $pass_mel);
-                            $pass_mel_timestamp = mktime($pass_mel_array[0], $pass_mel_array[1], $pass_mel_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
+                            $pass_mel_timestamp = gmmktime($pass_mel_array[0], $pass_mel_array[1], $pass_mel_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
                             $pass_los_array = explode(':', $pass_los);
-                            $pass_los_timestamp = mktime($pass_los_array[0], $pass_los_array[1], $pass_los_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
+                            $pass_los_timestamp = gmmktime($pass_los_array[0], $pass_los_array[1], $pass_los_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
                             $pass_el_start_array = explode(':', $pass_el_start);
-                            $pass_el_start_timestamp = ($pass_el_start_array[0]=='0'&&$pass_el_start_array[1]=='0'&&$pass_el_start_array[2]=='0')?false:mktime($pass_el_start_array[0], $pass_el_start_array[1], $pass_el_start_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
+                            $pass_el_start_timestamp = ($pass_el_start_array[0]=='0'&&$pass_el_start_array[1]=='0'&&$pass_el_start_array[2]=='0')?false:gmmktime($pass_el_start_array[0], $pass_el_start_array[1], $pass_el_start_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
                             $pass_el_end_array = explode(':', $pass_el_end);
-                            $pass_el_end_timestamp = ($pass_el_end_array[0]=='0'&&$pass_el_end_array[1]=='0'&&$pass_el_end_array[2]=='0')?false:mktime($pass_el_end_array[0], $pass_el_end_array[1], $pass_el_end_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
+                            $pass_el_end_timestamp = ($pass_el_end_array[0]=='0'&&$pass_el_end_array[1]=='0'&&$pass_el_end_array[2]=='0')?false:gmmktime($pass_el_end_array[0], $pass_el_end_array[1], $pass_el_end_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
                             
                             // Add the pass to the array
                             $temp_pass = array();

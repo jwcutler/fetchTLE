@@ -147,9 +147,17 @@ $(document).ready(function(){
                                 }
                                 
                                 // Display the timezone
-                                time_zone_string = AOS.toTimeString();
-                                time_zone_string = time_zone_string.substr(-4, 3);
-                                $("#timezone_notification").html("Note: All times and dates are in "+time_zone_string+".");
+                                time_zone_string_temp = AOS.toTimeString();
+                                time_zone_string = time_zone_string_temp.substr(-4, 3);
+                                time_zone_offset_string = time_zone_string_temp.substr(-14, 8);
+                                $("#timezone_notification").html("Note: All times and dates are in "+time_zone_string+" ("+time_zone_offset_string+").");
+                            }
+                            $("#passcount_notification").html("Number of Acceptable Passes To Calculate: <i>"+response['status']['params']['passcount']);
+                            $("#showallpasses_notification").html("Show All Passes: "+response['status']['params']['show_all_passes']);
+                            $("#satellite_tle_notification").html("TLE Used In Calculations: <div style='margin: 0px 0px 0px 20px;'>"+response['status']['params']['satellite']+"<br />"+response['status']['params']['raw_tle_line_1']+"<br />"+response['status']['params']['raw_tle_line_2']+"</div>");
+                            $("#groundstations_notification").html("");
+                            for (ground_station_index in response['status']['params']['ground_stations']){
+                                $("#groundstations_notification").append(response['status']['params']['ground_stations'][ground_station_index]['name']+" minimum elevation: "+response['status']['params']['ground_stations'][ground_station_index]['minelevation']+"&deg;<br />");
                             }
                             pass_result_row += '<td>'+response['passes'][pass_index]['pass']['duration']+'</td>';
                             pass_result_row += '</tr>';
@@ -186,6 +194,19 @@ $(document).ready(function(){
                 }
             });
         }
+    });
+    
+    // Exand calculation parameters
+    $("#show_parameters").click(function (){
+        link_content = $(this).html();
+            
+        if (link_content == '[- Show Calculation Parameters]'){
+            $(this).html('[+ Show Calculation Parameters]');
+        } else {
+            $(this).html('[- Show Calculation Parameters]');
+        }
+        
+        $("#calculation_parameters").toggle(400);
     });
     
     // Detect ground station changes
@@ -327,7 +348,19 @@ function pad(n){
     </div>
     <div id="passes_results">
         <button class="btn btn-primary btn-small" type="button" id="return_to_calculator">Return To Calculator</button>
-        <div style="margin: 10px 0px 10px 0px;" id="timezone_notification"></div>
+        <br />
+        <div style="background-color: #eeeeee; display: inline-block; padding: 5px; margin: 10px 0px 10px 0px; border: 1px solid #cccccc; border-radius: 4px; -moz-border-radius: 4px;">
+            <div>
+                <a class="link" id="show_parameters" style="cursor: pointer;">[+ Show Calculation Parameters]</a>
+            </div>
+            <div style="margin: 10px 0px 0px 0px; display:none;" id="calculation_parameters">
+                <div id="passcount_notification"></div>
+                <div id="showallpasses_notification"></div>
+                <div id="satellite_tle_notification"></div>
+                <div id="groundstations_notification"></div>
+            </div>
+        </div>
+        <div style="margin-bottom: 10px;" id="timezone_notification"></div>
         <table class="table table-condensed table-hover" id="pass_results">
             <thead>
                 <th width="20px"></th>
