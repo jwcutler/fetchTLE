@@ -36,8 +36,7 @@ $(document).ready(function(){
                 required: true,
                 digits: true,
                 min: 1,
-                //max: <?php echo $passes_max_pass_count['Configuration']['value']; ?>
-                max: 100
+                max: <?php echo $passes_max_pass_count['Configuration']['value']; ?>
             },
             ground_stations: {
                 required: true
@@ -89,7 +88,7 @@ $(document).ready(function(){
             $.ajax({
                 type: "GET",
                 url: api_endpoint,
-                data: {minelevations: minelevations, passcount: pass_count, ground_stations: ground_stations, timestamp: start_date, show_all_passes: show_all_passes},
+                data: {min_elevations: minelevations, pass_count: pass_count, ground_stations: ground_stations, timestamp: start_date, show_all_passes: show_all_passes},
                 success: function(response){
                     // Check if the API generated any errors
                     if (response['status']['status'] == 'okay'){
@@ -116,6 +115,7 @@ $(document).ready(function(){
                                 pass_result_row += '<td>'+pad(AOS.getUTCHours())+':'+pad(AOS.getUTCMinutes())+':'+pad(AOS.getUTCSeconds())+'</td>';
                                 pass_result_row += '<td>'+pad(MEL.getUTCHours())+':'+pad(MEL.getUTCMinutes())+':'+pad(MEL.getUTCSeconds())+'</td>';
                                 pass_result_row += '<td>'+pad(LOS.getUTCHours())+':'+pad(LOS.getUTCMinutes())+':'+pad(LOS.getUTCSeconds())+'</td>';
+                                pass_result_row += '<td>'+response['passes'][pass_index]['pass']['duration']+'</td>';
                                 if (!acceptable_el_start){
                                     pass_result_row += '<td>NA</td>';
                                 } else {
@@ -127,6 +127,18 @@ $(document).ready(function(){
                                     pass_result_row += '<td>'+pad(acceptable_el_end.getUTCHours())+':'+pad(acceptable_el_end.getUTCMinutes())+':'+pad(acceptable_el_end.getUTCSeconds())+'</td>';
                                 }
                                 
+                                // Calculate the duration of the acceptable elevation window
+                                if (!acceptable_el_start && !acceptable_el_end){
+                                    pass_result_row += '<td>NA</td>';
+                                } else {
+                                    // Calculate the difference
+                                    acceptable_duration = Math.abs(acceptable_el_end - acceptable_el_start)/1000; // In Seconds
+                                    hours = Math.floor(acceptable_duration/3600);
+                                    minutes = Math.floor((acceptable_duration/60) % 60);
+                                    seconds = acceptable_duration % 60;
+                                    pass_result_row += '<td>'+pad(hours)+':'+pad(minutes)+':'+pad(seconds)+'</td>';
+                                }
+                                
                                 // Display the timezone
                                 $("#timezone_notification").html("Note: All times and dates are in UTC.");
                             } else {
@@ -135,6 +147,7 @@ $(document).ready(function(){
                                 pass_result_row += '<td>'+pad(AOS.getHours())+':'+pad(AOS.getMinutes())+':'+pad(AOS.getSeconds())+'</td>';
                                 pass_result_row += '<td>'+pad(MEL.getHours())+':'+pad(MEL.getMinutes())+':'+pad(MEL.getSeconds())+'</td>';
                                 pass_result_row += '<td>'+pad(LOS.getHours())+':'+pad(LOS.getMinutes())+':'+pad(LOS.getSeconds())+'</td>';
+                                pass_result_row += '<td>'+response['passes'][pass_index]['pass']['duration']+'</td>';
                                 if (!acceptable_el_start){
                                     pass_result_row += '<td>NA</td>';
                                 } else {
@@ -152,16 +165,17 @@ $(document).ready(function(){
                                 time_zone_offset_string = time_zone_string_temp.substr(-14, 8);
                                 $("#timezone_notification").html("Note: All times and dates are in "+time_zone_string+" ("+time_zone_offset_string+").");
                             }
-                            $("#passcount_notification").html("Number of Acceptable Passes To Calculate: <i>"+response['status']['params']['passcount']);
-                            $("#showallpasses_notification").html("Show All Passes: "+response['status']['params']['show_all_passes']);
-                            $("#satellite_tle_notification").html("TLE Used In Calculations: <div style='margin: 0px 0px 0px 20px;'>"+response['status']['params']['satellite']+"<br />"+response['status']['params']['raw_tle_line_1']+"<br />"+response['status']['params']['raw_tle_line_2']+"</div>");
-                            $("#groundstations_notification").html("");
-                            for (ground_station_index in response['status']['params']['ground_stations']){
-                                $("#groundstations_notification").append(response['status']['params']['ground_stations'][ground_station_index]['name']+" minimum elevation: "+response['status']['params']['ground_stations'][ground_station_index]['minelevation']+"&deg;<br />");
-                            }
-                            pass_result_row += '<td>'+response['passes'][pass_index]['pass']['duration']+'</td>';
                             pass_result_row += '</tr>';
                             $("#pass_results tbody").append(pass_result_row);
+                            
+                            // Populate the request parameter panel
+                            $("#passcount_notification").html("Number of Acceptable Passes To Calculate: <i>"+response['status']['params']['passcount']);
+                            $("#showallpasses_notification").html("Show All Passes: <i>"+response['status']['params']['show_all_passes']+"</i>");
+                            $("#satellite_tle_notification").html("TLE Used In Calculations: <div style='margin: 0px 0px 0px 20px;font-style: italic;'><pre style='margin: 0px; padding: 0px; background-color: #eeeeee; border: none; line-height: 1; font-size: 11px; color: black;'>"+response['status']['params']['satellite']+"<br />"+response['status']['params']['raw_tle_line_1']+"<br />"+response['status']['params']['raw_tle_line_2']+"</pre></div>");
+                            $("#groundstations_notification").html("");
+                            for (ground_station_index in response['status']['params']['ground_stations']){
+                                $("#groundstations_notification").append(response['status']['params']['ground_stations'][ground_station_index]['name']+" minimum elevation: <i>"+response['status']['params']['ground_stations'][ground_station_index]['minelevation']+"&deg;</i><br />");
+                            }
                         }
                         
                         // Hide the form
@@ -294,7 +308,7 @@ function pad(n){
                     <div class="controls">
                         <select name="ground_stations" multiple="multiple" id="ground_stations" style="width: 250px;">
                             <?php foreach($ground_stations as $ground_station): ?>
-                                <option value="<?php echo $ground_station['Station']['name']; ?>"><?php echo $ground_station['Station']['name']; ?></option>
+                                <option value="<?php echo rawurlencode($ground_station['Station']['name']); ?>"><?php echo $ground_station['Station']['name']; ?></option>
                             <?php endforeach; ?>
                         </select>
                         <p class="help-block">The ground stations that you would like to use when calculating satellite pass times.</p>
@@ -371,9 +385,10 @@ function pad(n){
                 <th>AOS</th>
                 <th>MEL</th>
                 <th>LOS</th>
+                <th>Duration</th>
                 <th>Acceptable El. Start</th>
                 <th>Acceptable El. End</th>
-                <th>Duration</th>
+                <th>Acceptable Duration</th>
             </thead>
             <tbody>
             </tbody>

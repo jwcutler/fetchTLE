@@ -18,6 +18,10 @@ $(document).ready(function(){
 	e.preventDefault();
 	$(this).tab('show');
     })
+    $('#passes_examples a').click(function (e) {
+	e.preventDefault();
+	$(this).tab('show');
+    })
     $('#error_examples a').click(function (e) {
 	e.preventDefault();
 	$(this).tab('show');
@@ -119,15 +123,15 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 	<tr>
 	    <td colspan='1'>callback</td>
 	    <td colspan='1'>String</td>
-	    <td colspan='1'>satellites<br />sources<br />positions</td>
+	    <td colspan='1'>satellites<br />sources<br />positions<br />passes</td>
 	    <td colspan='1'>Adding the callback parameter to your request (when the format is set to .json) returns the results in JSONP format. This use commonly used when making requests from an AJAX or otherwise client-side script.</td>
 	    <td colspan='1'><span style="font-style: italic;">/sources/CUBESAT.json?callback=yourcallback</span></td>
 	</tr>
 	<tr>
 	    <td colspan='1'>timestamp</td>
 	    <td colspan='1'>Integer (UNIX Timestamp)</td>
-	    <td colspan='1'>satellites<br />sources</td>
-	    <td colspan='1'>The timestamp parameter allows you to supply a <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a> with your request. The result will consist of the TLE's that <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> has that are closest to the timestamp you provided. Without a timestamp, <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> returns the most recent TLE for each satellite included in the response. Note this parameter is relative to UTC.</td>
+	    <td colspan='1'>satellites<br />sources<br />passes</td>
+	    <td colspan='1'>The timestamp parameter allows you to supply a <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a> with your request. The result will consist of or use the TLE's that <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> has that are closest to the timestamp you provided. Without a timestamp, <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> uses the most recent TLE for each satellite included in the response. When used with the passes API, this parameter specifies the start date that you would like to use when calculating satellite passes. Note this parameter is relative to UTC.</td>
 	    <td colspan='1'><span style="font-style: italic;">/satellites/RAX-2.xml?timestamp=1339736400</span></td>
 	</tr>
 	<tr>
@@ -151,19 +155,35 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 	    <td colspan='1'>This parameter specifies how often you would like satellite position calculations to occur during the specified range. For example, if set to '60' the satellite positions calculated will be 60 seconds apart. Defaults to 60 if not specified.</td>
 	    <td colspan='1'><span style="font-style: italic;">/positions/RAX-2.xml?resolution=10</span></td>
 	</tr>
-	<!--<tr>
-	    <td width="10%">limit</td>
-	    <td width="10%">Integer</td>
-	    <td width="50%">This parameter allows you to limit the number of satellite TLEs returned in any given request. Note that this always limits the number of TLEs, not the number of sources. So the query to the right, for example, would return the first 3 satellites for both sources (GPS and CUBESAT).</td>
-	    <td width="30%"><span style="font-style: italic;">/sources/GPS+CUBESAT.xml?limit=3</span></td>
+	<tr>
+	    <td colspan='1'>pass_count</td>
+	    <td colspan='1'>Integer</td>
+	    <td colspan='1'>passes</td>
+	    <td colspan='1'>This parameter allows you to specify how many acceptable passes (i.e. passes that meet the minimum elevation constraints) you wanted included in the result. If the supplied value for this parameter is too large (either exceeds the set limit or if the propagator can't calculate the requested number of specified acceptable passes in one go), a default value will be used instead. Once <span style="font-style: italic;">pass_count</span> acceptable passes are calculated, no further passes will be included in the response. Note that this value is used to limit only the acceptable passes. That is to say, if the 'show_all_passes' parameter is set to true unacceptable passes won't be considered when checking this parameter.</td>
+	    <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?pass_count=5</span></td>
 	</tr>
 	<tr>
-	    <td width="10%">offset</td>
-	    <td width="10%">Integer</td>
-	    <td width="50%">The offset parameter allows you to specify how to offset the response. This must be used with the limit parameter defined above. For example, you may limit the results to 3 and then use offset to retrieve the next group of 3 TLEs.</td>
-	    <td width="30%"><span style="font-style: italic;">/sources/GPS+CUBESAT.xml?limit=3&offset=1</span></td>
-	</tr>-->
-	</tbody>
+	    <td colspan='1'>show_all_passes</td>
+	    <td colspan='1'>Boolean</td>
+	    <td colspan='1'>passes</td>
+	    <td colspan='1'>This parameter allows you to specify whether or not you would like unacceptable passes (i.e. passes that don't meet the elevation requirements) to be included in the response. Defaults to 'true' if not specified.</td>
+	    <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?show_all_passes=true</span></td>
+	</tr>
+	<tr>
+	    <td colspan='1'>ground_stations</td>
+	    <td colspan='1'>String</td>
+	    <td colspan='1'>passes</td>
+	    <td colspan='1'>The 'ground_stations' parameter allows you to specify what ground stations you would like to consider when calculating pass times for a specified satellite. It is a string consisting of URL encoded ground station names joined with underscores ("_"). If no ground stations are specified, a collection of default ground stations will be used instead. For a list of available ground stations, see the list in section <a href="#available_satellites" class="link">2.0</a> of this document.</td>
+	    <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?ground_stations=FXB_SRI</span></td>
+	</tr>
+	<tr>
+	    <td colspan='1'>min_elevations</td>
+	    <td colspan='1'>String</td>
+	    <td colspan='1'>passes</td>
+	    <td colspan='1'>This parameter, when used with the 'ground_stations' parameter, allows you to specify the minimum elevation to use for each ground station. It is comprised of a set of integers (the minimum elevations) joined with an underscore ("_"). The order that the minimum elevations are joined should match the order that the ground stations were joined. That is, if the <span style="font-style: italic;">ground_stations</span> parameter is "FXB_SRI" and the <span style="font-style: italic;">min_elevations</span> parameter is "30_45", FXB will have a minimum elevation of 30&deg; and SRI will have a minimum elevation of 45&deg;. If not specified or if there are more ground stations than minimum elevations, a default value will be used.</td>
+	    <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?ground_stations=FXB_SRI&min_elevations=30_45</span></td>
+	</tr>
+    </tbody>
 </table>
 <p>The resources that each of these parameters can be used on is indicated in the "Works With" column.</p>
 
@@ -184,84 +204,88 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 <pre class="prettyprint pre-scrollable">
 {
   "sources":{
-    "GPS":{
-      "satellites":{
-        "GPS BIIA-10 (PRN 32)":{
-          "name":"GPS BIIA-10 (PRN 32)",
-          "satellite_number":"20959",
-          "classification":"U",
-          "launch_year":"90",
-          "launch_number":"103",
-          "launch_piece":"A",
-          "epoch_year":"12",
-          "epoch":"208.35547222",
-          "ftd_mm_d2":".00000064",
-          "std_mm_d6":"00000-0",
-          "bstar_drag":"10000-3",
-          "element_number":"651",
-          "checksum_l1":"0",
-          "inclination":"54.5008",
-          "right_ascension":"237.0787",
-          "eccentricity":"0119318",
-          "perigee":"327.5321",
-          "mean_anomaly":"31.8169",
-          "mean_motion":"2.00568072",
-          "revs":"15867",
-          "checksum_l2":"4",
-          "raw_l1":"1 20959U 90103A   12208.35547222  .00000064  00000-0  10000-3 0  6510",
-          "raw_l2":"2 20959  54.5008 237.0787 0119318 327.5321  31.8169  2.00568072158674"
-        },
-        ...
-      },
-      "status":{
-        "url":"http:\/\/www.celestrak.com\/NORAD\/elements\/gps-ops.txt",
-        "description":"GPS Satellites.",
-        "updated":1343494980,
-        "satellites_fetched":31
-      }
-    },
     "CUBESAT":{
       "satellites":{
-        "DTUSAT":{
-          "name":"DTUSAT",
-          "satellite_number":"27842",
-          "classification":"U",
-          "launch_year":"3",
-          "launch_number":"31",
-          "launch_piece":"C",
-          "epoch_year":"12",
-          "epoch":"209.55574681",
-          "ftd_mm_d2":".00000096",
-          "std_mm_d6":"00000-0",
-          "bstar_drag":"64011-4",
-          "element_number":"454",
-          "checksum_l1":"2",
-          "inclination":"98.6957",
-          "right_ascension":"217.7612",
-          "eccentricity":"0010295",
-          "perigee":"81.8434",
-          "mean_anomaly":"278.3917",
-          "mean_motion":"14.21308551",
-          "revs":"47074",
-          "checksum_l2":"9",
-          "raw_l1":"1 27842U 03031C   12209.55574681  .00000096  00000-0  64011-4 0  4542",
-          "raw_l2":"2 27842  98.6957 217.7612 0010295  81.8434 278.3917 14.21308551470749"
-        },
-        ...
+	"DTUSAT":{
+	  "name":"DTUSAT",
+	  "satellite_number":"27842",
+	  "classification":"U",
+	  "launch_year":"3",
+	  "launch_number":"31",
+	  "launch_piece":"C",
+	  "epoch_year":"12",
+	  "epoch":"261.50866133",
+	  "ftd_mm_d2":".00000180",
+	  "std_mm_d6":"00000-0",
+	  "bstar_drag":"10239-3",
+	  "element_number":"494",
+	  "checksum_l1":"1",
+	  "inclination":"98.6965",
+	  "right_ascension":"268.9254",
+	  "eccentricity":"0009041",
+	  "perigee":"298.0471",
+	  "mean_anomaly":"61.9785",
+	  "mean_motion":"14.21328962",
+	  "revs":"47812",
+	  "checksum_l2":"5",
+	  "raw_l1":"1 27842U 03031C   12261.50866133  .00000180  00000-0  10239-3 0  4941",
+	  "raw_l2":"2 27842  98.6965 268.9254 0009041 298.0471  61.9785 14.21328962478125"
+	},
+	...
       },
       "status":{
-        "url":"http:\/\/celestrak.com\/NORAD\/elements\/cubesat.txt",
-        "description":"CUBESAT satellites",
-        "updated":1343494981,
-        "satellites_fetched":39
+	"url":"http:\/\/celestrak.com\/NORAD\/elements\/cubesat.txt",
+	"description":"Cubesat satellites.",
+	"updated":1347976291,
+	"satellites_fetched":39
+      }
+    },
+    "GPS":{
+      "satellites":{
+	"GPS BIIA-10 (PRN 32)":{
+	  "name":"GPS BIIA-10 (PRN 32)",
+	  "satellite_number":"20959",
+	  "classification":"U",
+	  "launch_year":"90",
+	  "launch_number":"103",
+	  "launch_piece":"A",
+	  "epoch_year":"12",
+	  "epoch":"261.20237825",
+	  "ftd_mm_d2":".00000021",
+	  "std_mm_d6":"00000-0",
+	  "bstar_drag":"10000-3",
+	  "element_number":"705",
+	  "checksum_l1":"1",
+	  "inclination":"54.4816",
+	  "right_ascension":"234.9334",
+	  "eccentricity":"0119386",
+	  "perigee":"329.0989",
+	  "mean_anomaly":"30.1776",
+	  "mean_motion":"2.00574017",
+	  "revs":"15973",
+	  "checksum_l2":"6",
+	  "raw_l1":"1 20959U 90103A   12261.20237825  .00000021  00000-0  10000-3 0  7051",
+	  "raw_l2":"2 20959  54.4816 234.9334 0119386 329.0989  30.1776  2.00574017159736"
+	},
+	...
+      },
+      "status":{
+	"url":"http:\/\/www.celestrak.com\/NORAD\/elements\/gps-ops.txt",
+	"description":"US GPS satellites.",
+	"updated":1347976291,
+	"satellites_fetched":31
       }
     }
   },
   "status":{
     "status":"okay",
     "message":"At least one of the specified sources was loaded.",
-    "timestamp":1343498683,
-    "sources_fetched":2
+    "timestamp":1347988683,
+    "sources_fetched":1,
+    "params":{
+      "timestamp":1347988683,
+      "sources":["CUBESAT","GPS"]
+    }
   }
 }
 </pre>
@@ -273,8 +297,15 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
   &lt;status&gt;
     &lt;status&gt;okay&lt;/status&gt;
     &lt;message&gt;At least one of the specified sources was loaded.&lt;/message&gt;
-    &lt;timestamp&gt;1343499500&lt;/timestamp&gt;
+    &lt;timestamp&gt;1347989842&lt;/timestamp&gt;
     &lt;sources_fetched&gt;2&lt;/sources_fetched&gt;
+    &lt;params&gt;
+      &lt;timestamp&gt;1347989842&lt;/timestamp&gt;
+      &lt;sources&gt;
+	&lt;source&gt;CUBESAT&lt;/source&gt;
+	&lt;source&gt;GPS&lt;/source&gt;
+      &lt;/sources&gt;
+    &lt;/params&gt;
   &lt;/status&gt;
   &lt;sources&gt;
     &lt;source name="GPS"&gt;
@@ -455,8 +486,12 @@ CUTE-1 (CO-55)
   "status":{
     "status":"okay",
     "message":"At least one of the specified satellites was loaded.",
-    "timestamp":1343500821,
-    "satellites_fetched":2
+    "timestamp":1347990035,
+    "satellites_fetched":2,
+    "params":{
+      "timestamp":1347990035,
+      "satellites":["RAX-2","CUTE-1.7+APD II (CO-65)"]
+    }
   }
 }
 </pre>
@@ -468,8 +503,15 @@ CUTE-1 (CO-55)
   &lt;status&gt;
     &lt;status&gt;okay&lt;/status&gt;
     &lt;message&gt;At least one of the specified satellites was loaded.&lt;/message&gt;
-    &lt;timestamp&gt;1343501121&lt;/timestamp&gt;
+    &lt;timestamp&gt;1347990109&lt;/timestamp&gt;
     &lt;satellites_fetched&gt;2&lt;/satellites_fetched&gt;
+    &lt;params&gt;
+      &lt;timestamp&gt;1347990109&lt;/timestamp&gt;
+      &lt;satellites&gt;
+	&lt;satellite&gt;RAX-2&lt;/satellite&gt;
+	&lt;satellite&gt;CUTE-1.7+APD II (CO-65)&lt;/satellite&gt;
+      &lt;/satellites&gt;
+    &lt;/params&gt;
   &lt;/status&gt;
   &lt;satellites&gt;
     &lt;satellite name='CUTE-1.7+APD II (CO-65)'&gt;
@@ -569,16 +611,16 @@ RAX-2
     "RAX-2":{
       "positions":{
 	"1345830113":{
-	  "timestamp":"1345830113",
-	  "latitude":"55.351346",
-	  "longitude":"52.918618",
-	  "altitude":"658.076145"
+	  "timestamp":1345830113,
+	  "latitude":55.351346,
+	  "longitude":52.918618,
+	  "altitude":658.076145
 	},
 	"1345830173":{
-	  "timestamp":"1345830173",
-	  "latitude":"58.765731",
-	  "longitude":"50.151246",
-	  "altitude":"647.762654"
+	  "timestamp":1345830173,
+	  "latitude":58.765731,
+	  "longitude":50.151246,
+	  "altitude":647.762654
 	},
         ...
       },
@@ -590,24 +632,24 @@ RAX-2
 	"name":"RAX-2",
 	"raw_tle_line_1":"1 37853U 11061D   12235.83404004  .00003153  00000-0  25520-3 0  2645",
 	"raw_tle_line_2":"2 37853 101.7092 306.3753 0246038 160.8856 200.1781 14.80426852 44256",
-	"timestamp_start":"1345830113",
-	"timestamp_end":"1345833713",
+	"timestamp_start":1345830113,
+	"timestamp_end":1345833713,
 	"resolution":60
       }
     },
     "CUTE-1.7+APD II (CO-65)":{
       "positions":{
         "1345830113":{
-	  "timestamp":"1345830113",
-	  "latitude":"60.801292",
-	  "longitude":"44.181864",
-	  "altitude":"636.395418"
+	  "timestamp":1345830113,
+	  "latitude":60.801292,
+	  "longitude":44.181864,
+	  "altitude":636.395418
 	},
 	"1345830173":{
-	  "timestamp":"1345830173",
-	  "latitude":"64.330966",
-	  "longitude":"41.576805",
-	  "altitude":"636.611687"
+	  "timestamp":1345830173,
+	  "latitude":64.330966,
+	  "longitude":41.576805,
+	  "altitude":636.611687
 	},
         ...
       },
@@ -619,8 +661,8 @@ RAX-2
 	"name":"CUTE-1.7+APD II (CO-65)",
 	"raw_tle_line_1":"1 32785U 08021C   12236.17412516  .00000497  00000-0  67364-4 0  3957",
 	"raw_tle_line_2":"2 32785  97.7916 295.6249 0014096 198.2384 161.8322 14.83121379233693",
-	"timestamp_start":"1345830113",
-	"timestamp_end":"1345833713",
+	"timestamp_start":1345830113,
+	"timestamp_end":1345833713,
         "resolution":60
       }
     }
@@ -628,8 +670,14 @@ RAX-2
   "status":{
     "status":"okay",
     "message":"The positions of the specified satellites were calculated successfully.",
-    "timestamp":1345830175,
-    "satellites_calculated":2
+    "timestamp":1347990223,
+    "satellites_calculated":2,
+    "params":{
+      "start":1347990223,
+      "end":1348076623,
+      "resolution":60,
+      "satellites":["RAX-2","CUTE-1.7+APD II (CO-65)"]
+    }
   }
 }
 </pre>
@@ -638,6 +686,21 @@ RAX-2
 <pre class="prettyprint pre-scrollable">
 &lt;?xml version="1.0"?&gt;
 &lt;api_positions&gt;
+  &lt;status&gt;
+    &lt;status&gt;okay&lt;/status&gt;
+    &lt;message&gt;The positions of the specified satellites were calculated successfully.&lt;/message&gt;
+    &lt;timestamp&gt;1347990287&lt;/timestamp&gt;
+    &lt;satellites_calculated&gt;2&lt;/satellites_calculated&gt;
+    &lt;params&gt;
+      &lt;start&gt;1347990287&lt;/start&gt;
+      &lt;end&gt;1348076687&lt;/end&gt;
+      &lt;resolution&gt;60&lt;/resolution&gt;
+      &lt;satellites&gt;
+	&lt;satellite&gt;RAX-2&lt;/satellite&gt;
+	&lt;satellite&gt;CUTE-1.7+APD II (CO-65)&lt;/satellite&gt;
+      &lt;/satellites&gt;
+    &lt;/params&gt;
+  &lt;/status&gt;
   &lt;status&gt;
     &lt;status&gt;okay&lt;/status&gt;
     &lt;message&gt;The positions of the specified satellites were calculated successfully.&lt;/message&gt;
@@ -717,7 +780,134 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
 </div>
 <p>If any of the satellites can't be located, they will simply be omitted from the response. However, if one or more of the valid satellites generates an error (e.g. calculation error), the whole request will return an error response.</p>
 
-<h3 class="titles"><a name="errors"><a href="#errors" class="doc_link">1.7 API Errors</a></a></h3>
+<h3 class="titles"><a name="resource_passes"><a href="#resource_passes" class="doc_link">1.7 Satellite Pass Prediction Resource: /api/passes/[satellite].[format]</a></a></h3>
+<p>The <span style="font-style: italic;">passes</span> resource allows you to retrieve a satellite's predicted pass times over specified ground stations. You can also specify minimum elevations for each ground station, a prediction start date, and various result filters. For example, to retrieve the next 5 acceptable passes (i.e. passes that meet the minimum elevation requirements) for the "RAX-2" satellite over FXB in Ann Arbor  with a minimum elevation of 20 degrees in JSON, this request would be used:</p>
+<pre>
+<?php echo Router::url('/', true); ?>api/passes/CUTE-1.7%2BAPD%20II%20%28CO-65%29.json?pass_count=5&ground_stations=FXB&min_elevations=20&show_all_passes=false
+</pre>
+<p>As stated in the <a href="#making_request" class="link">Making An API Request</a> section, all ground station and satellite names names must be URL encoded (like the "CUTE-1.7+APD II (CO-65)" satellite is in the example request above) before being joined with the underscore.</p>
+<p>Instead of explaining every field returned in the response, portions of the response (clipped parts of the response are indicated by a "...") from the example request above are displayed below in every available format.</p>
+<ul class="nav nav-tabs" id="passes_examples">
+    <li class="active"><a href="#passes_json">JSON</a></li>
+    <li><a href="#passes_xml">XML</a></li>
+    <li><a href="#passes_raw">Raw Satellite Passes</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane active" id="passes_json">
+<pre class="prettyprint pre-scrollable">
+{
+  "passes":[
+    {
+      "pass":{
+	"orbit_number":23754,
+	"aos":1347933717,
+	"aos_az":147,
+	"mel":1347934097,
+	"mel_az":70,
+	"los":1347934470,
+	"los_az":356,
+	"acceptable_el_start":1347933950,
+	"acceptable_el_end":1347934252,
+	"duration":"00:12:33",
+	"peak_elevation":39.6,
+	"acceptable":true,
+	"ground_station":"FXB"
+      }
+    },
+    ...
+  ],
+  "status":{
+    "status":"okay",
+    "message":"Passes were computed successfully.",
+    "timestamp":1348008751,
+    "total_passes_loaded":5,
+    "acceptable_passes_loaded":5,
+    "params":{
+      "pass_count":5,
+      "timestamp":1348008751,
+      "show_all_passes":false,
+      "satellite":"CUTE-1.7+APD II (CO-65)",
+      "raw_tle_line_1":"1 32785U 08021C   12261.27121132  .00001098  00000-0  14065-3 0  4179",
+      "raw_tle_line_2":"2 32785  97.7893 320.1075 0016031 119.4239 240.8600 14.83187504237416",
+      "ground_stations":{
+	"FXB":{
+	  "min_elevation":20,
+	  "name":"FXB",
+	  "latitude":42.293385,
+	  "longitude":-83.712076,
+	  "description":"FXB Ground Station in Ann Arbor, MI"
+	}
+      }
+    }
+  }
+}
+</pre>
+    </div>
+    <div class="tab-pane" id="passes_xml">
+<pre class="prettyprint pre-scrollable">
+&lt;?xml version="1.0"?&gt;
+&lt;api_passes&gt;
+  &lt;status&gt;
+    &lt;status&gt;okay&lt;/status&gt;
+    &lt;message&gt;Passes were computed successfully.&lt;/message&gt;
+    &lt;timestamp&gt;1348009662&lt;/timestamp&gt;
+    &lt;total_passes_loaded&gt;5&lt;/total_passes_loaded&gt;
+    &lt;acceptable_passes_loaded&gt;5&lt;/acceptable_passes_loaded&gt;
+    &lt;params&gt;
+      &lt;pass_count&gt;5&lt;/pass_count&gt;
+      &lt;timestamp&gt;1348009662&lt;/timestamp&gt;
+      &lt;show_all_passes&gt;false&lt;/show_all_passes&gt;
+      &lt;satellite&gt;CUTE-1.7+APD II (CO-65)&lt;/satellite&gt;
+      &lt;raw_tle_line_1&gt;1 32785U 08021C   12261.27121132  .00001098  00000-0  14065-3 0  4179&lt;/raw_tle_line_1&gt;
+      &lt;raw_tle_line_2&gt;2 32785  97.7893 320.1075 0016031 119.4239 240.8600 14.83187504237416&lt;/raw_tle_line_2&gt;
+      &lt;ground_stations&gt;
+        &lt;ground_station name='FXB'&gt;
+	  &lt;name&gt;FXB&lt;/name&gt;
+	  &lt;min_elevation&gt;20&lt;/min_elevation&gt;
+	  &lt;latitude&gt;42.293385&lt;/latitude&gt;
+	  &lt;longitude&gt;-83.712076&lt;/longitude&gt;
+	  &lt;description&gt;FXB Ground Station in Ann Arbor, MI&lt;/description&gt;
+	&lt;/ground_station&gt;
+      &lt;/ground_stations&gt;
+    &lt;/params&gt;
+  &lt;/status&gt;
+  &lt;passes&gt;
+    &lt;pass aos='1347933717'&gt;
+      &lt;orbit_number&gt;23754&lt;/orbit_number&gt;
+      &lt;aos&gt;1347933717&lt;/aos&gt;
+      &lt;aos_az&gt;147&lt;/aos_az&gt;
+      &lt;mel&gt;1347934097&lt;/mel&gt;
+      &lt;mel_az&gt;70&lt;/mel_az&gt;
+      &lt;los&gt;1347934470&lt;/los&gt;
+      &lt;los_az&gt;356&lt;/los_az&gt;
+      &lt;acceptable_el_start&gt;1347933950&lt;/acceptable_el_start&gt;
+      &lt;acceptable_el_end&gt;1347934252&lt;/acceptable_el_end&gt;
+      &lt;duration&gt;00:12:33&lt;/duration&gt;
+      &lt;peak_elevation&gt;39.6&lt;/peak_elevation&gt;
+      &lt;acceptable&gt;true&lt;/acceptable&gt;
+      &lt;ground_station&gt;FXB&lt;/ground_station&gt;
+    &lt;/pass&gt;
+    ...
+  &lt;/passes&gt;
+&lt;/api_passes&gt;
+</pre>
+    </div>
+    <div class="tab-pane" id="passes_raw">
+	<div style="font-style: italic;margin-bottom: 10px;">[satellite name]#[orbit]#[aos]#[aos_az]#[mel]#[mel_az]#[los]#[los_az]#[acceptable_el_start]#[acceptable_el_end]#[duration]#[peak_elevation]#[acceptable]#[station]</div>
+<pre class="pre-scrollable">
+CUTE-1.7+APD II (CO-65)#23769#1348021126#157#1348021515#71#1348021903#351#1348021344#1348021344#00:12:57#61.2#1#FXB
+CUTE-1.7+APD II (CO-65)#23778#1348069274#10#1348069655#281#1348070043#200#1348069484#1348069484#00:12:49#69.4#1#FXB
+CUTE-1.7+APD II (CO-65)#23784#1348108544#167#1348108933#265#1348109321#347#1348108754#1348108754#00:12:57#86.1#1#FXB
+CUTE-1.7+APD II (CO-65)#23793#1348156700#5#1348157073#286#1348157454#210#1348156918#1348156918#00:12:33#44.4#1#FXB
+CUTE-1.7+APD II (CO-65)#23799#1348195970#177#1348196351#257#1348196739#343#1348196188#1348196188#00:12:49#55.1#1#FXB
+</pre>
+    </div>
+</div>
+<p><span style="font-style: italic;">acceptable_el_start</span> and <span style="font-style: italic;">acceptable_el_end</span> indicate the start and end times of the period when the pass is above the specified elevation (assuming it is an acceptable pass). </p>
+
+<p>If any of the specified ground stations can't be found, an error will be generated.</p>
+
+<h3 class="titles"><a name="errors"><a href="#errors" class="doc_link">1.8 API Errors</a></a></h3>
 <p>The top level status element for the sources, satellites, and positions resources will always be returned, even in the event of an error (although this will not occur with the occasional server error). For example, the result of requesting a single non-existent satellite would be:</p>
 <ul class="nav nav-tabs" id="error_examples">
     <li class="active"><a href="#error_json">JSON</a></li>
@@ -731,8 +921,12 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
   "status":{
     "status":"error",
     "message":"None of the provided satellites could be located or have been updated recently.",
-    "timestamp":1343502007,
-    "satellites_fetched":0
+    "timestamp":1347990409,
+    "satellites_fetched":0,
+    "params":{
+      "timestamp":1347990409,
+      "satellites":["DOESNTEXIST"]
+    }
   }
 }
 </pre>
@@ -744,8 +938,14 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
   &lt;status&gt;
     &lt;status&gt;error&lt;/status&gt;
     &lt;message&gt;None of the provided satellites could be located or have been updated recently.&lt;/message&gt;
-    &lt;timestamp&gt;1343502042&lt;/timestamp&gt;
+    &lt;timestamp&gt;1347990456&lt;/timestamp&gt;
     &lt;satellites_fetched&gt;0&lt;/satellites_fetched&gt;
+    &lt;params&gt;
+      &lt;timestamp&gt;1347990456&lt;/timestamp&gt;
+      &lt;satellites&gt;
+	&lt;satellite&gt;DOESNTEXIST&lt;/satellite&gt;
+      &lt;/satellites&gt;
+    &lt;/params&gt;
   &lt;/status&gt;
 &lt;/api_satellites&gt;
 </pre>

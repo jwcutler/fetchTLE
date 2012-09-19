@@ -138,11 +138,16 @@ class Station extends AppModel {
             
             if (empty($stations)){
                 $error_message = 'None of the default ground stations could be found.';
+            } else {
+                // Fill up the elevations array
+                foreach($stations as $station){
+                    $stations_elevations[$station['Station']['name']] = $passes_default_min_el;
+                }
             }
         }
         
         // Grab the most recent TLE for the specified satellite
-        $satellite = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND Tle.created_on < TleAlt.created_on) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND (Tle.name=\''.Sanitize::clean($satellite_name).'\')');
+        $satellite = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(Tle.created_on - \''.Sanitize::clean($start_date).'\') > ABS(TleAlt.created_on - \''.Sanitize::clean($start_date).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND (Tle.name=\''.Sanitize::clean($satellite_name).'\')');
         if (empty($satellite)){
             $error_message = 'The satellite \''.$satellite_name.'\' could not be found.';
         }
@@ -155,7 +160,9 @@ class Station extends AppModel {
             foreach ($stations as $station_index => $station){
                 // Invoke the propagator and load the results
                 $gs_satellite_passes = array();
-                exec(APP.'Vendor/SatTrack/sattrack -b UTC "'.$station['Station']['name'].'" '.$station['Station']['latitude'].' '.$station['Station']['longitude'].' "'.$satellite[0]['Tle']['name'].'" "'.$satellite[0]['Tle']['raw_l1'].'" "'.$satellite[0]['Tle']['raw_l2'].'" shortpr '.gmdate("dMy", $start_date).' 0:0:0 auto 30 0 '.$stations_elevations[$station['Station']['name']].' nohardcopy', $gs_satellite_passes);
+                $station_latitude = $station['Station']['latitude'];
+                $station_longitude = $station['Station']['longitude']*-1; // Negate because SatTrack is weird
+                exec(APP.'Vendor/SatTrack/sattrack -b UTC "'.$station['Station']['name'].'" '.$station_latitude.' '.$station_longitude.' "'.$satellite[0]['Tle']['name'].'" "'.$satellite[0]['Tle']['raw_l1'].'" "'.$satellite[0]['Tle']['raw_l2'].'" shortpr '.gmdate("dMy", $start_date).' 0:0:0 auto 30 0 '.$stations_elevations[$station['Station']['name']].' nohardcopy', $gs_satellite_passes);
                 
                 if (strpos($gs_satellite_passes[0], 'SUCCESS')===FALSE){
                     // Some sort of error occured, set the error response and exit the loop
@@ -191,17 +198,17 @@ class Station extends AppModel {
                             
                             // Add the pass to the array
                             $temp_pass = array();
-                            $temp_pass['pass']['orbit_number'] = $pass_orbit;
+                            $temp_pass['pass']['orbit_number'] = intval($pass_orbit);
                             $temp_pass['pass']['aos'] = $pass_aos_timestamp;
-                            $temp_pass['pass']['aos_az'] = $pass_aos_az;
+                            $temp_pass['pass']['aos_az'] = floatval($pass_aos_az);
                             $temp_pass['pass']['mel'] = $pass_mel_timestamp;
-                            $temp_pass['pass']['mel_az'] = $pass_mel_az;
+                            $temp_pass['pass']['mel_az'] = floatval($pass_mel_az);
                             $temp_pass['pass']['los'] = $pass_los_timestamp;
-                            $temp_pass['pass']['los_az'] = $pass_los_az;
+                            $temp_pass['pass']['los_az'] = floatval($pass_los_az);
                             $temp_pass['pass']['acceptable_el_start'] = $pass_el_start_timestamp;
                             $temp_pass['pass']['acceptable_el_end'] = $pass_el_end_timestamp;
                             $temp_pass['pass']['duration'] = $pass_duration;
-                            $temp_pass['pass']['peak_elevation'] = $pass_peak_elev;
+                            $temp_pass['pass']['peak_elevation'] = floatval($pass_peak_elev);
                             $temp_pass['pass']['acceptable'] = ($pass_peak_elev>=$stations_elevations[$station['Station']['name']])?true:false;
                             $temp_pass['pass']['ground_station'] = $station['Station']['name'];
                             
@@ -248,7 +255,7 @@ class Station extends AppModel {
         }
         
         // Add the request parameters
-        $result['status']['params']['passcount'] = $pass_count;
+        $result['status']['params']['pass_count'] = intval($pass_count);
         $result['status']['params']['timestamp'] = $start_date;
         $result['status']['params']['show_all_passes'] = $show_all_passes;
         $result['status']['params']['satellite'] = $satellite_name;
@@ -259,10 +266,10 @@ class Station extends AppModel {
         if (!empty($stations)){
             $result['status']['params']['ground_stations']  = array();
             foreach($stations as $station_index => $station){
-                $result['status']['params']['ground_stations'][$station['Station']['name']]['minelevation'] = $stations_elevations[$station['Station']['name']];
+                $result['status']['params']['ground_stations'][$station['Station']['name']]['min_elevation'] = intval($stations_elevations[$station['Station']['name']]);
                 $result['status']['params']['ground_stations'][$station['Station']['name']]['name'] = $station['Station']['name'];
-                $result['status']['params']['ground_stations'][$station['Station']['name']]['latitude'] = $station['Station']['latitude'];
-                $result['status']['params']['ground_stations'][$station['Station']['name']]['longitude'] = $station['Station']['longitude'];
+                $result['status']['params']['ground_stations'][$station['Station']['name']]['latitude'] = floatval($station['Station']['latitude']);
+                $result['status']['params']['ground_stations'][$station['Station']['name']]['longitude'] = floatval($station['Station']['longitude']);
                 $result['status']['params']['ground_stations'][$station['Station']['name']]['description'] = $station['Station']['description'];
             }
         }
@@ -336,9 +343,10 @@ class Station extends AppModel {
             $xml_string .= '<total_passes_loaded>'.htmlspecialchars($pass_times['status']['total_passes_loaded']).'</total_passes_loaded>';
             $xml_string .= '<acceptable_passes_loaded>'.htmlspecialchars($pass_times['status']['acceptable_passes_loaded']).'</acceptable_passes_loaded>';
             $xml_string .= '<params>';
-                $xml_string .= '<passcount>'.htmlspecialchars($pass_times['status']['params']['passcount']).'</passcount>';
+                $xml_string .= '<pass_count>'.htmlspecialchars($pass_times['status']['params']['pass_count']).'</pass_count>';
                 $xml_string .= '<timestamp>'.htmlspecialchars($pass_times['status']['params']['timestamp']).'</timestamp>';
-                $xml_string .= '<show_all_passes>'.htmlspecialchars($pass_times['status']['params']['show_all_passes']).'</show_all_passes>';
+                $show_all_passes = ($pass_times['status']['params']['show_all_passes'])?'true':'false';
+                $xml_string .= '<show_all_passes>'.htmlspecialchars($show_all_passes).'</show_all_passes>';
                 $xml_string .= '<satellite>'.htmlspecialchars($pass_times['status']['params']['satellite']).'</satellite>';
                 if (isset($pass_times['status']['params']['raw_tle_line_1'])){
                     $xml_string .= '<raw_tle_line_1>'.htmlspecialchars($pass_times['status']['params']['raw_tle_line_1']).'</raw_tle_line_1>';
@@ -351,7 +359,7 @@ class Station extends AppModel {
                         foreach ($pass_times['status']['params']['ground_stations'] as $ground_station_name => $ground_station){
                             $xml_string .= '<ground_station name=\''.htmlspecialchars($ground_station_name).'\'>';
                                 $xml_string .= '<name>'.htmlspecialchars($ground_station_name).'</name>';
-                                $xml_string .= '<minelevation>'.htmlspecialchars($ground_station['minelevation']).'</minelevation>';
+                                $xml_string .= '<min_elevation>'.htmlspecialchars($ground_station['min_elevation']).'</min_elevation>';
                                 $xml_string .= '<latitude>'.htmlspecialchars($ground_station['latitude']).'</latitude>';
                                 $xml_string .= '<longitude>'.htmlspecialchars($ground_station['longitude']).'</longitude>';
                                 $xml_string .= '<description>'.htmlspecialchars($ground_station['description']).'</description>';

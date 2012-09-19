@@ -82,6 +82,7 @@ class Source extends AppModel {
 	} else {
 	    // Load the source and most recent successful update for each `source_names`
 	    $sources = $this->query('SELECT * FROM sources AS Source INNER JOIN updates AS `Update` ON (`Update`.id = Source.latest_successful_update AND `Update`.update_message = \'\') '.$query_source_names);
+	    $timestamp = time();
 	}
 		
 	if (empty($sources)){
@@ -110,7 +111,7 @@ class Source extends AppModel {
 		    // Store the source status
 		    $result['sources'][$source['Source']['name']]['status']['url'] = $source['Source']['url'];
 		    $result['sources'][$source['Source']['name']]['status']['description'] = $source['Source']['description'];
-		    $result['sources'][$source['Source']['name']]['status']['updated'] = strtotime($source['Update']['created_on']);
+		    $result['sources'][$source['Source']['name']]['status']['updated'] = intval($source['Update']['created_on']);
 		    $result['sources'][$source['Source']['name']]['status']['satellites_fetched'] = count($result['sources'][$source['Source']['name']]['satellites']);
 		} else {
 		    // No tle's found for the current source/update, skip it
@@ -123,13 +124,20 @@ class Source extends AppModel {
 		$result['status']['status'] = 'okay';
 		$result['status']['message'] = 'At least one of the specified sources was loaded.';
 		$result['status']['timestamp'] = time();
-		$result['status']['sources_fetched'] = count($result)-1;
+		$result['status']['sources_fetched'] = count($result);
 	    } else {
 		$result['status']['status'] = 'error';
 		$result['status']['message'] = 'None of the specified sources could be loaded.';
 		$result['status']['timestamp'] = time();
 		$result['status']['sources_fetched'] = 0;
 	    }
+	}
+	
+	// Add the request parameters
+	$result['status']['params']['timestamp'] = $timestamp;
+	$result['status']['params']['sources'] = array();
+	foreach($source_names as $temp_source_name){
+	    array_push($result['status']['params']['sources'], $temp_source_name);
 	}
         
         return $result;
@@ -255,6 +263,14 @@ class Source extends AppModel {
 	$xml_string .= '<message>'.htmlspecialchars($data['status']['message']).'</message>';
 	$xml_string .= '<timestamp>'.htmlspecialchars($data['status']['timestamp']).'</timestamp>';
 	$xml_string .= '<sources_fetched>'.htmlspecialchars($data['status']['sources_fetched']).'</sources_fetched>';
+	$xml_string .= '<params>';
+	    $xml_string .= '<timestamp>'.htmlspecialchars($data['status']['params']['timestamp']).'</timestamp>';
+	    $xml_string .= '<sources>';
+		foreach ($data['status']['params']['sources'] as $temp_source){
+		    $xml_string .= '<source>'.htmlspecialchars($temp_source).'</source>';
+		}
+	    $xml_string .= '</sources>';
+	$xml_string .= '</params>';
 	$xml_string .= '</status>';
 	
 	// Add each source

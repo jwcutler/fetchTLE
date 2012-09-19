@@ -103,8 +103,8 @@ class PassController extends AppController {
         $pass_times = null;
         
         // Collect the parameters
-        $minelevation = (isset($_GET['minelevations']))?$_GET['minelevations']:false;
-        $passcount = (isset($_GET['passcount']))?$_GET['passcount']:false;
+        $minelevation = (isset($_GET['min_elevations']))?$_GET['min_elevations']:false;
+        $pass_count = (isset($_GET['pass_count']))?$_GET['pass_count']:false;
         $ground_stations = (isset($_GET['ground_stations']))?$_GET['ground_stations']:false;
         $timestamp = (isset($_GET['timestamp']))?$_GET['timestamp']:false;
         $show_all_passes = (isset($_GET['show_all_passes'])&&$_GET['show_all_passes']=='false')?false:true;
@@ -115,7 +115,7 @@ class PassController extends AppController {
             $satellite_name = $this->request->params['satellite'];
             $ground_station_names = ($ground_stations)?explode('_', $ground_stations):false;
             $min_elevations = ($minelevation)?explode('_', $minelevation):false;
-            $pass_times = $this->Station->api_loadpasses($satellite_name, $ground_station_names, $min_elevations, $passcount, $timestamp, $show_all_passes);
+            $pass_times = $this->Station->api_loadpasses($satellite_name, $ground_station_names, $min_elevations, $pass_count, $timestamp, $show_all_passes);
             
             if (isset($this->request->params['ext']) && $this->request->params['ext']=='xml'){
                 // Convert the array to an XML string

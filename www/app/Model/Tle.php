@@ -82,6 +82,7 @@ class Tle extends AppModel {
         } else {
             // Grab the most recent TLE for each specified satellite along with its associated update
             $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND Tle.created_on < TleAlt.created_on) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
+            $timestamp = time();
         }
 		
 		//echo $this->getLastQuery();
@@ -99,7 +100,7 @@ class Tle extends AppModel {
                 $satellite_name = $satellite['Tle']['name'];
                 
                 // Set the satellite's status
-                $result['satellites'][$satellite_name]['status']['updated'] = $satellite['Tle']['created_on'];
+                $result['satellites'][$satellite_name]['status']['updated'] = intval($satellite['Tle']['created_on']);
                 
                 // Set the satellite's TLE info
                 $result['satellites'][$satellite_name]['tle'] = $satellite['Tle'];
@@ -120,6 +121,13 @@ class Tle extends AppModel {
                 $result['status']['timestamp'] = time();
                 $result['status']['satellites_fetched'] = 0;
             }
+        }
+        
+        // Add the request parameters
+        $result['status']['params']['timestamp'] = intval($timestamp);
+        $result['status']['params']['satellites'] = array();
+        foreach($satellite_names as $temp_satellite_name){
+            array_push($result['status']['params']['satellites'], $temp_satellite_name);
         }
         
         return $result;
@@ -212,17 +220,17 @@ class Tle extends AppModel {
                         $result['satellites'][$satellite_name]['status']['name'] = $satellite_name;
                         $result['satellites'][$satellite_name]['status']['raw_tle_line_1'] = $satellite['Tle']['raw_l1'];
                         $result['satellites'][$satellite_name]['status']['raw_tle_line_2'] = $satellite['Tle']['raw_l2'];
-                        $result['satellites'][$satellite_name]['status']['timestamp_start'] = $start;
-                        $result['satellites'][$satellite_name]['status']['timestamp_end'] = $end;
-                        $result['satellites'][$satellite_name]['status']['resolution'] = $resolution;
+                        $result['satellites'][$satellite_name]['status']['timestamp_start'] = intval($start);
+                        $result['satellites'][$satellite_name]['status']['timestamp_end'] = intval($end);
+                        $result['satellites'][$satellite_name]['status']['resolution'] = intval($resolution);
                     } else {
                         // Parse the calculation results
                         foreach($position_results as $position_result){
                             list($timestamp, $latitude, $longitude, $altitude) = explode(':', $position_result);
-                            $result['satellites'][$satellite_name]['positions'][$timestamp]['timestamp'] = $timestamp;
-                            $result['satellites'][$satellite_name]['positions'][$timestamp]['latitude'] = $latitude;
-                            $result['satellites'][$satellite_name]['positions'][$timestamp]['longitude'] = $longitude;
-                            $result['satellites'][$satellite_name]['positions'][$timestamp]['altitude'] = $altitude;
+                            $result['satellites'][$satellite_name]['positions'][$timestamp]['timestamp'] = intval($timestamp);
+                            $result['satellites'][$satellite_name]['positions'][$timestamp]['latitude'] = floatval($latitude);
+                            $result['satellites'][$satellite_name]['positions'][$timestamp]['longitude'] = floatval($longitude);
+                            $result['satellites'][$satellite_name]['positions'][$timestamp]['altitude'] = floatval($altitude);
                         }
                         
                         // Add the satellite status
@@ -233,9 +241,9 @@ class Tle extends AppModel {
                         $result['satellites'][$satellite_name]['status']['name'] = $satellite_name;
                         $result['satellites'][$satellite_name]['status']['raw_tle_line_1'] = $satellite['Tle']['raw_l1'];
                         $result['satellites'][$satellite_name]['status']['raw_tle_line_2'] = $satellite['Tle']['raw_l2'];
-                        $result['satellites'][$satellite_name]['status']['timestamp_start'] = $start;
-                        $result['satellites'][$satellite_name]['status']['timestamp_end'] = $end;
-                        $result['satellites'][$satellite_name]['status']['resolution'] = $resolution;
+                        $result['satellites'][$satellite_name]['status']['timestamp_start'] = intval($start);
+                        $result['satellites'][$satellite_name]['status']['timestamp_end'] = intval($end);
+                        $result['satellites'][$satellite_name]['status']['resolution'] = intval($resolution);
                     }
                 }
                 
@@ -259,6 +267,15 @@ class Tle extends AppModel {
             }
         }
         
+        // Add the request parameters
+        $result['status']['params']['start'] = intval($start);
+        $result['status']['params']['end'] = intval($end);
+        $result['status']['params']['resolution'] = intval($resolution);
+        $result['status']['params']['satellites'] = array();
+        foreach($satellite_names as $temp_satellite_name){
+            array_push($result['status']['params']['satellites'], $temp_satellite_name);
+        }
+        
         //var_dump($result);
         return $result;
     }
@@ -275,7 +292,7 @@ class Tle extends AppModel {
         
         // Start XML document.
         $xml_string = '<?xml version="1.0"?>';
-        $xml_string .= '<api_satellites>';
+        $xml_string .= '<api_satellites>';        
         
         // Add the status element
         $xml_string .= '<status>';
@@ -283,6 +300,14 @@ class Tle extends AppModel {
         $xml_string .= '<message>'.htmlspecialchars($satellites['status']['message']).'</message>';
         $xml_string .= '<timestamp>'.htmlspecialchars($satellites['status']['timestamp']).'</timestamp>';
         $xml_string .= '<satellites_fetched>'.htmlspecialchars($satellites['status']['satellites_fetched']).'</satellites_fetched>';
+            $xml_string .= '<params>';
+                $xml_string .= '<timestamp>'.htmlspecialchars($satellites['status']['params']['timestamp']).'</timestamp>';
+                $xml_string .= '<satellites>';
+                    foreach ($satellites['status']['params']['satellites'] as $temp_satellite){
+                        $xml_string .= '<satellite>'.htmlspecialchars($temp_satellite).'</satellite>';
+                    }
+                $xml_string .= '</satellites>';
+            $xml_string .= '</params>';
         $xml_string .= '</status>';
         
         // Add the satellites
@@ -354,6 +379,16 @@ class Tle extends AppModel {
         $xml_string .= '<message>'.htmlspecialchars($satellites['status']['message']).'</message>';
         $xml_string .= '<timestamp>'.htmlspecialchars($satellites['status']['timestamp']).'</timestamp>';
         $xml_string .= '<satellites_calculated>'.htmlspecialchars($satellites['status']['satellites_calculated']).'</satellites_calculated>';
+        $xml_string .= '<params>';
+            $xml_string .= '<start>'.htmlspecialchars($satellites['status']['params']['start']).'</start>';
+            $xml_string .= '<end>'.htmlspecialchars($satellites['status']['params']['end']).'</end>';
+            $xml_string .= '<resolution>'.htmlspecialchars($satellites['status']['params']['resolution']).'</resolution>';
+            $xml_string .= '<satellites>';
+                foreach ($satellites['status']['params']['satellites'] as $temp_satellite){
+                    $xml_string .= '<satellite>'.htmlspecialchars($temp_satellite).'</satellite>';
+                }
+            $xml_string .= '</satellites>';
+        $xml_string .= '</params>';
         $xml_string .= '</status>';
         
         // Add the satellites
