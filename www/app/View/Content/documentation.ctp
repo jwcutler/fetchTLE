@@ -958,60 +958,87 @@ CUTE-1.7+APD II (CO-65)#23799#1348195970#177#1348196351#257#1348196739#343#13481
 </div>
 
 <!-- Available Satellites & Sources -->
-<h2 class="titles"><a name="available_satellites"><a href="#available_satellites" class="doc_link">2.0 Available Sources and Satellites</a></a></h2>
+<h2 class="titles"><a name="available_satellites"><a href="#available_satellites" class="doc_link">2.0 Available Sources, Satellites, and Ground Stations</a></a></h2>
 <p>Below, lists of the available sources and their satellites along with their URL encoding are displayed for your convenience.</p>
 <?php if (!empty($sources)): ?>
     <table class="table table-hover">
 	<thead>
 	    <tr>
 		<th width="15%">Source Name</th>
-		<th width="15%">Encoded Name</th>
+		<th width="15%">URL Encoded Name</th>
 		<th width="20%">Last Updated</th>
 		<th width="15%">Description</th>
 		<th width="35%">URL</th>
 	    </tr>
 	</thead>
-    <tbody>
-	<?php foreach($sources as $source): ?>
-	    <tr id="source_<?php echo $source['Source']['id']; ?>">
-		<td width="15%"><?php echo $source['Source']['name']; ?> <a class="expand_link" rel="<?php echo $source['Source']['id']; ?>">[+ Satellites]</a></td>
-		<td width="15%"><?php echo rawurlencode($source['Source']['name']); ?></td>
-		<td width="20%">
-		    <?php if (isset($source['Update'][0]['created_on'])): ?>
-			<?php echo date('m/d/Y G:i:s T', $source['Update'][0]['created_on']); ?>
-		    <?php else: ?>
-			<span style="font-style: italic;">Not Updated Yet</span>
-		    <?php endif; ?>
-		</td>
-		<td width="15%"><?php echo $source['Source']['description']; ?></td>
-		<td width="35%"><a href="<?php echo $source['Source']['url']; ?>" target="_blank" class="link"><?php echo $source['Source']['url']; ?></a></td>
-	    </tr>
-	    <tr id="satellites_<?php echo $source['Source']['id']; ?>" class="satellite_row">
-		<td colspan="1"></td>
-		<td colspan="4">
-		    <?php if (!empty($source['Update'][0]['Tle'])): ?>
-			<table style="width: 50%;" class="table table-condensed satellite_table">
-			    <thead>
-				<th>Satellite Name</th>
-				<th>Encoded Satellite Name</th>
-			    </thead>
-			    <tbody>
-				<?php foreach($source['Update'][0]['Tle'] as $tle): ?>
-				    <tr>
-					<td><?php echo $tle['name']; ?></td>
-					<td><?php echo rawurlencode($tle['name']); ?></td>
-				    </tr>
-				<?php endforeach; ?>
-			    </tbody>
-			</table>
-		    <?php else: ?>
-			<span style="font-style: italic;">No Satellites Loaded</span>
-		    <?php endif; ?>
-		</td>
-	    </tr>
-	<?php endforeach; ?>
-    </tbody>
+	<tbody>
+	    <?php foreach($sources as $source): ?>
+		<tr id="source_<?php echo $source['Source']['id']; ?>">
+		    <td colspan="1"><?php echo $source['Source']['name']; ?> <a class="expand_link" rel="<?php echo $source['Source']['id']; ?>">[+ Satellites]</a></td>
+		    <td colspan="1"><?php echo rawurlencode($source['Source']['name']); ?></td>
+		    <td colspan="1">
+			<?php if (isset($source['Update'][0]['created_on'])): ?>
+			    <?php echo date('m/d/Y G:i:s T', $source['Update'][0]['created_on']); ?>
+			<?php else: ?>
+			    <span style="font-style: italic;">Not Updated Yet</span>
+			<?php endif; ?>
+		    </td>
+		    <td colspan="1"><?php echo $source['Source']['description']; ?></td>
+		    <td colspan="1"><a href="<?php echo $source['Source']['url']; ?>" target="_blank" class="link"><?php echo $source['Source']['url']; ?></a></td>
+		</tr>
+		<tr id="satellites_<?php echo $source['Source']['id']; ?>" class="satellite_row">
+		    <td colspan="1"></td>
+		    <td colspan="4">
+			<?php if (!empty($source['Update'][0]['Tle'])): ?>
+			    <table style="width: 50%;" class="table table-condensed satellite_table">
+				<thead>
+				    <th>Satellite Name</th>
+				    <th>Encoded Satellite Name</th>
+				</thead>
+				<tbody>
+				    <?php foreach($source['Update'][0]['Tle'] as $tle): ?>
+					<tr>
+					    <td><?php echo $tle['name']; ?></td>
+					    <td><?php echo rawurlencode($tle['name']); ?></td>
+					</tr>
+				    <?php endforeach; ?>
+				</tbody>
+			    </table>
+			<?php else: ?>
+			    <span style="font-style: italic;">No Satellites Loaded</span>
+			<?php endif; ?>
+		    </td>
+		</tr>
+	    <?php endforeach; ?>
+	</tbody>
     </table>
 <?php else: ?>
     <span style="font-style: italic;">No sources are currently available for use.</span>
+<?php endif; ?>
+<p>The list of all available ground stations is displayed below. These are typically used with the "passes" API.</p>
+<?php if (!empty($stations)): ?>
+    <table class="table table-hover">
+	<thead>
+	    <tr>
+		<th width="15%">Station Name</th>
+		<th width="15%">URL Encoded Name</th>
+		<th width="10%">Latitude</th>
+		<th width="10%">Longitude</th>
+		<th>Description</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    <?php foreach($stations as $station): ?>
+		<tr>
+		    <td colspan="1"><?php echo $station['Station']['name']; ?></td>
+		    <td colspan="1"><?php echo rawurlencode($station['Station']['name']); ?></td>
+		    <td colspan="1"><?php echo $station['Station']['latitude']; ?> <?php if ($station['Station']['latitude']>0): ?>N<?php else: ?>S<?php endif; ?></td>
+		    <td colspan="1"><?php echo $station['Station']['longitude']; ?> <?php if ($station['Station']['longitude']>0): ?>W<?php else: ?>E<?php endif; ?></td>
+		    <td colspan="1"><?php echo $station['Station']['description']; ?> <a href="https://maps.google.com/maps?q=<?php echo $station['Station']['latitude']; ?>,<?php echo $station['Station']['longitude']; ?>" target="_blank" class="link">(View Map)</a></td>
+		</tr>
+	    <?php endforeach; ?>
+	</tbody>
+    </table>
+<?php else: ?>
+    <span style="font-style: italic;">No ground stations are currently configured. Please try again once some have been added.</span>
 <?php endif; ?>

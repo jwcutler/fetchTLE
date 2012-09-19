@@ -57,7 +57,7 @@ $(document).ready(function(){
 });
 </script>
 <h3>Upcoming Pass Tool Configuration</h3>
-Use this form to configure the <a href="<?php echo $this->Html->url(array('controller' => 'pass', 'action' => 'index', 'tools' => true)); ?>" target="_blank" class="link">Upcoming Pass Tool</a>.
+Use this form to configure the <a href="<?php echo $this->Html->url(array('controller' => 'passes', 'action' => 'index', 'tools' => true)); ?>" target="_blank" class="link">Upcoming Pass Tool</a>.
 <div class="form_errors">
     <ul>
     </ul>

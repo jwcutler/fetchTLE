@@ -169,12 +169,12 @@ $(document).ready(function(){
                             $("#pass_results tbody").append(pass_result_row);
                             
                             // Populate the request parameter panel
-                            $("#passcount_notification").html("Number of Acceptable Passes To Calculate: <i>"+response['status']['params']['passcount']);
+                            $("#passcount_notification").html("Number of Acceptable Passes To Calculate: <i>"+response['status']['params']['pass_count']);
                             $("#showallpasses_notification").html("Show All Passes: <i>"+response['status']['params']['show_all_passes']+"</i>");
                             $("#satellite_tle_notification").html("TLE Used In Calculations: <div style='margin: 0px 0px 0px 20px;font-style: italic;'><pre style='margin: 0px; padding: 0px; background-color: #eeeeee; border: none; line-height: 1; font-size: 11px; color: black;'>"+response['status']['params']['satellite']+"<br />"+response['status']['params']['raw_tle_line_1']+"<br />"+response['status']['params']['raw_tle_line_2']+"</pre></div>");
                             $("#groundstations_notification").html("");
                             for (ground_station_index in response['status']['params']['ground_stations']){
-                                $("#groundstations_notification").append(response['status']['params']['ground_stations'][ground_station_index]['name']+" minimum elevation: <i>"+response['status']['params']['ground_stations'][ground_station_index]['minelevation']+"&deg;</i><br />");
+                                $("#groundstations_notification").append(response['status']['params']['ground_stations'][ground_station_index]['name']+" minimum elevation: <i>"+response['status']['params']['ground_stations'][ground_station_index]['min_elevation']+"&deg;</i><br />");
                             }
                         }
                         

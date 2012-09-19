@@ -40,22 +40,21 @@ $(document).ready(function(){
     <table class="table table-hover" width="100%">
 	<thead>
 	    <tr>
-		<th width="30%">Error Date</th>
-		<th width="31%">Source</th>
-		<th width="38%">Error Message</th>
+		<th width="25%">Error Date</th>
+		<th width="25%">Source</th>
+		<th width="50%">Error Message</th>
 	    </tr>
 	</thead>
 	<tbody>
 	    <?php foreach($error_updates as $error_update): ?>
 		<tr>
-		    <td width="30%">
+		    <td colspan="1">
                         <?php
-                        $source_polled = strtotime($error_update['Update']['created_on']);
-                        echo date("m/j/Y H:i:s", $source_polled);
+                        echo date("m/j/Y H:i:s", $error_update['Update']['created_on']);
                         ?>
                     </td>
-		    <td width="31%"><a href="<?php echo $this->webroot; ?>admin/source/<?php echo $error_update['Source']['id']; ?>/edit" target="_blank" class="link"><?php echo $error_update['Source']['name']; ?></a></td>
-		    <td width="38%"><?php echo $error_update['Update']['update_message']; ?></td>
+		    <td colspan="1"><a href="<?php echo $this->webroot; ?>admin/source/<?php echo $error_update['Source']['id']; ?>/edit" target="_blank" class="link"><?php echo $error_update['Source']['name']; ?></a></td>
+		    <td colspan="1"><?php echo $error_update['Update']['update_message']; ?></td>
 		</tr>
 	    <?php endforeach; ?>
 	</tbody>

@@ -4,7 +4,7 @@ This controller is used to load and render static content.
 */
 
 class ContentController extends AppController {
-	var $uses = array('Source', 'Tle');
+	var $uses = array('Source', 'Tle', 'Station');
 
     function beforeFilter(){
         parent::beforeFilter();
@@ -17,6 +17,9 @@ class ContentController extends AppController {
 	/*
 	This action displays the primary fetchTLE documentation.
 	*/
+	
+	// Load the ground stations
+	$this->set('stations', $this->Station->find('all'));
 	
 	// Load the sources
 	$this->Source->hasMany['Update']['limit'] = 1;

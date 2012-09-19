@@ -223,6 +223,8 @@ class Source extends AppModel {
                 // An error occured, record it in the update
                 $temp_update['Update']['id'] = $mod_update->id;
                 $temp_update['Update']['update_message'] = $temp_update_message;
+		$temp_update['Update']['source_id'] = $source['Source']['id'];
+                $temp_update['Update']['created_on'] = time();
                 $mod_update->save($temp_update);
                 
                 CakeLog::write('source', '[error] There was an error updating the source \''.$source['Source']['name'].'\': \''.$temp_update_message.'\'');

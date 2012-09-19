@@ -188,7 +188,7 @@ class Tle extends AppModel {
             // Load the TLEs that are closest to the starting timestamp
             $satellites = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(Tle.created_on - \''.Sanitize::clean($start).'\') > ABS(TleAlt.created_on - \''.Sanitize::clean($start).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND ('.$query_satellite_names.')');
             
-            //echo $this->getLastQuery().'<br /.';
+            //echo $this->getLastQuery().'<br />';
             //var_dump($satellites);
             
             if (empty($satellites)){
