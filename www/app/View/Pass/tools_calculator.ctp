@@ -127,18 +127,6 @@ $(document).ready(function(){
                                     pass_result_row += '<td>'+pad(acceptable_el_end.getUTCHours())+':'+pad(acceptable_el_end.getUTCMinutes())+':'+pad(acceptable_el_end.getUTCSeconds())+'</td>';
                                 }
                                 
-                                // Calculate the duration of the acceptable elevation window
-                                if (!acceptable_el_start && !acceptable_el_end){
-                                    pass_result_row += '<td>NA</td>';
-                                } else {
-                                    // Calculate the difference
-                                    acceptable_duration = Math.abs(acceptable_el_end - acceptable_el_start)/1000; // In Seconds
-                                    hours = Math.floor(acceptable_duration/3600);
-                                    minutes = Math.floor((acceptable_duration/60) % 60);
-                                    seconds = acceptable_duration % 60;
-                                    pass_result_row += '<td>'+pad(hours)+':'+pad(minutes)+':'+pad(seconds)+'</td>';
-                                }
-                                
                                 // Display the timezone
                                 $("#timezone_notification").html("Note: All times and dates are in UTC.");
                             } else {
@@ -165,6 +153,18 @@ $(document).ready(function(){
                                 time_zone_offset_string = time_zone_string_temp.substr(-14, 8);
                                 $("#timezone_notification").html("Note: All times and dates are in "+time_zone_string+" ("+time_zone_offset_string+").");
                             }
+                            // Calculate the duration of the acceptable elevation window
+                            if (!acceptable_el_start && !acceptable_el_end){
+                                pass_result_row += '<td>NA</td>';
+                            } else {
+                                // Calculate the difference
+                                acceptable_duration = Math.abs(acceptable_el_end - acceptable_el_start)/1000; // In Seconds
+                                hours = Math.floor(acceptable_duration/3600);
+                                minutes = Math.floor((acceptable_duration/60) % 60);
+                                seconds = acceptable_duration % 60;
+                                pass_result_row += '<td>'+pad(hours)+':'+pad(minutes)+':'+pad(seconds)+'</td>';
+                            }
+                            
                             pass_result_row += '</tr>';
                             $("#pass_results tbody").append(pass_result_row);
                             

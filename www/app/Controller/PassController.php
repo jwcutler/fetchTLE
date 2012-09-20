@@ -6,6 +6,12 @@ This controller is responsible for calculating and displaying pass times for spe
 class PassController extends AppController {
     var $uses = array('Tle', 'Update', 'Configuration', 'Station', 'Source'); 
     var $components = array('RequestHandler');
+    
+    // Setup Caching
+	public $helpers = array('Cache');
+    public $cacheAction = array(
+		'api_passes' => 1800 // Cache API for 30 minutes (1800 seconds)
+	);
 		
     function beforeFilter(){
         parent::beforeFilter();
