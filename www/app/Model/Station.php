@@ -196,6 +196,12 @@ class Station extends AppModel {
                             $pass_el_end_array = explode(':', $pass_el_end);
                             $pass_el_end_timestamp = ($pass_el_end_array[0]=='0'&&$pass_el_end_array[1]=='0'&&$pass_el_end_array[2]=='0')?false:gmmktime($pass_el_end_array[0], $pass_el_end_array[1], $pass_el_end_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
                             
+                            // Detect if any timestamps rolled over to the next day and correct
+                            $pass_mel_timestamp = ($pass_mel_timestamp < $pass_aos_timestamp)?$pass_mel_timestamp+(24*60*60):$pass_mel_timestamp;
+                            $pass_los_timestamp = ($pass_los_timestamp < $pass_aos_timestamp)?$pass_los_timestamp+(24*60*60):$pass_los_timestamp;
+                            $pass_el_start_timestamp = ($pass_el_start_timestamp < $pass_aos_timestamp)?$pass_el_start_timestamp+(24*60*60):$pass_el_start_timestamp;
+                            $pass_el_end_timestamp = ($pass_el_end_timestamp < $pass_aos_timestamp)?$pass_el_end_timestamp+(24*60*60):$pass_el_end_timestamp;
+                            
                             // Add the pass to the array
                             $temp_pass = array();
                             $temp_pass['pass']['orbit_number'] = intval($pass_orbit);
