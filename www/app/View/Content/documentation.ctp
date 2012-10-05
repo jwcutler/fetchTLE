@@ -786,6 +786,7 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
 <?php echo Router::url('/', true); ?>api/passes/CUTE-1.7%2BAPD%20II%20%28CO-65%29.json?pass_count=5&ground_stations=FXB&min_elevations=20&show_all_passes=false
 </pre>
 <p>As stated in the <a href="#making_request" class="link">Making An API Request</a> section, all ground station and satellite names names must be URL encoded (like the "CUTE-1.7+APD II (CO-65)" satellite is in the example request above) before being joined with the underscore.</p>
+<p>This API also features a user-friendly <a class="link" target="_blank" href="<?php echo Router::url('/', true); ?>tools/passes">pass-time calculation tool</a>.</p>
 <p>Instead of explaining every field returned in the response, portions of the response (clipped parts of the response are indicated by a "...") from the example request above are displayed below in every available format.</p>
 <ul class="nav nav-tabs" id="passes_examples">
     <li class="active"><a href="#passes_json">JSON</a></li>
