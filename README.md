@@ -39,6 +39,22 @@ So, for example, if fetchTLE were setup at mysite.com/fetchtle/ webroot/.htacces
 </IfModule>
 ```
 
+To configure Apache to run fetchTLE from a directory, simply setup an alias and enable FollowSymLinks (important) for that directory. For example, if you want fetchTLE to appear at /tools/fetchtle, your default virtual host may look like:
+```
+<VirtualHost *:80>
+    DocumentRoot /var/www
+    DirectoryIndex index.html index.php
+    
+    # Setup directory aliases
+    Alias /tools/fetchtle /var/other_apps/fetchTLE/www/app/webroot
+    <Directory /var/other_apps/fetchTLE/www/app/webroot>
+	Options FollowSymLinks
+	AllowOverride ALL
+    </Directory>
+</VirtualHost>
+```
+This is preferred to just copying fetchTLE to a directory of /var/www because it only allows access to the app/webroot folder. 
+
 Using fetchTLE
 ----------------
 After fetchTLE has been installed, you can access the administration panel at fetchtlelocation.com/admin using the 'admin' user with the password you created in step 5 above. From the administration panel you can:
