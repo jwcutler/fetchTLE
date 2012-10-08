@@ -28,7 +28,7 @@ class PassController extends AppController {
         $this->Source->hasMany['Update']['limit'] = 1;
         $this->Source->hasMany['Update']['order'] = 'id DESC';
         $this->Source->recursive = 2;
-        $this->set('sources', $this->Source->find('all'));
+        $this->set('sources', $this->Source->find('all', array('order' => 'Source.name ASC')));
         
         $this->set("title_for_layout", "Pass Time Satellite Selection");
     }

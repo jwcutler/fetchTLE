@@ -199,8 +199,12 @@ class Station extends AppModel {
                             // Detect if any timestamps rolled over to the next day and correct
                             $pass_mel_timestamp = ($pass_mel_timestamp < $pass_aos_timestamp)?$pass_mel_timestamp+(24*60*60):$pass_mel_timestamp;
                             $pass_los_timestamp = ($pass_los_timestamp < $pass_aos_timestamp)?$pass_los_timestamp+(24*60*60):$pass_los_timestamp;
-                            $pass_el_start_timestamp = ($pass_el_start_timestamp < $pass_aos_timestamp)?$pass_el_start_timestamp+(24*60*60):$pass_el_start_timestamp;
-                            $pass_el_end_timestamp = ($pass_el_end_timestamp < $pass_aos_timestamp)?$pass_el_end_timestamp+(24*60*60):$pass_el_end_timestamp;
+                            if ($pass_el_start_timestamp != false){
+                              $pass_el_start_timestamp = ($pass_el_start_timestamp < $pass_aos_timestamp)?$pass_el_start_timestamp+(24*60*60):$pass_el_start_timestamp;
+                            }
+                            if ($pass_el_end_timestamp != false){
+                              $pass_el_end_timestamp = ($pass_el_end_timestamp < $pass_aos_timestamp)?$pass_el_end_timestamp+(24*60*60):$pass_el_end_timestamp;
+                            }
                             
                             // Add the pass to the array
                             $temp_pass = array();

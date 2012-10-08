@@ -1,7 +1,21 @@
+<?php echo $this->Html->script('chosen.jquery.min.js'); ?>
+<?php echo $this->Html->css('chosen.css'); ?>
+<script type="text/javascript">
+$(document).ready(function(){
+  // Initialize the select box
+  $("#tle_list").chosen({no_results_text: "No Satellites Found"});
+  
+  // Redirect the user if they select a satellite
+  $("#tle_list").on('change', function(){
+    satellite_location = $(this).val();
+    
+    window.location = satellite_location;
+  });
+});
+</script>
 <style type="text/css">
 .list_container {
     width: 840px;
-    margin-top: 20px;
 }
 
 .source_container {
@@ -14,7 +28,21 @@
 }
 </style>
 <h1 class="titles">Satellite Pass Time Calculator</h1>
-<p>This utility will allow you to calculate the pass times of a specified satellite over any number of ground stations. To get started, select a satellite below.</p>
+<p>This utility will allow you to calculate the pass times of a specified satellite over any number of ground stations. To get started, use the select box below to search for the satellite of interest or manually select it using the lists.</p>
+<div style="margin: 20px 0px 10px 0px;">
+  <select name="tle_list" id="tle_list" style="width: 300px;" data-placeholder="Select A Satellite">
+    <option></option>
+    <?php foreach($sources as $source): ?>
+      <?php if (!empty($source['Update'][0]['Tle'])): ?>
+        <optgroup label="<?php echo $source['Source']['name']; ?>">
+          <?php foreach ($source['Update'][0]['Tle'] as $tle): ?>
+            <option value="<?php echo Router::url('/', true); ?>tools/passes/<?php echo rawurlencode($tle['name']); ?>"><?php echo $tle['name']; ?></option>
+          <?php endforeach; ?>
+        </optgroup>
+      <?php endif; ?>
+    <?php endforeach; ?>
+  </select>
+</div>
 <div class="list_container">
     <?php if (!empty($sources)): ?>
         <?php $source_counter = 1; ?>
