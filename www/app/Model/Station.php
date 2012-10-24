@@ -196,33 +196,36 @@ class Station extends AppModel {
                             $pass_el_end_array = explode(':', $pass_el_end);
                             $pass_el_end_timestamp = ($pass_el_end_array[0]=='0'&&$pass_el_end_array[1]=='0'&&$pass_el_end_array[2]=='0')?false:gmmktime($pass_el_end_array[0], $pass_el_end_array[1], $pass_el_end_array[2], $pass_date_array[0], $pass_date_array[1], $pass_date_array[2]);
                             
-                            // Detect if any timestamps rolled over to the next day and correct
-                            $pass_mel_timestamp = ($pass_mel_timestamp < $pass_aos_timestamp)?$pass_mel_timestamp+(24*60*60):$pass_mel_timestamp;
-                            $pass_los_timestamp = ($pass_los_timestamp < $pass_aos_timestamp)?$pass_los_timestamp+(24*60*60):$pass_los_timestamp;
-                            if ($pass_el_start_timestamp != false){
-                              $pass_el_start_timestamp = ($pass_el_start_timestamp < $pass_aos_timestamp)?$pass_el_start_timestamp+(24*60*60):$pass_el_start_timestamp;
+                            // Filter out passes that occur before the start time but in the same day
+                            if ($pass_aos_timestamp >= $start_date){
+                                // Detect if any timestamps rolled over to the next day and correct
+                                $pass_mel_timestamp = ($pass_mel_timestamp < $pass_aos_timestamp)?$pass_mel_timestamp+(24*60*60):$pass_mel_timestamp;
+                                $pass_los_timestamp = ($pass_los_timestamp < $pass_aos_timestamp)?$pass_los_timestamp+(24*60*60):$pass_los_timestamp;
+                                if ($pass_el_start_timestamp != false){
+                                  $pass_el_start_timestamp = ($pass_el_start_timestamp < $pass_aos_timestamp)?$pass_el_start_timestamp+(24*60*60):$pass_el_start_timestamp;
+                                }
+                                if ($pass_el_end_timestamp != false){
+                                  $pass_el_end_timestamp = ($pass_el_end_timestamp < $pass_aos_timestamp)?$pass_el_end_timestamp+(24*60*60):$pass_el_end_timestamp;
+                                }
+                                
+                                // Add the pass to the array
+                                $temp_pass = array();
+                                $temp_pass['pass']['orbit_number'] = intval($pass_orbit);
+                                $temp_pass['pass']['aos'] = $pass_aos_timestamp;
+                                $temp_pass['pass']['aos_az'] = floatval($pass_aos_az);
+                                $temp_pass['pass']['mel'] = $pass_mel_timestamp;
+                                $temp_pass['pass']['mel_az'] = floatval($pass_mel_az);
+                                $temp_pass['pass']['los'] = $pass_los_timestamp;
+                                $temp_pass['pass']['los_az'] = floatval($pass_los_az);
+                                $temp_pass['pass']['acceptable_el_start'] = $pass_el_start_timestamp;
+                                $temp_pass['pass']['acceptable_el_end'] = $pass_el_end_timestamp;
+                                $temp_pass['pass']['duration'] = $pass_duration;
+                                $temp_pass['pass']['peak_elevation'] = floatval($pass_peak_elev);
+                                $temp_pass['pass']['acceptable'] = ($pass_peak_elev>=$stations_elevations[$station['Station']['name']])?true:false;
+                                $temp_pass['pass']['ground_station'] = $station['Station']['name'];
+                                
+                                array_push($result['passes'], $temp_pass);
                             }
-                            if ($pass_el_end_timestamp != false){
-                              $pass_el_end_timestamp = ($pass_el_end_timestamp < $pass_aos_timestamp)?$pass_el_end_timestamp+(24*60*60):$pass_el_end_timestamp;
-                            }
-                            
-                            // Add the pass to the array
-                            $temp_pass = array();
-                            $temp_pass['pass']['orbit_number'] = intval($pass_orbit);
-                            $temp_pass['pass']['aos'] = $pass_aos_timestamp;
-                            $temp_pass['pass']['aos_az'] = floatval($pass_aos_az);
-                            $temp_pass['pass']['mel'] = $pass_mel_timestamp;
-                            $temp_pass['pass']['mel_az'] = floatval($pass_mel_az);
-                            $temp_pass['pass']['los'] = $pass_los_timestamp;
-                            $temp_pass['pass']['los_az'] = floatval($pass_los_az);
-                            $temp_pass['pass']['acceptable_el_start'] = $pass_el_start_timestamp;
-                            $temp_pass['pass']['acceptable_el_end'] = $pass_el_end_timestamp;
-                            $temp_pass['pass']['duration'] = $pass_duration;
-                            $temp_pass['pass']['peak_elevation'] = floatval($pass_peak_elev);
-                            $temp_pass['pass']['acceptable'] = ($pass_peak_elev>=$stations_elevations[$station['Station']['name']])?true:false;
-                            $temp_pass['pass']['ground_station'] = $station['Station']['name'];
-                            
-                            array_push($result['passes'], $temp_pass);
                         }
                     }
                 }
