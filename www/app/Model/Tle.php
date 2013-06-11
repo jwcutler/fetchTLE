@@ -33,8 +33,7 @@ class Tle extends AppModel {
         // Construct a query out of the names
         $query_satellite_names = Array();
         foreach($satellite_names as $satellite_name){
-			//var_dump(urldecode($satellite_name));
-            array_push($query_satellite_names, 'Tle.name=\''.$satellite_name.'\'');
+            array_push($query_satellite_names, 'Tle.name=\''.Sanitize::escape($satellite_name).'\'');
         }
         $query_satellite_names = implode(' OR ',$query_satellite_names);
 		
@@ -70,8 +69,7 @@ class Tle extends AppModel {
         // Construct a query out of the names
         $query_satellite_names = Array();
         foreach($satellite_names as $satellite_name){
-			//var_dump(urldecode($satellite_name));
-            array_push($query_satellite_names, 'Tle.name=\''.Sanitize::clean($satellite_name).'\'');
+            array_push($query_satellite_names, 'Tle.name=\''.Sanitize::escape($satellite_name).'\'');
         }
         $query_satellite_names = implode(' OR ',$query_satellite_names);
 		
@@ -180,8 +178,7 @@ class Tle extends AppModel {
             // Construct a query out of the satellite names
             $query_satellite_names = Array();
             foreach($satellite_names as $satellite_name){
-                //var_dump(urldecode($satellite_name));
-                array_push($query_satellite_names, 'Tle.name=\''.Sanitize::clean($satellite_name).'\'');
+                array_push($query_satellite_names, 'Tle.name=\''.Sanitize::escape($satellite_name).'\'');
             }
             $query_satellite_names = implode(' OR ',$query_satellite_names);
             
@@ -206,7 +203,7 @@ class Tle extends AppModel {
                     // Perform the calculation
                     $position_results = Array();
                     exec(APP.'Vendor/Satellite_Position/satpos "'.$satellite_name.'" "'.$satellite['Tle']['raw_l1'].'" "'.$satellite['Tle']['raw_l2'].'" '.escapeshellarg($start).' '.escapeshellarg($end).' '.escapeshellarg($resolution), $position_results);
-                    
+
                     // Check for calculation errors
                     if (strpos($position_results[0], '[ERROR]')!==FALSE){
                         $error_message = substr($position_results[0], 7);

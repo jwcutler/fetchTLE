@@ -147,7 +147,7 @@ class Station extends AppModel {
         }
         
         // Grab the most recent TLE for the specified satellite
-        $satellite = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(Tle.created_on - \''.Sanitize::clean($start_date).'\') > ABS(TleAlt.created_on - \''.Sanitize::clean($start_date).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND (Tle.name=\''.Sanitize::clean($satellite_name).'\')');
+        $satellite = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(Tle.created_on - \''.Sanitize::clean($start_date).'\') > ABS(TleAlt.created_on - \''.Sanitize::clean($start_date).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND (Tle.name=\''.Sanitize::escape($satellite_name).'\')');
         if (empty($satellite)){
             $error_message = 'The satellite \''.$satellite_name.'\' could not be found.';
         }

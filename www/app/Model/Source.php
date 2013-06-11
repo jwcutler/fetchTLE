@@ -51,7 +51,7 @@ class Source extends AppModel {
 	    // Construct a query out of the names
 	    $query_source_names = Array();
 	    foreach($source_names as $source_name){
-		array_push($query_source_names, 'Source.name=\''.Sanitize::clean($source_name).'\'');
+		array_push($query_source_names, 'Source.name=\''.Sanitize::escape($source_name).'\'');
 	    }
 	    $query_source_names = 'WHERE '.implode(' OR ',$query_source_names);
 	} else {
