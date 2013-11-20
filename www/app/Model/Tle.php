@@ -504,7 +504,11 @@ class Tle extends AppModel {
             $tle_entry_counter = 0;
             $new_tle_entries = array();
             $valid_tle = true;
-            $tle_lines = explode("\n", $raw_tle_data);
+            if (strpos($raw_tle_data,"\n") !== false){
+              $tle_lines = explode("\n", $raw_tle_data);
+            } else {
+              $tle_lines = explode("\r", $raw_tle_data);
+            }
             foreach ($tle_lines as $tle_line){
                 // Skip empty lines
                 if (empty($tle_line)){
