@@ -542,9 +542,12 @@ class Tle extends AppModel {
                     }
 
                     // Make sure that the launch information isn't blank
-                    $launch_year = empty(trim(substr($tle_line, 9, 2))) ? "00" : trim(substr($tle_line, 9, 2));
-                    $launch_number = empty(trim(substr($tle_line, 11, 3))) ? "000" : trim(substr($tle_line, 11, 3));
-                    $launch_piece = empty(trim(substr($tle_line, 14, 1))) ? "A" : trim(substr($tle_line, 14, 1));
+                    $trim_year = trim(substr($tle_line, 9, 2));
+                    $launch_year = empty($trim_year) ? "00" : $trim_year;
+                    $trim_number = trim(substr($tle_line, 11, 3));
+                    $launch_number = empty($trim_number) ? "000" : $trim_number;
+                    $trim_piece = trim(substr($tle_line, 14, 1));
+                    $launch_piece = empty($trim_piece) ? "A" : $trim_piece;
                     
                     $new_tle_entries[$tle_entry_counter]['satellite_number'] = trim(substr($tle_line, 2, 5));
                     $new_tle_entries[$tle_entry_counter]['classification'] = trim(substr($tle_line, 7, 1));
