@@ -540,12 +540,20 @@ class Tle extends AppModel {
                         $valid_tle = false;
                         break;
                     }
+
+                    // Make sure that the launch information isn't blank
+                    $trim_year = trim(substr($tle_line, 9, 2));
+                    $launch_year = empty($trim_year) ? "00" : $trim_year;
+                    $trim_number = trim(substr($tle_line, 11, 3));
+                    $launch_number = empty($trim_number) ? "000" : $trim_number;
+                    $trim_piece = trim(substr($tle_line, 14, 1));
+                    $launch_piece = empty($trim_piece) ? "A" : $trim_piece;
                     
                     $new_tle_entries[$tle_entry_counter]['satellite_number'] = trim(substr($tle_line, 2, 5));
                     $new_tle_entries[$tle_entry_counter]['classification'] = trim(substr($tle_line, 7, 1));
-                    $new_tle_entries[$tle_entry_counter]['launch_year'] = trim(substr($tle_line, 9, 2));
-                    $new_tle_entries[$tle_entry_counter]['launch_number'] = trim(substr($tle_line, 11, 3));
-                    $new_tle_entries[$tle_entry_counter]['launch_piece'] = trim(substr($tle_line, 14, 1));
+                    $new_tle_entries[$tle_entry_counter]['launch_year'] = $launch_year;
+                    $new_tle_entries[$tle_entry_counter]['launch_number'] = $launch_number;
+                    $new_tle_entries[$tle_entry_counter]['launch_piece'] = $launch_piece;
                     $new_tle_entries[$tle_entry_counter]['epoch_year'] = trim(substr($tle_line, 18, 2));
                     $new_tle_entries[$tle_entry_counter]['epoch'] = trim(substr($tle_line, 20, 12));
                     $new_tle_entries[$tle_entry_counter]['ftd_mm_d2'] = trim(substr($tle_line, 33, 12));
@@ -581,7 +589,8 @@ class Tle extends AppModel {
             if ($valid_tle){
                 // Add the TLE's
                 $save_result = $this->saveMany($new_tle_entries, array('deep' => true));
-                
+                var_dump($save_result);
+
                 if ($save_result){
                     // Success
                     return true;
