@@ -147,7 +147,8 @@ class Station extends AppModel {
         }
         
         // Grab the most recent TLE for the specified satellite
-        $satellite = $this->query('SELECT Tle.*,`Update`.* FROM tles Tle LEFT JOIN tles TleAlt ON (Tle.name = TleAlt.name AND ABS(Tle.created_on - \''.Sanitize::clean($start_date).'\') > ABS(TleAlt.created_on - \''.Sanitize::clean($start_date).'\')) INNER JOIN updates AS `Update` ON (`Update`.id = Tle.update_id) WHERE TleAlt.id IS NULL AND (Tle.name=\''.Sanitize::escape($satellite_name).'\')');
+        $satellite = $this->query('SELECT name, raw_l1, raw_l2, created_on FROM tles WHERE created_on < \''.Sanitize::clean($start_date).'\' AND name = \''.Sanitize::escape($satellite_name).'\' ORDER BY created_on DESC LIMIT 1');
+        
         if (empty($satellite)){
             $error_message = 'The satellite \''.$satellite_name.'\' could not be found.';
         }
@@ -162,12 +163,12 @@ class Station extends AppModel {
                 $gs_satellite_passes = array();
                 $station_latitude = $station['Station']['latitude'];
                 $station_longitude = $station['Station']['longitude']*-1; // Negate because SatTrack is weird
-                exec(APP.'Vendor/SatTrack/sattrack -b UTC "'.$station['Station']['name'].'" '.$station_latitude.' '.$station_longitude.' "'.$satellite[0]['Tle']['name'].'" "'.$satellite[0]['Tle']['raw_l1'].'" "'.$satellite[0]['Tle']['raw_l2'].'" shortpr '.gmdate("dMy", $start_date).' 0:0:0 auto 30 0 '.$stations_elevations[$station['Station']['name']].' nohardcopy', $gs_satellite_passes);
+                exec(APP.'Vendor/SatTrack/sattrack -b UTC "'.$station['Station']['name'].'" '.$station_latitude.' '.$station_longitude.' "'.$satellite[0]['tles']['name'].'" "'.$satellite[0]['tles']['raw_l1'].'" "'.$satellite[0]['tles']['raw_l2'].'" shortpr '.gmdate("dMy", $start_date).' 0:0:0 auto 30 0 '.$stations_elevations[$station['Station']['name']].' nohardcopy', $gs_satellite_passes);
                 
                 if (strpos($gs_satellite_passes[0], 'SUCCESS')===FALSE){
                     // Some sort of error occured, set the error response and exit the loop
                     $result['status']['status'] = 'error';
-                    $result['status']['message'] = 'There was an error calculating the pass times for \''.$satellite[0]['Tle']['name'].'\'.';
+                    $result['status']['message'] = 'There was an error calculating the pass times for \''.$satellite[0]['tles']['name'].'\'.';
                     $result['status']['timestamp'] = time();
                     $result['status']['total_passes_loaded'] = 0;
                     $result['status']['valid_passes_loaded'] = 0;
@@ -273,8 +274,8 @@ class Station extends AppModel {
         $result['status']['params']['show_all_passes'] = $show_all_passes;
         $result['status']['params']['satellite'] = $satellite_name;
         if (!empty($satellite)){
-            $result['status']['params']['raw_tle_line_1'] = $satellite[0]['Tle']['raw_l1'];
-            $result['status']['params']['raw_tle_line_2'] = $satellite[0]['Tle']['raw_l2'];
+            $result['status']['params']['raw_tle_line_1'] = $satellite[0]['tles']['raw_l1'];
+            $result['status']['params']['raw_tle_line_2'] = $satellite[0]['tles']['raw_l2'];
         }
         if (!empty($stations)){
             $result['status']['params']['ground_stations']  = array();
