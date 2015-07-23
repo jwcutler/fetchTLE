@@ -26,11 +26,15 @@ class SatelliteController extends AppController {
         
         // Load the required satellites
         $satellites = null;
-        $timestamp = (isset($_GET['timestamp'])&&is_numeric($_GET['timestamp']))?$_GET['timestamp']:false;
+        $timestamp = isset($_GET['timestamp']) ? $_GET['timestamp'] : false;
+        $start = isset($_GET['start']) ? $_GET['start'] : false;
+        $count = isset($_GET['count']) ? $_GET['count'] : false;
+        $page = isset($_GET['page']) ? $_GET['page'] : false;
+
         if (isset($this->request->params['satellites'])){
             // Load the specified sources
             $satellite_names = explode('_', $this->request->params['satellites']);
-            $satellites = $this->Tle->api_loadsatellites($satellite_names, $timestamp);
+            $satellites = $this->Tle->api_loadsatellites($satellite_names, $timestamp, $start, $count, $page);
             
             if (isset($this->request->params['ext']) && $this->request->params['ext']=='xml'){
                 // Convert the array to an XML string

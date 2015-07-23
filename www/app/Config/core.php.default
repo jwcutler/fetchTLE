@@ -280,3 +280,7 @@ Cache::config('_cake_model_', array(
 // Configure route prefixes
 Configure::write('Routing.prefixes', array('admin', 'api', 'cron', 'tools'));
 
+// fetchTLE configuration
+Configure::write('fetchTLE.tleCount', 20);
+Configure::write('fetchTLE.tleCountMax', 50);
+
