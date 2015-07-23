@@ -7,39 +7,39 @@ $(document).ready(function(){
 
   // Handle example tabs
   $('#sources_examples a').click(function (e) {
-  e.preventDefault();
-  $(this).tab('show');
+    e.preventDefault();
+    $(this).tab('show');
   })
   $('#satellites_examples a').click(function (e) {
-  e.preventDefault();
-  $(this).tab('show');
+    e.preventDefault();
+    $(this).tab('show');
   })
   $('#positions_examples a').click(function (e) {
-  e.preventDefault();
-  $(this).tab('show');
+    e.preventDefault();
+    $(this).tab('show');
   })
   $('#passes_examples a').click(function (e) {
-  e.preventDefault();
-  $(this).tab('show');
+    e.preventDefault();
+    $(this).tab('show');
   })
   $('#error_examples a').click(function (e) {
-  e.preventDefault();
-  $(this).tab('show');
+    e.preventDefault();
+    $(this).tab('show');
   })
   
   $(".expand_link").click(function (){
-  row_id = $(this).attr('rel');
-  link_content = $(this).html();
-  
-  if (link_content == '[- Satellites]'){
-    $(this).html('[+ Satellites]');
-    $("#source_"+row_id).css("background-color","white");
-  } else {
-    $(this).html('[- Satellites]');
-    $("#source_"+row_id).css("background-color","#F5F5F5");
-  }
-  
-  $("#satellites_"+row_id).toggle(400);
+    row_id = $(this).attr('rel');
+    link_content = $(this).html();
+    
+    if (link_content == '[- Satellites]'){
+      $(this).html('[+ Satellites]');
+      $("#source_"+row_id).css("background-color","white");
+    } else {
+      $(this).html('[- Satellites]');
+      $("#source_"+row_id).css("background-color","#F5F5F5");
+    }
+    
+    $("#satellites_"+row_id).toggle(400);
   });
 });
 </script>
@@ -111,92 +111,92 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 <p>There are several parameters that you can append to your API request that allow you to customize the results returned.</p>
 <table class="table table-condensed table-hover">
   <thead>
-  <tr>
-    <th width="10%">Parameter</th>
-    <th width="10%">Type</th>
-    <th width="10%">Works With</th>
-    <th width="40%">Effect</th>
-    <th width="30%">Example</th>
-  </tr>
+    <tr>
+      <th width="10%">Parameter</th>
+      <th width="10%">Type</th>
+      <th width="10%">Works With</th>
+      <th width="40%">Effect</th>
+      <th width="30%">Example</th>
+    </tr>
   </thead>
   <tbody>
-  <tr>
-    <td colspan='1'>callback</td>
-    <td colspan='1'>String</td>
-    <td colspan='1'>satellites<br />sources<br />positions<br />passes</td>
-    <td colspan='1'>Adding the callback parameter to your request (when the format is set to .json) returns the results in JSONP format. This use commonly used when making requests from an AJAX or otherwise client-side script.</td>
-    <td colspan='1'><span style="font-style: italic;">/sources/CUBESAT.json?callback=yourcallback</span></td>
-  </tr>
-  <tr>
-    <td colspan='1'>timestamp</td>
-    <td colspan='1'>Integer (UNIX Timestamp)</td>
-    <td colspan='1'>satellites<br />sources<br />passes</td>
-    <td colspan='1'>The timestamp parameter allows you to supply a <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a> with your request. The result will consist of (or use for calculations) the TLEs that are closest to the timestamp you provided. Without a timestamp, <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> uses the most recent TLE for each satellite included in the response. When used with the passes API, this parameter specifies the start date that you would like to use when calculating satellite passes.</td>
-    <td colspan='1'><span style="font-style: italic;">/satellites/RAX-2.xml?timestamp=1339736400</span></td>
-  </tr>
-  <tr>
-    <td colspan='1'>start</td>
-    <td colspan='1'>Integer (UNIX Timestamp)</td>
-    <td colspan='1'>satellites<br />positions</td>
-    <td colspan='1'>This parameter, when used with the positions API, allows you to specify the beginning of the range of times that you would like to calculate satellite positions during. This timestamp will be used to select the TLE for the specified satellite(s) that is closest to the beginning of the range. That TLE will then be used to calculate the satellite positions during the interval. If no start timestamp is specified, the time that the request was submitted will be used instead. When used with the satellites API, the start parameter specifies the beginning (inclusive) timestamp for a set of TLEs. Including the start parameter will cause the response to be paginated (see the count and page parameters below). In addition, the start parameter will take precedence over the timestamp parameter. It is a UTC <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a>.</td>
-    <td colspan='1'><span style="font-style: italic;">/positions/RAX-2.xml?start=1339736400</span></td>
-  </tr>
-  <tr>
-    <td colspan='1'>end</td>
-    <td colspan='1'>Integer (UNIX Timestamp)</td>
-    <td colspan='1'>positions</td>
-    <td colspan='1'>This parameter, when used with the positions API, allows you to specify the end of the range of times that you would like to calculate satellite positions during. If no end timestamp is specified, it will automatically be set to be 24 hours ahead of the start timestamp. It is a UTC <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a>.</td>
-    <td colspan='1'><span style="font-style: italic;">/positions/RAX-2.xml?start=1339736400&end=1339822800</span></td>
-  </tr>
-  <tr>
-    <td colspan='1'>count</td>
-    <td colspan='1'>Integer</td>
-    <td colspan='1'>satellites</td>
-    <td colspan='1'>When used with start, the count parameter specifies the number of TLEs returned per page, per satellite, in the API response. Defaults to <?php echo Configure::read('fetchTLE.tleCount') ?> and has a max value of <?php echo Configure::read('fetchTLE.tleCountMax') ?>.</td>
-    <td colspan='1'><span style="font-style: italic;">/satellites/RAX-2.xml?start=1339736400&count=5</span></td>
-  </tr>
-  <tr>
-    <td colspan='1'>page</td>
-    <td colspan='1'>Integer</td>
-    <td colspan='1'>satellites</td>
-    <td colspan='1'>When used with the start and count parameters, page specifies the current page of the result set. Note that result sets are not persisted between requests. This means that if an update occurs while you are iterating over the pages, some requests may contain duplicate TLEs.</td>
-    <td colspan='1'><span style="font-style: italic;">/satellites/RAX-2.xml?start=1339736400&count=5&page=2</span></td>
-  </tr>
-  <tr>
-    <td colspan='1'>resolution</td>
-    <td colspan='1'>Integer (seconds)</td>
-    <td colspan='1'>positions</td>
-    <td colspan='1'>This parameter specifies how often you would like satellite position calculations to occur during the specified range. For example, if set to '60' the satellite positions calculated will be 60 seconds apart. Defaults to 60 if not specified.</td>
-    <td colspan='1'><span style="font-style: italic;">/positions/RAX-2.xml?resolution=10</span></td>
-  </tr>
-  <tr>
-    <td colspan='1'>pass_count</td>
-    <td colspan='1'>Integer</td>
-    <td colspan='1'>passes</td>
-    <td colspan='1'>This parameter allows you to specify how many acceptable passes (i.e. passes that meet the minimum elevation constraints) you wanted included in the result. If the supplied value for this parameter is too large (either exceeds the set limit or if the propagator can't calculate the requested number of specified acceptable passes in one go), a default value will be used instead. Once <span style="font-style: italic;">pass_count</span> acceptable passes are calculated, no further passes will be included in the response. Note that this value is used to limit only the acceptable passes. That is to say, if the 'show_all_passes' parameter is set to true unacceptable passes won't be considered when checking this parameter.</td>
-    <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?pass_count=5</span></td>
-  </tr>
-  <tr>
-    <td colspan='1'>show_all_passes</td>
-    <td colspan='1'>Boolean</td>
-    <td colspan='1'>passes</td>
-    <td colspan='1'>This parameter allows you to specify whether or not you would like unacceptable passes (i.e. passes that don't meet the elevation requirements) to be included in the response. Defaults to 'true' if not specified.</td>
-    <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?show_all_passes=true</span></td>
-  </tr>
-  <tr>
-    <td colspan='1'>ground_stations</td>
-    <td colspan='1'>String</td>
-    <td colspan='1'>passes</td>
-    <td colspan='1'>The 'ground_stations' parameter allows you to specify what ground stations you would like to consider when calculating pass times for a specified satellite. It is a string consisting of URL encoded ground station names joined with underscores ("_"). If no ground stations are specified, a collection of default ground stations will be used instead. For a list of available ground stations, see the list in section <a href="#available_satellites" class="link">2.0</a> of this document.</td>
-    <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?ground_stations=FXB_SRI</span></td>
-  </tr>
-  <tr>
-    <td colspan='1'>min_elevations</td>
-    <td colspan='1'>String</td>
-    <td colspan='1'>passes</td>
-    <td colspan='1'>This parameter, when used with the 'ground_stations' parameter, allows you to specify the minimum elevation to use for each ground station. It is comprised of a set of integers (the minimum elevations) joined with an underscore ("_"). The order that the minimum elevations are joined should match the order that the ground stations were joined. That is, if the <span style="font-style: italic;">ground_stations</span> parameter is "FXB_SRI" and the <span style="font-style: italic;">min_elevations</span> parameter is "30_45", FXB will have a minimum elevation of 30&deg; and SRI will have a minimum elevation of 45&deg;. If not specified or if there are more ground stations than minimum elevations, a default value will be used.</td>
-    <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?ground_stations=FXB_SRI&min_elevations=30_45</span></td>
-  </tr>
+    <tr>
+      <td colspan='1'>callback</td>
+      <td colspan='1'>String</td>
+      <td colspan='1'>satellites<br />sources<br />positions<br />passes</td>
+      <td colspan='1'>Adding the callback parameter to your request (when the format is set to .json) returns the results in JSONP format. This use commonly used when making requests from an AJAX or otherwise client-side script.</td>
+      <td colspan='1'><span style="font-style: italic;">/sources/CUBESAT.json?callback=yourcallback</span></td>
+    </tr>
+    <tr>
+      <td colspan='1'>timestamp</td>
+      <td colspan='1'>Integer (UNIX Timestamp)</td>
+      <td colspan='1'>satellites<br />sources<br />passes</td>
+      <td colspan='1'>The timestamp parameter allows you to supply a <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a> with your request. The result will consist of (or use for calculations) the TLEs that are closest to the timestamp you provided. Without a timestamp, <span style="font-style: italic;"><?php echo Configure::read('Website.name'); ?></span> uses the most recent TLE for each satellite included in the response. When used with the passes API, this parameter specifies the start date that you would like to use when calculating satellite passes.</td>
+      <td colspan='1'><span style="font-style: italic;">/satellites/RAX-2.xml?timestamp=1339736400</span></td>
+    </tr>
+    <tr>
+      <td colspan='1'>start</td>
+      <td colspan='1'>Integer (UNIX Timestamp)</td>
+      <td colspan='1'>satellites<br />positions</td>
+      <td colspan='1'>This parameter, when used with the positions API, allows you to specify the beginning of the range of times that you would like to calculate satellite positions during. This timestamp will be used to select the TLE for the specified satellite(s) that is closest to the beginning of the range. That TLE will then be used to calculate the satellite positions during the interval. If no start timestamp is specified, the time that the request was submitted will be used instead. When used with the satellites API, the start parameter specifies the beginning (inclusive) timestamp for a set of TLEs. Including the start parameter will cause the response to be paginated (see the count and page parameters below). In addition, the start parameter will take precedence over the timestamp parameter. It is a UTC <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a>.</td>
+      <td colspan='1'><span style="font-style: italic;">/positions/RAX-2.xml?start=1339736400</span></td>
+    </tr>
+    <tr>
+      <td colspan='1'>end</td>
+      <td colspan='1'>Integer (UNIX Timestamp)</td>
+      <td colspan='1'>positions</td>
+      <td colspan='1'>This parameter, when used with the positions API, allows you to specify the end of the range of times that you would like to calculate satellite positions during. If no end timestamp is specified, it will automatically be set to be 24 hours ahead of the start timestamp. It is a UTC <a href="http://www.unixtimestamp.com/index.php" target="_blank" class="link">UNIX timestamp</a>.</td>
+      <td colspan='1'><span style="font-style: italic;">/positions/RAX-2.xml?start=1339736400&end=1339822800</span></td>
+    </tr>
+    <tr>
+      <td colspan='1'>count</td>
+      <td colspan='1'>Integer</td>
+      <td colspan='1'>satellites</td>
+      <td colspan='1'>When used with start, the count parameter specifies the number of TLEs returned per page, per satellite, in the API response. Defaults to <?php echo Configure::read('fetchTLE.tleCount') ?> and has a max value of <?php echo Configure::read('fetchTLE.tleCountMax') ?>.</td>
+      <td colspan='1'><span style="font-style: italic;">/satellites/RAX-2.xml?start=1339736400&count=5</span></td>
+    </tr>
+    <tr>
+      <td colspan='1'>page</td>
+      <td colspan='1'>Integer</td>
+      <td colspan='1'>satellites</td>
+      <td colspan='1'>When used with the start and count parameters, page specifies the current page of the result set. Note that result sets are not persisted between requests. This means that if an update occurs while you are iterating over the pages, some requests may contain duplicate TLEs.</td>
+      <td colspan='1'><span style="font-style: italic;">/satellites/RAX-2.xml?start=1339736400&count=5&page=2</span></td>
+    </tr>
+    <tr>
+      <td colspan='1'>resolution</td>
+      <td colspan='1'>Integer (seconds)</td>
+      <td colspan='1'>positions</td>
+      <td colspan='1'>This parameter specifies how often you would like satellite position calculations to occur during the specified range. For example, if set to '60' the satellite positions calculated will be 60 seconds apart. Defaults to 60 if not specified.</td>
+      <td colspan='1'><span style="font-style: italic;">/positions/RAX-2.xml?resolution=10</span></td>
+    </tr>
+    <tr>
+      <td colspan='1'>pass_count</td>
+      <td colspan='1'>Integer</td>
+      <td colspan='1'>passes</td>
+      <td colspan='1'>This parameter allows you to specify how many acceptable passes (i.e. passes that meet the minimum elevation constraints) you wanted included in the result. If the supplied value for this parameter is too large (either exceeds the set limit or if the propagator can't calculate the requested number of specified acceptable passes in one go), a default value will be used instead. Once <span style="font-style: italic;">pass_count</span> acceptable passes are calculated, no further passes will be included in the response. Note that this value is used to limit only the acceptable passes. That is to say, if the 'show_all_passes' parameter is set to true unacceptable passes won't be considered when checking this parameter.</td>
+      <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?pass_count=5</span></td>
+    </tr>
+    <tr>
+      <td colspan='1'>show_all_passes</td>
+      <td colspan='1'>Boolean</td>
+      <td colspan='1'>passes</td>
+      <td colspan='1'>This parameter allows you to specify whether or not you would like unacceptable passes (i.e. passes that don't meet the elevation requirements) to be included in the response. Defaults to 'true' if not specified.</td>
+      <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?show_all_passes=true</span></td>
+    </tr>
+    <tr>
+      <td colspan='1'>ground_stations</td>
+      <td colspan='1'>String</td>
+      <td colspan='1'>passes</td>
+      <td colspan='1'>The 'ground_stations' parameter allows you to specify what ground stations you would like to consider when calculating pass times for a specified satellite. It is a string consisting of URL encoded ground station names joined with underscores ("_"). If no ground stations are specified, a collection of default ground stations will be used instead. For a list of available ground stations, see the list in section <a href="#available_satellites" class="link">2.0</a> of this document.</td>
+      <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?ground_stations=FXB_SRI</span></td>
+    </tr>
+    <tr>
+      <td colspan='1'>min_elevations</td>
+      <td colspan='1'>String</td>
+      <td colspan='1'>passes</td>
+      <td colspan='1'>This parameter, when used with the 'ground_stations' parameter, allows you to specify the minimum elevation to use for each ground station. It is comprised of a set of integers (the minimum elevations) joined with an underscore ("_"). The order that the minimum elevations are joined should match the order that the ground stations were joined. That is, if the <span style="font-style: italic;">ground_stations</span> parameter is "FXB_SRI" and the <span style="font-style: italic;">min_elevations</span> parameter is "30_45", FXB will have a minimum elevation of 30&deg; and SRI will have a minimum elevation of 45&deg;. If not specified or if there are more ground stations than minimum elevations, a default value will be used.</td>
+      <td colspan='1'><span style="font-style: italic;">/passes/RAX-2.json?ground_stations=FXB_SRI&min_elevations=30_45</span></td>
+    </tr>
   </tbody>
 </table>
 <p>The resources that each of these parameters can be used on is indicated in the "Works With" column.</p>
@@ -990,55 +990,55 @@ CUTE-1.7+APD II (CO-65)#23799#1348195970#177#1348196351#257#1348196739#343#13481
 <p>Below, lists of the available sources and their satellites along with their URL encoding are displayed for your convenience.</p>
 <?php if (!empty($sources)): ?>
   <table class="table table-hover">
-  <thead>
-    <tr>
-  <th width="15%">Source Name</th>
-  <th width="15%">URL Encoded Name</th>
-  <th width="20%">Last Updated</th>
-  <th width="15%">Description</th>
-  <th width="35%">URL</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php foreach($sources as $source): ?>
-  <tr id="source_<?php echo $source['Source']['id']; ?>">
-    <td colspan="1"><?php echo $source['Source']['name']; ?> <a class="expand_link" rel="<?php echo $source['Source']['id']; ?>">[+ Satellites]</a></td>
-    <td colspan="1"><?php echo rawurlencode($source['Source']['name']); ?></td>
-    <td colspan="1">
-    <?php if (isset($source['Update'][0]['created_on'])): ?>
-      <?php echo date('m/d/Y G:i:s T', $source['Update'][0]['created_on']); ?>
-    <?php else: ?>
-      <span style="font-style: italic;">Not Updated Yet</span>
-    <?php endif; ?>
-    </td>
-    <td colspan="1"><?php echo $source['Source']['description']; ?></td>
-    <td colspan="1"><a href="<?php echo $source['Source']['url']; ?>" target="_blank" class="link"><?php echo $source['Source']['url']; ?></a></td>
-  </tr>
-  <tr id="satellites_<?php echo $source['Source']['id']; ?>" class="satellite_row">
-    <td colspan="1"></td>
-    <td colspan="4">
-    <?php if (!empty($source['Update'][0]['Tle'])): ?>
-      <table style="width: 50%;" class="table table-condensed satellite_table">
     <thead>
-      <th>Satellite Name</th>
-      <th>Encoded Satellite Name</th>
+      <tr>
+        <th width="15%">Source Name</th>
+        <th width="15%">URL Encoded Name</th>
+        <th width="20%">Last Updated</th>
+        <th width="15%">Description</th>
+        <th width="35%">URL</th>
+      </tr>
     </thead>
     <tbody>
-      <?php foreach($source['Update'][0]['Tle'] as $tle): ?>
-      <tr>
-        <td><?php echo $tle['name']; ?></td>
-        <td><?php echo rawurlencode($tle['name']); ?></td>
-      </tr>
+      <?php foreach($sources as $source): ?>
+        <tr id="source_<?php echo $source['Source']['id']; ?>">
+          <td colspan="1"><?php echo $source['Source']['name']; ?> <a class="expand_link" rel="<?php echo $source['Source']['id']; ?>">[+ Satellites]</a></td>
+          <td colspan="1"><?php echo rawurlencode($source['Source']['name']); ?></td>
+          <td colspan="1">
+          <?php if (isset($source['Update'][0]['created_on'])): ?>
+            <?php echo date('m/d/Y G:i:s T', $source['Update'][0]['created_on']); ?>
+          <?php else: ?>
+            <span style="font-style: italic;">Not Updated Yet</span>
+          <?php endif; ?>
+          </td>
+          <td colspan="1"><?php echo $source['Source']['description']; ?></td>
+          <td colspan="1"><a href="<?php echo $source['Source']['url']; ?>" target="_blank" class="link"><?php echo $source['Source']['url']; ?></a></td>
+        </tr>
+        <tr id="satellites_<?php echo $source['Source']['id']; ?>" class="satellite_row">
+          <td colspan="1"></td>
+          <td colspan="4">
+          <?php if (!empty($source['Update'][0]['Tle'])): ?>
+            <table style="width: 50%;" class="table table-condensed satellite_table">
+              <thead>
+                <th>Satellite Name</th>
+                <th>Encoded Satellite Name</th>
+              </thead>
+              <tbody>
+                <?php foreach($source['Update'][0]['Tle'] as $tle): ?>
+                  <tr>
+                    <td><?php echo $tle['name']; ?></td>
+                    <td><?php echo rawurlencode($tle['name']); ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          <?php else: ?>
+            <span style="font-style: italic;">No Satellites Loaded</span>
+          <?php endif; ?>
+          </td>
+        </tr>
       <?php endforeach; ?>
     </tbody>
-      </table>
-    <?php else: ?>
-      <span style="font-style: italic;">No Satellites Loaded</span>
-    <?php endif; ?>
-    </td>
-  </tr>
-    <?php endforeach; ?>
-  </tbody>
   </table>
 <?php else: ?>
   <span style="font-style: italic;">No sources are currently available for use.</span>
@@ -1046,26 +1046,26 @@ CUTE-1.7+APD II (CO-65)#23799#1348195970#177#1348196351#257#1348196739#343#13481
 <p>The list of all available ground stations is displayed below. These are typically used with the "passes" API.</p>
 <?php if (!empty($stations)): ?>
   <table class="table table-hover">
-  <thead>
-    <tr>
-  <th width="15%">Station Name</th>
-  <th width="15%">URL Encoded Name</th>
-  <th width="10%">Latitude</th>
-  <th width="10%">Longitude</th>
-  <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php foreach($stations as $station): ?>
-  <tr>
-    <td colspan="1"><?php echo $station['Station']['name']; ?></td>
-    <td colspan="1"><?php echo rawurlencode($station['Station']['name']); ?></td>
-    <td colspan="1"><?php echo $station['Station']['latitude']; ?> <?php if ($station['Station']['latitude']>0): ?>N<?php else: ?>S<?php endif; ?></td>
-    <td colspan="1"><?php echo $station['Station']['longitude']; ?> <?php if ($station['Station']['longitude']>0): ?>W<?php else: ?>E<?php endif; ?></td>
-    <td colspan="1"><?php echo $station['Station']['description']; ?> <a href="https://maps.google.com/maps?q=<?php echo $station['Station']['latitude']; ?>,<?php echo $station['Station']['longitude']; ?>" target="_blank" class="link">(View Map)</a></td>
-  </tr>
-    <?php endforeach; ?>
-  </tbody>
+    <thead>
+      <tr>
+        <th width="15%">Station Name</th>
+        <th width="15%">URL Encoded Name</th>
+        <th width="10%">Latitude</th>
+        <th width="10%">Longitude</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach($stations as $station): ?>
+        <tr>
+          <td colspan="1"><?php echo $station['Station']['name']; ?></td>
+          <td colspan="1"><?php echo rawurlencode($station['Station']['name']); ?></td>
+          <td colspan="1"><?php echo $station['Station']['latitude']; ?> <?php if ($station['Station']['latitude']>0): ?>N<?php else: ?>S<?php endif; ?></td>
+          <td colspan="1"><?php echo $station['Station']['longitude']; ?> <?php if ($station['Station']['longitude']>0): ?>W<?php else: ?>E<?php endif; ?></td>
+          <td colspan="1"><?php echo $station['Station']['description']; ?> <a href="https://maps.google.com/maps?q=<?php echo $station['Station']['latitude']; ?>,<?php echo $station['Station']['longitude']; ?>" target="_blank" class="link">(View Map)</a></td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
   </table>
 <?php else: ?>
   <span style="font-style: italic;">No ground stations are currently configured. Please try again once some have been added.</span>
