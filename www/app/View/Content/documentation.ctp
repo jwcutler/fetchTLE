@@ -218,88 +218,88 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 <pre class="prettyprint pre-scrollable">
 {
   "sources":{
-  "CUBESAT":{
-    "satellites":{
-  "DTUSAT":{
-  "name":"DTUSAT",
-  "satellite_number":"27842",
-  "classification":"U",
-  "launch_year":"3",
-  "launch_number":"31",
-  "launch_piece":"C",
-  "epoch_year":"12",
-  "epoch":"261.50866133",
-  "ftd_mm_d2":".00000180",
-  "std_mm_d6":"00000-0",
-  "bstar_drag":"10239-3",
-  "element_number":"494",
-  "checksum_l1":"1",
-  "inclination":"98.6965",
-  "right_ascension":"268.9254",
-  "eccentricity":"0009041",
-  "perigee":"298.0471",
-  "mean_anomaly":"61.9785",
-  "mean_motion":"14.21328962",
-  "revs":"47812",
-  "checksum_l2":"5",
-  "raw_l1":"1 27842U 03031C   12261.50866133  .00000180  00000-0  10239-3 0  4941",
-  "raw_l2":"2 27842  98.6965 268.9254 0009041 298.0471  61.9785 14.21328962478125"
-  },
-  ...
+    "CUBESAT":{
+      "satellites":{
+        "DTUSAT":{
+          "name":"DTUSAT",
+          "satellite_number":"27842",
+          "classification":"U",
+          "launch_year":"3",
+          "launch_number":"31",
+          "launch_piece":"C",
+          "epoch_year":"12",
+          "epoch":"261.50866133",
+          "ftd_mm_d2":".00000180",
+          "std_mm_d6":"00000-0",
+          "bstar_drag":"10239-3",
+          "element_number":"494",
+          "checksum_l1":"1",
+          "inclination":"98.6965",
+          "right_ascension":"268.9254",
+          "eccentricity":"0009041",
+          "perigee":"298.0471",
+          "mean_anomaly":"61.9785",
+          "mean_motion":"14.21328962",
+          "revs":"47812",
+          "checksum_l2":"5",
+          "raw_l1":"1 27842U 03031C   12261.50866133  .00000180  00000-0  10239-3 0  4941",
+          "raw_l2":"2 27842  98.6965 268.9254 0009041 298.0471  61.9785 14.21328962478125"
+        },
+        ...
+      },
+      "status":{
+        "url":"http:\/\/celestrak.com\/NORAD\/elements\/cubesat.txt",
+        "description":"Cubesat satellites.",
+        "updated":1347976291,
+        "satellites_fetched":39
+      }
     },
-    "status":{
-  "url":"http:\/\/celestrak.com\/NORAD\/elements\/cubesat.txt",
-  "description":"Cubesat satellites.",
-  "updated":1347976291,
-  "satellites_fetched":39
+    "GPS":{
+      "satellites":{
+        "GPS BIIA-10 (PRN 32)":{
+          "name":"GPS BIIA-10 (PRN 32)",
+          "satellite_number":"20959",
+          "classification":"U",
+          "launch_year":"90",
+          "launch_number":"103",
+          "launch_piece":"A",
+          "epoch_year":"12",
+          "epoch":"261.20237825",
+          "ftd_mm_d2":".00000021",
+          "std_mm_d6":"00000-0",
+          "bstar_drag":"10000-3",
+          "element_number":"705",
+          "checksum_l1":"1",
+          "inclination":"54.4816",
+          "right_ascension":"234.9334",
+          "eccentricity":"0119386",
+          "perigee":"329.0989",
+          "mean_anomaly":"30.1776",
+          "mean_motion":"2.00574017",
+          "revs":"15973",
+          "checksum_l2":"6",
+          "raw_l1":"1 20959U 90103A   12261.20237825  .00000021  00000-0  10000-3 0  7051",
+          "raw_l2":"2 20959  54.4816 234.9334 0119386 329.0989  30.1776  2.00574017159736"
+        },
+        ...
+      },
+      "status":{
+        "url":"http:\/\/www.celestrak.com\/NORAD\/elements\/gps-ops.txt",
+        "description":"US GPS satellites.",
+        "updated":1347976291,
+        "satellites_fetched":31
+      }
     }
-  },
-  "GPS":{
-    "satellites":{
-  "GPS BIIA-10 (PRN 32)":{
-  "name":"GPS BIIA-10 (PRN 32)",
-  "satellite_number":"20959",
-  "classification":"U",
-  "launch_year":"90",
-  "launch_number":"103",
-  "launch_piece":"A",
-  "epoch_year":"12",
-  "epoch":"261.20237825",
-  "ftd_mm_d2":".00000021",
-  "std_mm_d6":"00000-0",
-  "bstar_drag":"10000-3",
-  "element_number":"705",
-  "checksum_l1":"1",
-  "inclination":"54.4816",
-  "right_ascension":"234.9334",
-  "eccentricity":"0119386",
-  "perigee":"329.0989",
-  "mean_anomaly":"30.1776",
-  "mean_motion":"2.00574017",
-  "revs":"15973",
-  "checksum_l2":"6",
-  "raw_l1":"1 20959U 90103A   12261.20237825  .00000021  00000-0  10000-3 0  7051",
-  "raw_l2":"2 20959  54.4816 234.9334 0119386 329.0989  30.1776  2.00574017159736"
-  },
-  ...
-    },
-    "status":{
-  "url":"http:\/\/www.celestrak.com\/NORAD\/elements\/gps-ops.txt",
-  "description":"US GPS satellites.",
-  "updated":1347976291,
-  "satellites_fetched":31
-    }
-  }
   },
   "status":{
-  "status":"okay",
-  "message":"At least one of the specified sources was loaded.",
-  "timestamp":1347988683,
-  "sources_fetched":1,
-  "params":{
+    "status":"okay",
+    "message":"At least one of the specified sources was loaded.",
     "timestamp":1347988683,
-    "sources":["CUBESAT","GPS"]
-  }
+    "sources_fetched":1,
+    "params":{
+      "timestamp":1347988683,
+      "sources":["CUBESAT","GPS"]
+    }
   }
 }
 </pre>
@@ -309,91 +309,91 @@ tr.satellite_row:hover td, tr.satellite_row:hover th {
 &lt;?xml version="1.0"?&gt;
 &lt;api_sources&gt;
   &lt;status&gt;
-  &lt;status&gt;okay&lt;/status&gt;
-  &lt;message&gt;At least one of the specified sources was loaded.&lt;/message&gt;
-  &lt;timestamp&gt;1347989842&lt;/timestamp&gt;
-  &lt;sources_fetched&gt;2&lt;/sources_fetched&gt;
-  &lt;params&gt;
+    &lt;status&gt;okay&lt;/status&gt;
+    &lt;message&gt;At least one of the specified sources was loaded.&lt;/message&gt;
     &lt;timestamp&gt;1347989842&lt;/timestamp&gt;
-    &lt;sources&gt;
-  &lt;source&gt;CUBESAT&lt;/source&gt;
-  &lt;source&gt;GPS&lt;/source&gt;
-    &lt;/sources&gt;
-  &lt;/params&gt;
+    &lt;sources_fetched&gt;2&lt;/sources_fetched&gt;
+    &lt;params&gt;
+      &lt;timestamp&gt;1347989842&lt;/timestamp&gt;
+      &lt;sources&gt;
+        &lt;source&gt;CUBESAT&lt;/source&gt;
+        &lt;source&gt;GPS&lt;/source&gt;
+      &lt;/sources&gt;
+    &lt;/params&gt;
   &lt;/status&gt;
   &lt;sources&gt;
-  &lt;source name="GPS"&gt;
-    &lt;status&gt;
-    &lt;url&gt;http://www.celestrak.com/NORAD/elements/gps-ops.txt&lt;/url&gt;
-    &lt;description&gt;GPS Satellites.&lt;/description&gt;
-    &lt;updated&gt;1343494980&lt;/updated&gt;
-    &lt;satellites_fetched&gt;31&lt;/satellites_fetched&gt;
-    &lt;/status&gt;
-    &lt;satellites&gt;
-    &lt;satellite name="GPS BIIA-10 (PRN 32)"&gt;
-      &lt;name&gt;GPS BIIA-10 (PRN 32)&lt;/name&gt;
-      &lt;satellite_number&gt;20959&lt;/satellite_number&gt;
-      &lt;classification&gt;U&lt;/classification&gt;
-      &lt;launch_year&gt;90&lt;/launch_year&gt;
-      &lt;launch_number&gt;103&lt;/launch_number&gt;
-      &lt;launch_piece&gt;A&lt;/launch_piece&gt;
-      &lt;epoch_year&gt;12&lt;/epoch_year&gt;
-      &lt;epoch&gt;208.35547222&lt;/epoch&gt;
-      &lt;ftd_mm_d2&gt;.00000064&lt;/ftd_mm_d2&gt;
-      &lt;std_mm_d6&gt;00000-0&lt;/std_mm_d6&gt;
-      &lt;bstar_drag&gt;10000-3&lt;/bstar_drag&gt;
-      &lt;element_number&gt;651&lt;/element_number&gt;
-      &lt;checksum_l1&gt;0&lt;/checksum_l1&gt;
-      &lt;inclination&gt;54.5008&lt;/inclination&gt;
-      &lt;right_ascension&gt;237.0787&lt;/right_ascension&gt;
-      &lt;eccentricity&gt;0119318&lt;/eccentricity&gt;
-      &lt;perigee&gt;327.5321&lt;/perigee&gt;
-      &lt;mean_anomaly&gt;31.8169&lt;/mean_anomaly&gt;
-      &lt;mean_motion&gt;2.00568072&lt;/mean_motion&gt;
-      &lt;revs&gt;15867&lt;/revs&gt;
-      &lt;checksum_l2&gt;4&lt;/checksum_l2&gt;
-      &lt;raw_l1&gt;1 20959U 90103A   12208.35547222  .00000064  00000-0  10000-3 0  6510&lt;/raw_l1&gt;
-      &lt;raw_l2&gt;2 20959  54.5008 237.0787 0119318 327.5321  31.8169  2.00568072158674&lt;/raw_l2&gt;
-    &lt;/satellite&gt;
-    ...
-    &lt;/satellites&gt;
-  &lt;/source&gt;
-  &lt;source name="CUBESAT"&gt;
-    &lt;status&gt;
-    &lt;url&gt;http://celestrak.com/NORAD/elements/cubesat.txt&lt;/url&gt;
-    &lt;description&gt;CUBESAT satellites&lt;/description&gt;
-    &lt;updated&gt;1343494981&lt;/updated&gt;
-    &lt;satellites_fetched&gt;39&lt;/satellites_fetched&gt;
-    &lt;/status&gt;
-    &lt;satellites&gt;
-    &lt;satellite name="DTUSAT"&gt;
-      &lt;name&gt;DTUSAT&lt;/name&gt;
-      &lt;satellite_number&gt;27842&lt;/satellite_number&gt;
-      &lt;classification&gt;U&lt;/classification&gt;
-      &lt;launch_year&gt;3&lt;/launch_year&gt;
-      &lt;launch_number&gt;31&lt;/launch_number&gt;
-      &lt;launch_piece&gt;C&lt;/launch_piece&gt;
-      &lt;epoch_year&gt;12&lt;/epoch_year&gt;
-      &lt;epoch&gt;209.55574681&lt;/epoch&gt;
-      &lt;ftd_mm_d2&gt;.00000096&lt;/ftd_mm_d2&gt;
-      &lt;std_mm_d6&gt;00000-0&lt;/std_mm_d6&gt;
-      &lt;bstar_drag&gt;64011-4&lt;/bstar_drag&gt;
-      &lt;element_number&gt;454&lt;/element_number&gt;
-      &lt;checksum_l1&gt;2&lt;/checksum_l1&gt;
-      &lt;inclination&gt;98.6957&lt;/inclination&gt;
-      &lt;right_ascension&gt;217.7612&lt;/right_ascension&gt;
-      &lt;eccentricity&gt;0010295&lt;/eccentricity&gt;
-      &lt;perigee&gt;81.8434&lt;/perigee&gt;
-      &lt;mean_anomaly&gt;278.3917&lt;/mean_anomaly&gt;
-      &lt;mean_motion&gt;14.21308551&lt;/mean_motion&gt;
-      &lt;revs&gt;47074&lt;/revs&gt;
-      &lt;checksum_l2&gt;9&lt;/checksum_l2&gt;
-      &lt;raw_l1&gt;1 27842U 03031C   12209.55574681  .00000096  00000-0  64011-4 0  4542&lt;/raw_l1&gt;
-      &lt;raw_l2&gt;2 27842  98.6957 217.7612 0010295  81.8434 278.3917 14.21308551470749&lt;/raw_l2&gt;
-    &lt;/satellite&gt;
-    ...
-    &lt;/satellites&gt;
-  &lt;/source&gt;
+    &lt;source name="GPS"&gt;
+      &lt;status&gt;
+        &lt;url&gt;http://www.celestrak.com/NORAD/elements/gps-ops.txt&lt;/url&gt;
+        &lt;description&gt;GPS Satellites.&lt;/description&gt;
+        &lt;updated&gt;1343494980&lt;/updated&gt;
+        &lt;satellites_fetched&gt;31&lt;/satellites_fetched&gt;
+      &lt;/status&gt;
+      &lt;satellites&gt;
+        &lt;satellite name="GPS BIIA-10 (PRN 32)"&gt;
+          &lt;name&gt;GPS BIIA-10 (PRN 32)&lt;/name&gt;
+          &lt;satellite_number&gt;20959&lt;/satellite_number&gt;
+          &lt;classification&gt;U&lt;/classification&gt;
+          &lt;launch_year&gt;90&lt;/launch_year&gt;
+          &lt;launch_number&gt;103&lt;/launch_number&gt;
+          &lt;launch_piece&gt;A&lt;/launch_piece&gt;
+          &lt;epoch_year&gt;12&lt;/epoch_year&gt;
+          &lt;epoch&gt;208.35547222&lt;/epoch&gt;
+          &lt;ftd_mm_d2&gt;.00000064&lt;/ftd_mm_d2&gt;
+          &lt;std_mm_d6&gt;00000-0&lt;/std_mm_d6&gt;
+          &lt;bstar_drag&gt;10000-3&lt;/bstar_drag&gt;
+          &lt;element_number&gt;651&lt;/element_number&gt;
+          &lt;checksum_l1&gt;0&lt;/checksum_l1&gt;
+          &lt;inclination&gt;54.5008&lt;/inclination&gt;
+          &lt;right_ascension&gt;237.0787&lt;/right_ascension&gt;
+          &lt;eccentricity&gt;0119318&lt;/eccentricity&gt;
+          &lt;perigee&gt;327.5321&lt;/perigee&gt;
+          &lt;mean_anomaly&gt;31.8169&lt;/mean_anomaly&gt;
+          &lt;mean_motion&gt;2.00568072&lt;/mean_motion&gt;
+          &lt;revs&gt;15867&lt;/revs&gt;
+          &lt;checksum_l2&gt;4&lt;/checksum_l2&gt;
+          &lt;raw_l1&gt;1 20959U 90103A   12208.35547222  .00000064  00000-0  10000-3 0  6510&lt;/raw_l1&gt;
+          &lt;raw_l2&gt;2 20959  54.5008 237.0787 0119318 327.5321  31.8169  2.00568072158674&lt;/raw_l2&gt;
+        &lt;/satellite&gt;
+        ...
+      &lt;/satellites&gt;
+    &lt;/source&gt;
+    &lt;source name="CUBESAT"&gt;
+      &lt;status&gt;
+        &lt;url&gt;http://celestrak.com/NORAD/elements/cubesat.txt&lt;/url&gt;
+        &lt;description&gt;CUBESAT satellites&lt;/description&gt;
+        &lt;updated&gt;1343494981&lt;/updated&gt;
+        &lt;satellites_fetched&gt;39&lt;/satellites_fetched&gt;
+      &lt;/status&gt;
+      &lt;satellites&gt;
+        &lt;satellite name="DTUSAT"&gt;
+          &lt;name&gt;DTUSAT&lt;/name&gt;
+          &lt;satellite_number&gt;27842&lt;/satellite_number&gt;
+          &lt;classification&gt;U&lt;/classification&gt;
+          &lt;launch_year&gt;3&lt;/launch_year&gt;
+          &lt;launch_number&gt;31&lt;/launch_number&gt;
+          &lt;launch_piece&gt;C&lt;/launch_piece&gt;
+          &lt;epoch_year&gt;12&lt;/epoch_year&gt;
+          &lt;epoch&gt;209.55574681&lt;/epoch&gt;
+          &lt;ftd_mm_d2&gt;.00000096&lt;/ftd_mm_d2&gt;
+          &lt;std_mm_d6&gt;00000-0&lt;/std_mm_d6&gt;
+          &lt;bstar_drag&gt;64011-4&lt;/bstar_drag&gt;
+          &lt;element_number&gt;454&lt;/element_number&gt;
+          &lt;checksum_l1&gt;2&lt;/checksum_l1&gt;
+          &lt;inclination&gt;98.6957&lt;/inclination&gt;
+          &lt;right_ascension&gt;217.7612&lt;/right_ascension&gt;
+          &lt;eccentricity&gt;0010295&lt;/eccentricity&gt;
+          &lt;perigee&gt;81.8434&lt;/perigee&gt;
+          &lt;mean_anomaly&gt;278.3917&lt;/mean_anomaly&gt;
+          &lt;mean_motion&gt;14.21308551&lt;/mean_motion&gt;
+          &lt;revs&gt;47074&lt;/revs&gt;
+          &lt;checksum_l2&gt;9&lt;/checksum_l2&gt;
+          &lt;raw_l1&gt;1 27842U 03031C   12209.55574681  .00000096  00000-0  64011-4 0  4542&lt;/raw_l1&gt;
+          &lt;raw_l2&gt;2 27842  98.6957 217.7612 0010295  81.8434 278.3917 14.21308551470749&lt;/raw_l2&gt;
+        &lt;/satellite&gt;
+        ...
+      &lt;/satellites&gt;
+    &lt;/source&gt;
   &lt;/sources&gt;
 &lt;/api_sources&gt;
 </pre>
@@ -635,76 +635,76 @@ BEESAT-2
 <pre class="prettyprint pre-scrollable">
 {
   "satellites":{
-  "RAX-2":{
-    "positions":{
-  "1345830113":{
-  "timestamp":1345830113,
-  "latitude":55.351346,
-  "longitude":52.918618,
-  "altitude":658.076145
-  },
-  "1345830173":{
-  "timestamp":1345830173,
-  "latitude":58.765731,
-  "longitude":50.151246,
-  "altitude":647.762654
-  },
-    ...
+    "RAX-2":{
+      "positions":{
+        "1345830113":{
+          "timestamp":1345830113,
+          "latitude":55.351346,
+          "longitude":52.918618,
+          "altitude":658.076145
+        },
+        "1345830173":{
+          "timestamp":1345830173,
+          "latitude":58.765731,
+          "longitude":50.151246,
+          "altitude":647.762654
+        },
+        ...
+      },
+      "status":{
+        "status":"okay",
+        "message":"Satellite positions calculated successfully.",
+        "generated_at":1345830175,
+        "positions_calculated":60,
+        "name":"RAX-2",
+        "raw_tle_line_1":"1 37853U 11061D   12235.83404004  .00003153  00000-0  25520-3 0  2645",
+        "raw_tle_line_2":"2 37853 101.7092 306.3753 0246038 160.8856 200.1781 14.80426852 44256",
+        "timestamp_start":1345830113,
+        "timestamp_end":1345833713,
+        "resolution":60
+      }
     },
-    "status":{
-    "status":"okay",
-  "message":"Satellite positions calculated successfully.",
-  "generated_at":1345830175,
-  "positions_calculated":60,
-  "name":"RAX-2",
-  "raw_tle_line_1":"1 37853U 11061D   12235.83404004  .00003153  00000-0  25520-3 0  2645",
-  "raw_tle_line_2":"2 37853 101.7092 306.3753 0246038 160.8856 200.1781 14.80426852 44256",
-  "timestamp_start":1345830113,
-  "timestamp_end":1345833713,
-  "resolution":60
+    "CUTE-1.7+APD II (CO-65)":{
+      "positions":{
+        "1345830113":{
+          "timestamp":1345830113,
+          "latitude":60.801292,
+          "longitude":44.181864,
+          "altitude":636.395418
+        },
+        "1345830173":{
+          "timestamp":1345830173,
+          "latitude":64.330966,
+          "longitude":41.576805,
+          "altitude":636.611687
+        },
+        ...
+      },
+      "status":{
+        "status":"okay",
+        "message":"Satellite positions calculated successfully.",
+        "generated_at":1345830175,
+        "positions_calculated":60,
+        "name":"CUTE-1.7+APD II (CO-65)",
+        "raw_tle_line_1":"1 32785U 08021C   12236.17412516  .00000497  00000-0  67364-4 0  3957",
+        "raw_tle_line_2":"2 32785  97.7916 295.6249 0014096 198.2384 161.8322 14.83121379233693",
+        "timestamp_start":1345830113,
+        "timestamp_end":1345833713,
+        "resolution":60
+      }
     }
-  },
-  "CUTE-1.7+APD II (CO-65)":{
-    "positions":{
-    "1345830113":{
-  "timestamp":1345830113,
-  "latitude":60.801292,
-  "longitude":44.181864,
-  "altitude":636.395418
-  },
-  "1345830173":{
-  "timestamp":1345830173,
-  "latitude":64.330966,
-  "longitude":41.576805,
-  "altitude":636.611687
-  },
-    ...
-    },
-    "status":{
-    "status":"okay",
-  "message":"Satellite positions calculated successfully.",
-  "generated_at":1345830175,
-  "positions_calculated":60,
-  "name":"CUTE-1.7+APD II (CO-65)",
-  "raw_tle_line_1":"1 32785U 08021C   12236.17412516  .00000497  00000-0  67364-4 0  3957",
-  "raw_tle_line_2":"2 32785  97.7916 295.6249 0014096 198.2384 161.8322 14.83121379233693",
-  "timestamp_start":1345830113,
-  "timestamp_end":1345833713,
-    "resolution":60
-    }
-  }
   },
   "status":{
-  "status":"okay",
-  "message":"The positions of the specified satellites were calculated successfully.",
-  "timestamp":1347990223,
-  "satellites_calculated":2,
-  "params":{
-    "start":1347990223,
-    "end":1348076623,
-    "resolution":60,
-    "satellites":["RAX-2","CUTE-1.7+APD II (CO-65)"]
-  }
+    "status":"okay",
+    "message":"The positions of the specified satellites were calculated successfully.",
+    "timestamp":1347990223,
+    "satellites_calculated":2,
+    "params":{
+      "start":1347990223,
+      "end":1348076623,
+      "resolution":60,
+      "satellites":["RAX-2","CUTE-1.7+APD II (CO-65)"]
+    }
   }
 }
 </pre>
@@ -714,81 +714,75 @@ BEESAT-2
 &lt;?xml version="1.0"?&gt;
 &lt;api_positions&gt;
   &lt;status&gt;
-  &lt;status&gt;okay&lt;/status&gt;
-  &lt;message&gt;The positions of the specified satellites were calculated successfully.&lt;/message&gt;
-  &lt;timestamp&gt;1347990287&lt;/timestamp&gt;
-  &lt;satellites_calculated&gt;2&lt;/satellites_calculated&gt;
-  &lt;params&gt;
-    &lt;start&gt;1347990287&lt;/start&gt;
-    &lt;end&gt;1348076687&lt;/end&gt;
-    &lt;resolution&gt;60&lt;/resolution&gt;
-    &lt;satellites&gt;
-  &lt;satellite&gt;RAX-2&lt;/satellite&gt;
-  &lt;satellite&gt;CUTE-1.7+APD II (CO-65)&lt;/satellite&gt;
-    &lt;/satellites&gt;
-  &lt;/params&gt;
-  &lt;/status&gt;
-  &lt;status&gt;
-  &lt;status&gt;okay&lt;/status&gt;
-  &lt;message&gt;The positions of the specified satellites were calculated successfully.&lt;/message&gt;
-  &lt;timestamp&gt;1345830822&lt;/timestamp&gt;
-  &lt;satellites_calculated&gt;2&lt;/satellites_calculated&gt;
+    &lt;status&gt;okay&lt;/status&gt;
+    &lt;message&gt;The positions of the specified satellites were calculated successfully.&lt;/message&gt;
+    &lt;timestamp&gt;1347990287&lt;/timestamp&gt;
+    &lt;satellites_calculated&gt;2&lt;/satellites_calculated&gt;
+    &lt;params&gt;
+      &lt;start&gt;1347990287&lt;/start&gt;
+      &lt;end&gt;1348076687&lt;/end&gt;
+      &lt;resolution&gt;60&lt;/resolution&gt;
+      &lt;satellites&gt;
+        &lt;satellite&gt;RAX-2&lt;/satellite&gt;
+        &lt;satellite&gt;CUTE-1.7+APD II (CO-65)&lt;/satellite&gt;
+      &lt;/satellites&gt;
+    &lt;/params&gt;
   &lt;/status&gt;
   &lt;satellites&gt;
-  &lt;satellite name='RAX-2'&gt;
-    &lt;status&gt;
-    &lt;status&gt;okay&lt;/status&gt;
-  &lt;message&gt;Satellite positions calculated successfully.&lt;/message&gt;
-  &lt;generated_at&gt;1345830822&lt;/generated_at&gt;
-  &lt;positions_calculated&gt;60&lt;/positions_calculated&gt;
-  &lt;name&gt;RAX-2&lt;/name&gt;
-  &lt;raw_tle_line_1&gt;1 37853U 11061D   12235.83404004  .00003153  00000-0  25520-3 0  2645&lt;/raw_tle_line_1&gt;
-  &lt;raw_tle_line_2&gt;2 37853 101.7092 306.3753 0246038 160.8856 200.1781 14.80426852 44256&lt;/raw_tle_line_2&gt;
-  &lt;timestamp_start&gt;1345830113&lt;/timestamp_start&gt;
-  &lt;timestamp_end&gt;1345833713&lt;/timestamp_end&gt;
-  &lt;resolution&gt;60&lt;/resolution&gt;
-    &lt;/status&gt;
-    &lt;positions&gt;
-    &lt;position timestamp='1345830113'&gt;
-  &lt;latitude&gt;55.351346&lt;/latitude&gt;
-  &lt;longitude&gt;52.918618&lt;/longitude&gt;
-  &lt;altitude&gt;658.076145&lt;/altitude&gt;
-  &lt;/position&gt;
-  &lt;position timestamp='1345830173'&gt;
-  &lt;latitude&gt;58.765731&lt;/latitude&gt;
-  &lt;longitude&gt;50.151246&lt;/longitude&gt;
-  &lt;altitude&gt;647.762654&lt;/altitude&gt;
-  &lt;/position&gt;
-  ...
-    &lt;/positions&gt;
-  &lt;/satellite&gt;
-  &lt;satellite name='CUTE-1.7+APD II (CO-65)'&gt;
-    &lt;status&gt;
-    &lt;status&gt;okay&lt;/status&gt;
-  &lt;message&gt;Satellite positions calculated successfully.&lt;/message&gt;
-  &lt;generated_at&gt;1345830822&lt;/generated_at&gt;
-  &lt;positions_calculated&gt;60&lt;/positions_calculated&gt;
-  &lt;name&gt;CUTE-1.7+APD II (CO-65)&lt;/name&gt;
-  &lt;raw_tle_line_1&gt;1 32785U 08021C   12236.17412516  .00000497  00000-0  67364-4 0  3957&lt;/raw_tle_line_1&gt;
-  &lt;raw_tle_line_2&gt;2 32785  97.7916 295.6249 0014096 198.2384 161.8322 14.83121379233693&lt;/raw_tle_line_2&gt;
-  &lt;timestamp_start&gt;1345830113&lt;/timestamp_start&gt;
-  &lt;timestamp_end&gt;1345833713&lt;/timestamp_end&gt;
-  &lt;resolution&gt;60&lt;/resolution&gt;
-    &lt;/status&gt;
-    &lt;positions&gt;
-    &lt;position timestamp='1345830113'&gt;
-  &lt;latitude&gt;60.801292&lt;/latitude&gt;
-  &lt;longitude&gt;44.181864&lt;/longitude&gt;
-  &lt;altitude&gt;636.395418&lt;/altitude&gt;
-  &lt;/position&gt;
-  &lt;position timestamp='1345830173'&gt;
-  &lt;latitude&gt;64.330966&lt;/latitude&gt;
-  &lt;longitude&gt;41.576805&lt;/longitude&gt;
-  &lt;altitude&gt;636.611687&lt;/altitude&gt;
-  &lt;/position&gt;
-    ...
-    &lt;/positions&gt;
-  &lt;/satellite&gt;
+    &lt;satellite name='RAX-2'&gt;
+      &lt;status&gt;
+        &lt;status&gt;okay&lt;/status&gt;
+        &lt;message&gt;Satellite positions calculated successfully.&lt;/message&gt;
+        &lt;generated_at&gt;1345830822&lt;/generated_at&gt;
+        &lt;positions_calculated&gt;60&lt;/positions_calculated&gt;
+        &lt;name&gt;RAX-2&lt;/name&gt;
+        &lt;raw_tle_line_1&gt;1 37853U 11061D   12235.83404004  .00003153  00000-0  25520-3 0  2645&lt;/raw_tle_line_1&gt;
+        &lt;raw_tle_line_2&gt;2 37853 101.7092 306.3753 0246038 160.8856 200.1781 14.80426852 44256&lt;/raw_tle_line_2&gt;
+        &lt;timestamp_start&gt;1345830113&lt;/timestamp_start&gt;
+        &lt;timestamp_end&gt;1345833713&lt;/timestamp_end&gt;
+        &lt;resolution&gt;60&lt;/resolution&gt;
+      &lt;/status&gt;
+      &lt;positions&gt;
+        &lt;position timestamp='1345830113'&gt;
+          &lt;latitude&gt;55.351346&lt;/latitude&gt;
+          &lt;longitude&gt;52.918618&lt;/longitude&gt;
+          &lt;altitude&gt;658.076145&lt;/altitude&gt;
+        &lt;/position&gt;
+        &lt;position timestamp='1345830173'&gt;
+          &lt;latitude&gt;58.765731&lt;/latitude&gt;
+          &lt;longitude&gt;50.151246&lt;/longitude&gt;
+          &lt;altitude&gt;647.762654&lt;/altitude&gt;
+        &lt;/position&gt;
+        ...
+      &lt;/positions&gt;
+    &lt;/satellite&gt;
+    &lt;satellite name='CUTE-1.7+APD II (CO-65)'&gt;
+      &lt;status&gt;
+        &lt;status&gt;okay&lt;/status&gt;
+        &lt;message&gt;Satellite positions calculated successfully.&lt;/message&gt;
+        &lt;generated_at&gt;1345830822&lt;/generated_at&gt;
+        &lt;positions_calculated&gt;60&lt;/positions_calculated&gt;
+        &lt;name&gt;CUTE-1.7+APD II (CO-65)&lt;/name&gt;
+        &lt;raw_tle_line_1&gt;1 32785U 08021C   12236.17412516  .00000497  00000-0  67364-4 0  3957&lt;/raw_tle_line_1&gt;
+        &lt;raw_tle_line_2&gt;2 32785  97.7916 295.6249 0014096 198.2384 161.8322 14.83121379233693&lt;/raw_tle_line_2&gt;
+        &lt;timestamp_start&gt;1345830113&lt;/timestamp_start&gt;
+        &lt;timestamp_end&gt;1345833713&lt;/timestamp_end&gt;
+        &lt;resolution&gt;60&lt;/resolution&gt;
+      &lt;/status&gt;
+      &lt;positions&gt;
+        &lt;position timestamp='1345830113'&gt;
+          &lt;latitude&gt;60.801292&lt;/latitude&gt;
+          &lt;longitude&gt;44.181864&lt;/longitude&gt;
+          &lt;altitude&gt;636.395418&lt;/altitude&gt;
+        &lt;/position&gt;
+        &lt;position timestamp='1345830173'&gt;
+          &lt;latitude&gt;64.330966&lt;/latitude&gt;
+          &lt;longitude&gt;41.576805&lt;/longitude&gt;
+          &lt;altitude&gt;636.611687&lt;/altitude&gt;
+        &lt;/position&gt;
+        ...
+      &lt;/positions&gt;
+    &lt;/satellite&gt;
   &lt;/satellites&gt;
 &lt;/api_positions&gt;
 </pre>
@@ -825,48 +819,48 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
 <pre class="prettyprint pre-scrollable">
 {
   "passes":[
-  {
-    "pass":{
-  "orbit_number":23754,
-  "aos":1347933717,
-  "aos_az":147,
-  "mel":1347934097,
-  "mel_az":70,
-  "los":1347934470,
-  "los_az":356,
-  "acceptable_el_start":1347933950,
-  "acceptable_el_end":1347934252,
-  "duration":"00:12:33",
-  "peak_elevation":39.6,
-  "acceptable":true,
-  "ground_station":"FXB"
-    }
-  },
-  ...
+    {
+      "pass":{
+        "orbit_number":23754,
+        "aos":1347933717,
+        "aos_az":147,
+        "mel":1347934097,
+        "mel_az":70,
+        "los":1347934470,
+        "los_az":356,
+        "acceptable_el_start":1347933950,
+        "acceptable_el_end":1347934252,
+        "duration":"00:12:33",
+        "peak_elevation":39.6,
+        "acceptable":true,
+        "ground_station":"FXB"
+      }
+    },
+    ...
   ],
   "status":{
-  "status":"okay",
-  "message":"Passes were computed successfully.",
-  "timestamp":1348008751,
-  "total_passes_loaded":5,
-  "acceptable_passes_loaded":5,
-  "params":{
-    "pass_count":5,
+    "status":"okay",
+    "message":"Passes were computed successfully.",
     "timestamp":1348008751,
-    "show_all_passes":false,
-    "satellite":"CUTE-1.7+APD II (CO-65)",
-    "raw_tle_line_1":"1 32785U 08021C   12261.27121132  .00001098  00000-0  14065-3 0  4179",
-    "raw_tle_line_2":"2 32785  97.7893 320.1075 0016031 119.4239 240.8600 14.83187504237416",
-    "ground_stations":{
-  "FXB":{
-  "min_elevation":20,
-  "name":"FXB",
-  "latitude":42.293385,
-  "longitude":-83.712076,
-  "description":"FXB Ground Station in Ann Arbor, MI"
-  }
+    "total_passes_loaded":5,
+    "acceptable_passes_loaded":5,
+    "params":{
+      "pass_count":5,
+      "timestamp":1348008751,
+      "show_all_passes":false,
+      "satellite":"CUTE-1.7+APD II (CO-65)",
+      "raw_tle_line_1":"1 32785U 08021C   12261.27121132  .00001098  00000-0  14065-3 0  4179",
+      "raw_tle_line_2":"2 32785  97.7893 320.1075 0016031 119.4239 240.8600 14.83187504237416",
+      "ground_stations":{
+        "FXB":{
+          "min_elevation":20,
+          "name":"FXB",
+          "latitude":42.293385,
+          "longitude":-83.712076,
+          "description":"FXB Ground Station in Ann Arbor, MI"
+        }
+      }
     }
-  }
   }
 }
 </pre>
@@ -876,46 +870,46 @@ CUTE-1.7+APD II (CO-65):1345830173:64.330966:41.576805:636.611687
 &lt;?xml version="1.0"?&gt;
 &lt;api_passes&gt;
   &lt;status&gt;
-  &lt;status&gt;okay&lt;/status&gt;
-  &lt;message&gt;Passes were computed successfully.&lt;/message&gt;
-  &lt;timestamp&gt;1348009662&lt;/timestamp&gt;
-  &lt;total_passes_loaded&gt;5&lt;/total_passes_loaded&gt;
-  &lt;acceptable_passes_loaded&gt;5&lt;/acceptable_passes_loaded&gt;
-  &lt;params&gt;
-    &lt;pass_count&gt;5&lt;/pass_count&gt;
+    &lt;status&gt;okay&lt;/status&gt;
+    &lt;message&gt;Passes were computed successfully.&lt;/message&gt;
     &lt;timestamp&gt;1348009662&lt;/timestamp&gt;
-    &lt;show_all_passes&gt;false&lt;/show_all_passes&gt;
-    &lt;satellite&gt;CUTE-1.7+APD II (CO-65)&lt;/satellite&gt;
-    &lt;raw_tle_line_1&gt;1 32785U 08021C   12261.27121132  .00001098  00000-0  14065-3 0  4179&lt;/raw_tle_line_1&gt;
-    &lt;raw_tle_line_2&gt;2 32785  97.7893 320.1075 0016031 119.4239 240.8600 14.83187504237416&lt;/raw_tle_line_2&gt;
-    &lt;ground_stations&gt;
-    &lt;ground_station name='FXB'&gt;
-  &lt;name&gt;FXB&lt;/name&gt;
-  &lt;min_elevation&gt;20&lt;/min_elevation&gt;
-  &lt;latitude&gt;42.293385&lt;/latitude&gt;
-  &lt;longitude&gt;-83.712076&lt;/longitude&gt;
-  &lt;description&gt;FXB Ground Station in Ann Arbor, MI&lt;/description&gt;
-  &lt;/ground_station&gt;
-    &lt;/ground_stations&gt;
-  &lt;/params&gt;
+    &lt;total_passes_loaded&gt;5&lt;/total_passes_loaded&gt;
+    &lt;acceptable_passes_loaded&gt;5&lt;/acceptable_passes_loaded&gt;
+    &lt;params&gt;
+      &lt;pass_count&gt;5&lt;/pass_count&gt;
+      &lt;timestamp&gt;1348009662&lt;/timestamp&gt;
+      &lt;show_all_passes&gt;false&lt;/show_all_passes&gt;
+      &lt;satellite&gt;CUTE-1.7+APD II (CO-65)&lt;/satellite&gt;
+      &lt;raw_tle_line_1&gt;1 32785U 08021C   12261.27121132  .00001098  00000-0  14065-3 0  4179&lt;/raw_tle_line_1&gt;
+      &lt;raw_tle_line_2&gt;2 32785  97.7893 320.1075 0016031 119.4239 240.8600 14.83187504237416&lt;/raw_tle_line_2&gt;
+      &lt;ground_stations&gt;
+        &lt;ground_station name='FXB'&gt;
+          &lt;name&gt;FXB&lt;/name&gt;
+          &lt;min_elevation&gt;20&lt;/min_elevation&gt;
+          &lt;latitude&gt;42.293385&lt;/latitude&gt;
+          &lt;longitude&gt;-83.712076&lt;/longitude&gt;
+          &lt;description&gt;FXB Ground Station in Ann Arbor, MI&lt;/description&gt;
+        &lt;/ground_station&gt;
+      &lt;/ground_stations&gt;
+    &lt;/params&gt;
   &lt;/status&gt;
   &lt;passes&gt;
-  &lt;pass aos='1347933717'&gt;
-    &lt;orbit_number&gt;23754&lt;/orbit_number&gt;
-    &lt;aos&gt;1347933717&lt;/aos&gt;
-    &lt;aos_az&gt;147&lt;/aos_az&gt;
-    &lt;mel&gt;1347934097&lt;/mel&gt;
-    &lt;mel_az&gt;70&lt;/mel_az&gt;
-    &lt;los&gt;1347934470&lt;/los&gt;
-    &lt;los_az&gt;356&lt;/los_az&gt;
-    &lt;acceptable_el_start&gt;1347933950&lt;/acceptable_el_start&gt;
-    &lt;acceptable_el_end&gt;1347934252&lt;/acceptable_el_end&gt;
-    &lt;duration&gt;00:12:33&lt;/duration&gt;
-    &lt;peak_elevation&gt;39.6&lt;/peak_elevation&gt;
-    &lt;acceptable&gt;true&lt;/acceptable&gt;
-    &lt;ground_station&gt;FXB&lt;/ground_station&gt;
-  &lt;/pass&gt;
-  ...
+    &lt;pass aos='1347933717'&gt;
+      &lt;orbit_number&gt;23754&lt;/orbit_number&gt;
+      &lt;aos&gt;1347933717&lt;/aos&gt;
+      &lt;aos_az&gt;147&lt;/aos_az&gt;
+      &lt;mel&gt;1347934097&lt;/mel&gt;
+      &lt;mel_az&gt;70&lt;/mel_az&gt;
+      &lt;los&gt;1347934470&lt;/los&gt;
+      &lt;los_az&gt;356&lt;/los_az&gt;
+      &lt;acceptable_el_start&gt;1347933950&lt;/acceptable_el_start&gt;
+      &lt;acceptable_el_end&gt;1347934252&lt;/acceptable_el_end&gt;
+      &lt;duration&gt;00:12:33&lt;/duration&gt;
+      &lt;peak_elevation&gt;39.6&lt;/peak_elevation&gt;
+      &lt;acceptable&gt;true&lt;/acceptable&gt;
+      &lt;ground_station&gt;FXB&lt;/ground_station&gt;
+    &lt;/pass&gt;
+    ...
   &lt;/passes&gt;
 &lt;/api_passes&gt;
 </pre>
@@ -964,16 +958,16 @@ CUTE-1.7+APD II (CO-65)#23799#1348195970#177#1348196351#257#1348196739#343#13481
 &lt;?xml version="1.0"?&gt;
 &lt;api_satellites&gt;
   &lt;status&gt;
-  &lt;status&gt;error&lt;/status&gt;
-  &lt;message&gt;None of the provided satellites could be located or have been updated recently.&lt;/message&gt;
-  &lt;timestamp&gt;1347990456&lt;/timestamp&gt;
-  &lt;satellites_fetched&gt;0&lt;/satellites_fetched&gt;
-  &lt;params&gt;
+    &lt;status&gt;error&lt;/status&gt;
+    &lt;message&gt;None of the provided satellites could be located or have been updated recently.&lt;/message&gt;
     &lt;timestamp&gt;1347990456&lt;/timestamp&gt;
-    &lt;satellites&gt;
-  &lt;satellite&gt;DOESNTEXIST&lt;/satellite&gt;
-    &lt;/satellites&gt;
-  &lt;/params&gt;
+    &lt;satellites_fetched&gt;0&lt;/satellites_fetched&gt;
+    &lt;params&gt;
+      &lt;timestamp&gt;1347990456&lt;/timestamp&gt;
+      &lt;satellites&gt;
+        &lt;satellite&gt;DOESNTEXIST&lt;/satellite&gt;
+      &lt;/satellites&gt;
+    &lt;/params&gt;
   &lt;/status&gt;
 &lt;/api_satellites&gt;
 </pre>
